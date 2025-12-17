@@ -2,6 +2,8 @@
 
 This directory contains the ROS2 implementation of the entrance detection system for the Unitree GO2 robot.
 
+**Uses the official [unitree_ros2](https://github.com/unitreerobotics/unitree_ros2) SDK for robot control and sensor integration.**
+
 ## Structure
 
 ```
@@ -29,11 +31,26 @@ ros2_nodes/
     └── params.yaml
 ```
 
+## Prerequisites
+
+1. **ROS2 Humble** installed
+2. **unitree_ros2 SDK** installed (see [SETUP.md](../SETUP.md))
+3. **RealSense SDK** for depth camera
+
 ## Quick Start
 
-### 1. Build Custom Messages (One-time setup)
+### 1. Setup unitree_ros2 SDK (One-time)
 
-If you have a ROS2 workspace:
+```bash
+# Install unitree_ros2 (see SETUP.md for full instructions)
+cd ~/ros2_ws/src
+git clone https://github.com/unitreerobotics/unitree_ros2.git
+cd ~/ros2_ws
+colcon build
+source install/setup.bash
+```
+
+### 2. Build Custom Messages (One-time setup)
 
 ```bash
 # Copy entrance_detection_msgs to your ROS2 workspace
@@ -48,7 +65,9 @@ source install/setup.bash
 ros2 interface list | grep entrance_detection_msgs
 ```
 
-### 2. Run Nodes
+### 3. Run Nodes
+
+**Note:** The `unitree_ros2` nodes for LiDAR and robot state run automatically when connected to the GO2.
 
 #### Option A: Individual Nodes (for testing)
 
@@ -56,13 +75,16 @@ ros2 interface list | grep entrance_detection_msgs
 # Terminal 1: Depth Camera Node
 python3 depth_camera_node.py
 
-# Terminal 2: Verarbeitung Node  
+# Terminal 2: Unitree LiDAR Processing Node
+python3 unitree_lidar_node.py
+
+# Terminal 3: Verarbeitung Node (Sensor Fusion)
 python3 verarbeitung_node.py
 
-# Terminal 3: Verhalten Node
+# Terminal 4: Verhalten Node (Decision Logic)
 python3 verhalten_node.py
 
-# Terminal 4: Ausfuehrung Node (Simulation mode)
+# Terminal 5: Ausfuehrung Node (Movement Control)
 python3 ausfuehrung_node.py
 ```
 
@@ -115,14 +137,27 @@ Edit `config/params.yaml` to adjust:
 ## Architecture
 
 ```
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌─────────────┐   ┌──────────────┐
-│depth_camera_ │   │unitree_lidar │   │verarbeitung  │   │ verhalten   │   │ ausfuehrung  │
-│node (Camera) │──>│_node (LiDAR) │──>│_node (Fusion)│──>│_node (State)│──>│_node (Motor) │
-└──────────────┘   └──────────────┘   └──────────────┘   └─────────────┘   └──────────────┘
-   /sensor/              /perception/          Decision            /status/
-   depth_data            entrance              Logic               motor
-                         entrance_state
+unitree_ros2 SDK                     Custom Nodes
+┌──────────────┐                  ┌──────────────┐
+│   /utlidar/  │                  │depth_camera_ │
+│    cloud     │───┐              │node (Camera) │
+└──────────────┘   │              └──────────────┘
+                   │                     │
+                   ▼                     ▼
+            ┌──────────────┐      ┌──────────────┐      ┌─────────────┐      ┌──────────────┐
+            │unitree_lidar │      │verarbeitung  │      │ verhalten   │      │ ausfuehrung  │
+            │_node (Proc.) │─────>│_node (Fusion)│─────>│_node (State)│─────>│_node (Move)  │
+            └──────────────┘      └──────────────┘      └─────────────┘      └──────────────┘
+                                        │                                            │
+                                        ▼                                            ▼
+                                  /perception/                                  /cmd_vel
+                                   entrance                                  (unitree_ros2)
 ```
+
+### Topic Flow:
+- **Inputs:** `/utlidar/cloud` (from unitree_ros2), `/sensor/depth_image` (RealSense)
+- **Processing:** Gap detection, sensor fusion, decision logic
+- **Output:** `/cmd_vel` (movement commands to unitree_ros2)
 
 ## Troubleshooting
 
@@ -135,14 +170,16 @@ lsusb | grep Intel
 sudo apt install ros-humble-librealsense2
 ```
 
-### Unitree Connection Failed
+### Unitree Topics Not Visible
 ```bash
-# Check network interface name
-ifconfig
+# Ensure unitree_ros2 is running
+ros2 topic list | grep utlidar
 
-# Update params.yaml with correct interface name
-# Test ping to robot (if using Ethernet)
-ping <robot-ip>
+# Check network connection to GO2
+ping 192.168.123.15
+
+# Restart unitree_ros2 nodes if needed
+# (Usually auto-start when GO2 is on)
 ```
 
 ### Custom Messages Not Found

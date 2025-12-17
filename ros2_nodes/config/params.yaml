@@ -10,6 +10,7 @@
     enable_filters: true
 
 # Unitree LiDAR Node (4D LiDAR L1)
+# Subscribes to /utlidar/cloud from unitree_ros2 SDK
 /unitree_lidar_node:
   ros__parameters:
     min_gap_width: 0.7
@@ -18,6 +19,7 @@
     camera_fov_deg: 69.0
     slice_height_min: -0.3  # Meter unterhalb LiDAR
     slice_height_max: 0.3   # Meter oberhalb LiDAR
+
 
 # Verarbeitung Node (Entrance Detection + Sensor Fusion)
 /verarbeitung_node:
@@ -55,15 +57,14 @@
     safety_clearance: 0.10
     min_passable_height: 0.10
 
-# Ausfuehrung Node (Motor Control - Unitree GO2)
+# Ausfuehrung Node (Movement Control - Unitree GO2)
+# Uses unitree_ros2 standard topics (/cmd_vel)
 /ausfuehrung_node:
   ros__parameters:
-    # Unitree connection
-    network_interface: "enp129s0"  # Check with 'ifconfig'
-    timeout: 10.0
-    
-    # Motion limits
-    max_height_change_rate: 0.05  # meters/second
+    # Movement limits
+    max_linear_speed: 0.3   # meters/second
+    max_angular_speed: 0.5  # radians/second
     
     # Simulation mode (set to true for testing without robot)
     simulation_mode: false
+

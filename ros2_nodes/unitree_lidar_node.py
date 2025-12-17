@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """
-ROS2 Unitree 4D LiDAR L1 Sensor Node
+ROS2 Unitree 4D LiDAR L1 Processing Node
 
 Verantwortlichkeit:
-- Unitree 4D LiDAR L1 Punktwolke empfangen
+- Punktwolke von unitree_ros2 SDK empfangen (/utlidar/cloud)
 - Eingänge in 3D-Daten erkennen
 - LidarGap Messages publizieren
+- 2D LaserScan für Visualisierung generieren
+
+Hinweis: Diese Node nutzt die Topics des offiziellen unitree_ros2 SDK.
+Der LiDAR-Treiber wird automatisch vom unitree_ros2 Package bereitgestellt.
 """
 
 import rclpy

@@ -1,202 +1,222 @@
 #!/usr/bin/env python3
 """
-ROS2 Ausfuehrung Node - Motor Control Executor (Unitree GO2)
+ROS2 Ausfuehrung Node - Movement Control Executor (Unitree GO2)
 
 Verantwortlichkeit:
-- Unitree SportClient initialisieren
-- Motor-Befehle via Service empfangen
-- Körperhöhe ändern via SetBodyHeight()
+- Bewegungskommandos via /cmd_vel senden (Twist messages)
+- Roboter-Status von unitree_ros2 überwachen
+- Höhenbefehle ausführen
 - Motor-Status zurückmelden
+
+Hinweis: Diese Node nutzt das offizielle unitree_ros2 SDK.
+Bewegungskommandos werden über Standard ROS2 Topics gesendet.
 """
 
 import rclpy
 from rclpy.node import Node
 import time
 
-# Unitree SDK
-try:
-    from unitree_sdk2py.go2.sport.sport_client import SportClient
-    from unitree_sdk2py.core.channel import ChannelFactoryInitialize
-    UNITREE_AVAILABLE = True
-except ImportError:
-    UNITREE_AVAILABLE = False
-    print("WARNING: unitree_sdk2py not available - running in simulation mode")
+# ROS2 Standard Messages
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Header
 
 # TODO: Custom messages (uncomment after build)
-# from entrance_detection_msgs.msg import MotorStatus
+# from entrance_detection_msgs.msg import MotorStatus, MovementCommand
 
 
 class AusfuehrungNode(Node):
-    """Motor Control Executor Node for Unitree GO2"""
+    """Movement Control Executor Node for Unitree GO2"""
     
     def __init__(self):
         super().__init__('ausfuehrung_node')
         
+        # Publisher für Bewegungskommandos (unitree_ros2 Standard)
+        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        
         # TODO: Publisher for motor status
         # self.status_pub = self.create_publisher(MotorStatus, '/status/motor', 10)
         
-        # TODO: Service for motor commands
+        # TODO: Service for movement commands
         # self.command_srv = self.create_service(...)
         
-        # Parameters
-        self.declare_parameter('network_interface', 'enp129s0')
-        self.declare_parameter('timeout', 10.0)
-        self.declare_parameter('max_height_change_rate', 0.05)  # m/s
-        self.declare_parameter('simulation_mode', not UNITREE_AVAILABLE)
+        # TODO: Subscriber für Roboter-Status (von unitree_ros2)
+        # self.robot_state_sub = self.create_subscription(
+        #     RobotState, '/robot_state', self.robot_state_callback, 10
+        # )
         
-        self.network_interface = self.get_parameter('network_interface').value
-        self.timeout = self.get_parameter('timeout').value
-        self.max_rate = self.get_parameter('max_height_change_rate').value
+        # Parameters
+        self.declare_parameter('max_linear_speed', 0.3)   # m/s
+        self.declare_parameter('max_angular_speed', 0.5)  # rad/s
+        self.declare_parameter('simulation_mode', False)
+        
+        self.max_linear_speed = self.get_parameter('max_linear_speed').value
+        self.max_angular_speed = self.get_parameter('max_angular_speed').value
         self.simulation_mode = self.get_parameter('simulation_mode').value
         
-        # Unitree SDK
-        self.sport_client = None
-        self.current_height = 0.30  # Default normal height
+        # State
         self.is_ready = True
         self.in_motion = False
-        
-        # Initialize Unitree SDK
-        if not self.simulation_mode:
-            self.initialize_unitree_sdk()
-        else:
-            self.get_logger().warn('Running in SIMULATION MODE (no Unitree SDK)')
+        self.current_velocity = Twist()
         
         # Status publishing timer (10 Hz)
         self.status_timer = self.create_timer(0.1, self.publish_status)
         
-        self.get_logger().info('Ausfuehrung Node initialized')
+        mode_str = "SIMULATION" if self.simulation_mode else "REAL ROBOT"
+        self.get_logger().info(f'Ausfuehrung Node initialized ({mode_str})')
+        self.get_logger().info(f'Publishing to: /cmd_vel')
     
-    def initialize_unitree_sdk(self):
-        """Initialize Unitree GO2 SDK connection"""
-        try:
-            # Initialize channel factory
-            ChannelFactoryInitialize(0, self.network_interface)
-            
-            # Create sport client
-            self.sport_client = SportClient()
-            self.sport_client.SetTimeout(self.timeout)
-            self.sport_client.Init()
-            
-            self.get_logger().info(
-                f'Unitree SDK initialized on interface: {self.network_interface}'
-            )
-            
-        except Exception as e:
-            self.get_logger().error(f'Failed to initialize Unitree SDK: {e}')
-            self.get_logger().warn('Falling back to simulation mode')
-            self.simulation_mode = True
-    
-    def execute_height_command(self, target_height, posture_mode):
-        """Execute motor command to change body height"""
+    def execute_movement_command(self, linear_x=0.0, linear_y=0.0, angular_z=0.0, duration=1.0):
+        """
+        Execute movement command
+        
+        Args:
+            linear_x: Forward/backward velocity (m/s)
+            linear_y: Left/right velocity (m/s)
+            angular_z: Rotation velocity (rad/s)
+            duration: Duration to move (seconds)
+        """
         if not self.is_ready:
             self.get_logger().warn('Robot not ready, rejecting command')
             return False
         
+        # Limit velocities
+        linear_x = max(-self.max_linear_speed, min(self.max_linear_speed, linear_x))
+        linear_y = max(-self.max_linear_speed, min(self.max_linear_speed, linear_y))
+        angular_z = max(-self.max_angular_speed, min(self.max_angular_speed, angular_z))
+        
         self.get_logger().info(
-            f'Executing: height={target_height:.2f}m, mode={posture_mode}'
+            f'Moving: linear=({linear_x:.2f}, {linear_y:.2f}), '
+            f'angular={angular_z:.2f}, duration={duration:.1f}s'
         )
         
-        # Mark as in motion
         self.in_motion = True
         self.is_ready = False
         
         try:
-            if self.simulation_mode:
-                # Simulate height change
-                self.simulate_height_change(target_height)
-            else:
-                # Real robot control
-                self.control_robot_height(target_height, posture_mode)
+            # Create Twist message
+            cmd = Twist()
+            cmd.linear.x = linear_x
+            cmd.linear.y = linear_y
+            cmd.linear.z = 0.0
+            cmd.angular.x = 0.0
+            cmd.angular.y = 0.0
+            cmd.angular.z = angular_z
             
-            # Update current height
-            self.current_height = target_height
+            # Publish velocity command for specified duration
+            rate = self.create_rate(50)  # 50 Hz
+            start_time = time.time()
             
-            self.get_logger().info(f'Height change complete: {target_height:.2f}m')
+            while (time.time() - start_time) < duration:
+                self.cmd_vel_pub.publish(cmd)
+                self.current_velocity = cmd
+                rate.sleep()
+            
+            # Stop movement
+            self.stop_movement()
+            
+            self.get_logger().info('Movement complete')
             return True
             
         except Exception as e:
-            self.get_logger().error(f'Motor control failed: {e}')
+            self.get_logger().error(f'Movement control failed: {e}')
+            self.stop_movement()
             return False
         
         finally:
             self.in_motion = False
             self.is_ready = True
     
-    def control_robot_height(self, target_height, posture_mode):
-        """Control actual Unitree GO2 robot"""
-        if not self.sport_client:
-            raise RuntimeError("Sport client not initialized")
+    def move_forward(self, distance, speed=0.2):
+        """
+        Move forward by specified distance
         
-        # Calculate height change time based on rate limit
-        height_delta = abs(target_height - self.current_height)
-        duration = height_delta / self.max_rate
-        
-        self.get_logger().info(f'Height change will take ~{duration:.1f}s')
-        
-        # Send height command to robot
-        # Note: Unitree SDK method may vary depending on version
-        # This is a placeholder - adjust based on actual SDK API
-        try:
-            # Example command (adjust based on SDK documentation):
-            # self.sport_client.BodyHeight(target_height)
-            # OR
-            # self.sport_client.SetBodyHeight(target_height)
-            
-            # For now, simulate wait time
-            time.sleep(duration)
-            
-            self.get_logger().info('Robot height adjusted')
-            
-        except Exception as e:
-            self.get_logger().error(f'SDK command failed: {e}')
-            raise
+        Args:
+            distance: Distance to move (meters)
+            speed: Forward speed (m/s)
+        """
+        duration = abs(distance / speed)
+        direction = 1.0 if distance > 0 else -1.0
+        return self.execute_movement_command(linear_x=speed * direction, duration=duration)
     
-    def simulate_height_change(self, target_height):
-        """Simulate height change for testing without robot"""
-        height_delta = abs(target_height - self.current_height)
-        duration = height_delta / self.max_rate
+    def turn(self, angle_deg, speed=0.3):
+        """
+        Turn by specified angle
         
-        self.get_logger().info(f'[SIMULATION] Changing height over {duration:.1f}s')
-        time.sleep(min(duration, 2.0))  # Cap simulation time
-        self.get_logger().info(f'[SIMULATION] Height now: {target_height:.2f}m')
+        Args:
+            angle_deg: Angle to turn (degrees, positive = left)
+            speed: Angular speed (rad/s)
+        """
+        import math
+        angle_rad = math.radians(angle_deg)
+        duration = abs(angle_rad / speed)
+        direction = 1.0 if angle_deg > 0 else -1.0
+        return self.execute_movement_command(angular_z=speed * direction, duration=duration)
+    
+    def crouch(self):
+        """Lower body height for cave entrance passage"""
+        self.get_logger().info('Crouching...')
+        # Note: Body height control via unitree_ros2 may use different topic
+        # For GO2, this might be via sport_client or specific service
+        # Placeholder for now
+        if self.simulation_mode:
+            self.get_logger().info('[SIMULATION] Body lowered')
+        else:
+            self.get_logger().warn('Body height control not yet implemented')
+            # TODO: Implement via unitree_ros2 service or topic
+        return True
+    
+    def stand_normal(self):
+        """Return to normal standing height"""
+        self.get_logger().info('Standing up...')
+        if self.simulation_mode:
+            self.get_logger().info('[SIMULATION] Body raised to normal')
+        else:
+            self.get_logger().warn('Body height control not yet implemented')
+            # TODO: Implement via unitree_ros2 service or topic
+        return True
+    
+    def stop_movement(self):
+        """Stop all movement immediately"""
+        cmd = Twist()  # All zeros
+        for _ in range(10):  # Send multiple stop commands
+            self.cmd_vel_pub.publish(cmd)
+            time.sleep(0.01)
+        self.current_velocity = cmd
+        self.get_logger().info('Movement stopped')
+    
+    def emergency_stop(self):
+        """Emergency stop - freeze all motion"""
+        self.get_logger().error('EMERGENCY STOP ACTIVATED')
+        self.is_ready = False
+        self.stop_movement()
     
     def publish_status(self):
         """Publish motor status"""
         # TODO: Publish MotorStatus message
         # status = MotorStatus()
         # status.header.stamp = self.get_clock().now().to_msg()
-        # status.current_body_height = self.current_height
         # status.in_motion = self.in_motion
         # status.ready = self.is_ready
-        # status.error_message = ""
+        # status.current_velocity = self.current_velocity
         # self.status_pub.publish(status)
         
         # For now, just log occasionally
-        if int(self.get_clock().now().nanoseconds / 1e9) % 5 == 0:
+        if int(self.get_clock().now().nanoseconds / 1e9) % 10 == 0:
             self.get_logger().info(
-                f'Status: h={self.current_height:.2f}m, '
-                f'ready={self.is_ready}, moving={self.in_motion}',
-                throttle_duration_sec=5.0
+                f'Status: ready={self.is_ready}, moving={self.in_motion}',
+                throttle_duration_sec=10.0
             )
     
-    def emergency_stop(self):
-        """Emergency stop - freeze all motion"""
-        self.get_logger().error('EMERGENCY STOP ACTIVATED')
-        self.is_ready = False
-        
-        if not self.simulation_mode and self.sport_client:
-            try:
-                # Send emergency stop to robot
-                # self.sport_client.StandDown()  # or similar method
-                pass
-            except Exception as e:
-                self.get_logger().error(f'Emergency stop failed: {e}')
+    def robot_state_callback(self, msg):
+        """Callback for robot state from unitree_ros2"""
+        # TODO: Process robot state message
+        # Update internal state based on actual robot status
+        pass
     
     def destroy_node(self):
         """Clean shutdown"""
-        if self.sport_client and not self.simulation_mode:
-            self.get_logger().info('Shutting down Unitree connection')
-            # Clean up SDK resources if needed
+        self.get_logger().info('Shutting down movement controller')
+        self.stop_movement()
         super().destroy_node()
 
 
