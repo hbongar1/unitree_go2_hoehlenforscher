@@ -33,7 +33,7 @@ ros2_nodes/
 
 ## Prerequisites
 
-1. **ROS2 Humble** installed
+1. **ROS2 Foxy** installed (Ubuntu 20.04)
 2. **unitree_ros2 SDK** installed (see [SETUP.md](../SETUP.md))
 3. **RealSense SDK** for depth camera
 
@@ -167,7 +167,7 @@ unitree_ros2 SDK                     Custom Nodes
 lsusb | grep Intel
 
 # Install drivers
-sudo apt install ros-humble-librealsense2
+sudo apt install ros-foxy-librealsense2
 ```
 
 ### Unitree Topics Not Visible

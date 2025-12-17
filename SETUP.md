@@ -7,14 +7,14 @@ Diese Anleitung führt dich durch die komplette Installation aller benötigten K
 
 ## 📋 Voraussetzungen
 
-- **Ubuntu 22.04 LTS** (auf dem Unitree GO2 oder Entwicklungsrechner)
+- **Ubuntu 20.04 LTS** (auf dem Unitree GO2 oder Entwicklungsrechner)
 - **Python 3.10+**
 - **Sudo-Rechte** für System-Pakete
 - **Internetverbindung** für Downloads
 
 ---
 
-## 1️⃣ ROS2 Humble Installation
+## 1️⃣ ROS2 Foxy Installation
 
 ### Schritt 1.1: System vorbereiten
 ```bash
@@ -46,8 +46,8 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 # Paketlisten aktualisieren
 sudo apt update
 
-# ROS2 Humble Desktop installieren (mit RViz, rqt, etc.)
-sudo apt install -y ros-humble-desktop
+# ROS2 Foxy Desktop installieren (mit RViz, rqt, etc.)
+sudo apt install -y ros-foxy-desktop
 
 # ROS2 Development Tools
 sudo apt install -y ros-dev-tools
@@ -59,7 +59,7 @@ sudo apt install -y python3-colcon-common-extensions
 ### Schritt 1.4: ROS2 Environment einrichten
 ```bash
 # ROS2 in .bashrc hinzufügen (automatisch bei jedem Terminal)
-echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
 # Verifizieren
@@ -86,7 +86,7 @@ cd ~/ros2_ws/src
 git clone https://github.com/unitreerobotics/unitree_ros2.git
 
 # Cyclone DDS installieren (empfohlener DDS für Unitree)
-sudo apt install -y ros-humble-rmw-cyclonedds-cpp
+sudo apt install -y ros-foxy-rmw-cyclonedds-cpp
 
 # Cyclone DDS als Standard setzen
 echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
@@ -192,13 +192,13 @@ pip3 install \
 # PCL für Point Cloud Verarbeitung
 sudo apt install -y \
     libpcl-dev \
-    ros-humble-pcl-ros \
-    ros-humble-pcl-conversions
+    ros-foxy-pcl-ros \
+    ros-foxy-pcl-conversions
 
 # ROS2 Point Cloud Tools
 sudo apt install -y \
-    ros-humble-perception-pcl \
-    ros-humble-pcl-msgs
+    ros-foxy-perception-pcl \
+    ros-foxy-pcl-msgs
 ```
 
 ### Schritt 5.2: LiDAR Topics testen
@@ -319,7 +319,7 @@ sudo usermod -aG video $USER
 ### Problem: "ModuleNotFoundError: No module named 'rclpy'"
 ```bash
 # ROS2 Environment sourcen
-source /opt/ros/humble/setup.bash
+source /opt/ros/foxy/setup.bash
 source ~/Documents/GitHub/unitree_go2_hoehlenforscher/install/setup.bash
 ```
 
@@ -356,8 +356,8 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev <INTERFACE>
 
 ## ✅ Installations-Checkliste
 
-- [ ] Ubuntu 22.04 LTS installiert
-- [ ] ROS2 Humble installiert und getestet
+- [ ] Ubuntu 20.04 LTS installiert
+- [ ] ROS2 Foxy installiert und getestet
 - [ ] Unitree SDK2 gebaut
 - [ ] RealSense SDK installiert
 - [ ] Python-Abhängigkeiten installiert
@@ -395,4 +395,4 @@ rviz2
 
 **🎉 Fertig! Dein System ist jetzt einsatzbereit.**
 
-Bei Fragen siehe die einzelnen README-Dateien im Projekt oder die [ROS2 Dokumentation](https://docs.ros.org/en/humble/).
+Bei Fragen siehe die einzelnen README-Dateien im Projekt oder die [ROS2 Dokumentation](https://docs.ros.org/en/foxy/).
