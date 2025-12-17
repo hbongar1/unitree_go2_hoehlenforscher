@@ -1,0 +1,69 @@
+# ROS2 Parameter Configuration for Entrance Detection System
+# Load with: ros2 launch entrance_detection entrance_detection.launch.py
+
+# Depth Camera Node (RealSense Camera)
+/depth_camera_node:
+  ros__parameters:
+    frame_width: 640
+    frame_height: 480
+    fps: 30
+    enable_filters: true
+
+# Unitree LiDAR Node (4D LiDAR L1)
+/unitree_lidar_node:
+  ros__parameters:
+    min_gap_width: 0.7
+    max_gap_width: 2.5
+    max_range: 5.0
+    camera_fov_deg: 69.0
+    slice_height_min: -0.3  # Meter unterhalb LiDAR
+    slice_height_max: 0.3   # Meter oberhalb LiDAR
+
+# Verarbeitung Node (Entrance Detection + Sensor Fusion)
+/verarbeitung_node:
+  ros__parameters:
+    # Entrance dimensions (meters)
+    min_entrance_width: 0.7
+    min_entrance_height: 1.8
+    max_entrance_width: 2.5
+    
+    # Detection range
+    max_detection_range: 5.0
+    
+    # Quality threshold
+    confidence_threshold: 0.6
+    
+    # Safety
+    safety_clearance: 0.10
+    
+    # Sensor Fusion
+    use_lidar_fusion: true
+    camera_weight: 0.6          # 60% Kamera
+    lidar_weight: 0.4           # 40% LiDAR
+    fusion_angle_tolerance: 30.0     # Grad
+    fusion_distance_tolerance: 0.5   # Meter
+
+# Verhalten Node (State Machine / Decision Logic)
+/verhalten_node:
+  ros__parameters:
+    # Robot height configurations (meters)
+    normal_height: 0.30
+    low_height: 0.15
+    prone_height: 0.08
+    
+    # Safety
+    safety_clearance: 0.10
+    min_passable_height: 0.10
+
+# Ausfuehrung Node (Motor Control - Unitree GO2)
+/ausfuehrung_node:
+  ros__parameters:
+    # Unitree connection
+    network_interface: "enp129s0"  # Check with 'ifconfig'
+    timeout: 10.0
+    
+    # Motion limits
+    max_height_change_rate: 0.05  # meters/second
+    
+    # Simulation mode (set to true for testing without robot)
+    simulation_mode: false
