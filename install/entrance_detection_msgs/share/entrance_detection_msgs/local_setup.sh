@@ -1,0 +1,1 @@
+/workspace/unitree_go2_hoehlenforscher/build/entrance_detection_msgs/ament_cmake_environment_hooks/local_setup.sh

@@ -1,0 +1,10 @@
+{
+  "package_name": "entrance_detection_msgs",
+  "non_idl_tuples": [
+    "/workspace/unitree_go2_hoehlenforscher/ros2_nodes/entrance_detection_msgs:msg/DepthData.msg",
+    "/workspace/unitree_go2_hoehlenforscher/ros2_nodes/entrance_detection_msgs:msg/EntranceEvent.msg",
+    "/workspace/unitree_go2_hoehlenforscher/ros2_nodes/entrance_detection_msgs:msg/EntranceState.msg",
+    "/workspace/unitree_go2_hoehlenforscher/ros2_nodes/entrance_detection_msgs:msg/MotorStatus.msg",
+    "/workspace/unitree_go2_hoehlenforscher/ros2_nodes/entrance_detection_msgs:msg/LidarGap.msg"
+  ]
+}

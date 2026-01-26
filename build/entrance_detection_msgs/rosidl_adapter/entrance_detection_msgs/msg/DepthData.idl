@@ -1,0 +1,35 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from entrance_detection_msgs/msg/DepthData.msg
+// generated code does not contain a copyright notice
+
+#include "sensor_msgs/msg/CameraInfo.idl"
+#include "sensor_msgs/msg/Image.idl"
+#include "std_msgs/msg/Header.idl"
+
+module entrance_detection_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "DepthData.msg" "\n"
+      "Raw RealSense depth camera data")
+    struct DepthData {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "Depth frame (640x480, 16-bit unsigned integers, z16 format)")
+      sensor_msgs::msg::Image depth_image;
+
+      @verbatim (language="comment", text=
+        "Color frame (640x480, BGR8 format)")
+      sensor_msgs::msg::Image color_image;
+
+      @verbatim (language="comment", text=
+        "Depth scale factor (converts depth units to meters)" "\n"
+        "Typical value: ~0.001 (1 unit = 1mm)")
+      float depth_scale;
+
+      @verbatim (language="comment", text=
+        "Camera intrinsics for 3D projection")
+      sensor_msgs::msg::CameraInfo camera_info;
+    };
+  };
+};

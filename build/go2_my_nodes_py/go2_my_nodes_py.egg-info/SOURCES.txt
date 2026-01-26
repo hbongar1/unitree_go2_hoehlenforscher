@@ -1,0 +1,12 @@
+package.xml
+setup.cfg
+setup.py
+go2_my_nodes_py/__init__.py
+go2_my_nodes_py.egg-info/PKG-INFO
+go2_my_nodes_py.egg-info/SOURCES.txt
+go2_my_nodes_py.egg-info/dependency_links.txt
+go2_my_nodes_py.egg-info/entry_points.txt
+go2_my_nodes_py.egg-info/requires.txt
+go2_my_nodes_py.egg-info/top_level.txt
+go2_my_nodes_py.egg-info/zip-safe
+resource/go2_my_nodes_py

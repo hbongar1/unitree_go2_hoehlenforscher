@@ -1,0 +1,1 @@
+/workspace/unitree_go2_hoehlenforscher/ros2_nodes/entrance_detection_msgs/msg/EntranceState.msg
