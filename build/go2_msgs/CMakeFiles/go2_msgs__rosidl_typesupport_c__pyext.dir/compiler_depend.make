@@ -261,8 +261,14 @@ CMakeFiles/go2_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/go2_msg
   /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/string.h \
   /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence.h \
   /opt/ros/humble/include/geometry_msgs/geometry_msgs/msg/detail/point__struct.h \
-  rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h
+  rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h \
+  rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__type_support.h \
+  rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__struct.h \
+  /opt/ros/humble/include/unique_identifier_msgs/unique_identifier_msgs/msg/detail/uuid__struct.h \
+  rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__functions.h
 
+
+rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__functions.h:
 
 rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h:
 
@@ -438,6 +444,8 @@ rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h:
 
 /usr/include/python3.10/cpython/traceback.h:
 
+rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__type_support.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
 /usr/include/math.h:
@@ -532,6 +540,8 @@ rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h:
 
 /usr/include/limits.h:
 
+/opt/ros/humble/include/unique_identifier_msgs/unique_identifier_msgs/msg/detail/uuid__struct.h:
+
 /usr/include/python3.10/objimpl.h:
 
 /usr/include/python3.10/patchlevel.h:
@@ -595,6 +605,8 @@ rosidl_generator_c/go2_msgs/msg/detail/entrance__struct.h:
 /usr/include/x86_64-linux-gnu/asm/posix_types.h:
 
 /usr/include/python3.10/namespaceobject.h:
+
+rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__struct.h:
 
 /usr/include/x86_64-linux-gnu/bits/statx-generic.h:
 

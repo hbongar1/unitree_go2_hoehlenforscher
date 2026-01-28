@@ -1,0 +1,33 @@
+[0.023s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs': /usr/bin/cmake /workspace/unitree_go2_hoehlenforscher/src/go2_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspace/unitree_go2_hoehlenforscher/install/go2_msgs
+[0.222s] -- The C compiler identification is Clang 18.1.8
+[0.356s] -- The CXX compiler identification is Clang 18.1.8
+[0.369s] -- Detecting C compiler ABI info
+[0.533s] -- Detecting C compiler ABI info - done
+[0.553s] -- Check for working C compiler: /usr/bin/clang-18 - skipped
+[0.563s] -- Detecting C compile features
+[0.563s] -- Detecting C compile features - done
+[0.567s] -- Detecting CXX compiler ABI info
+[0.775s] -- Detecting CXX compiler ABI info - done
+[0.792s] -- Check for working CXX compiler: /usr/bin/clang++-18 - skipped
+[0.792s] -- Detecting CXX compile features
+[0.793s] -- Detecting CXX compile features - done
+[0.815s] [31mCMake Error at CMakeLists.txt:9 (find_package):
+[0.815s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[0.815s]   has asked CMake to find a package configuration file provided by
+[0.815s]   "ament_cmake", but CMake did not find one.
+[0.816s] 
+[0.816s]   Could not find a package configuration file provided by "ament_cmake" with
+[0.816s]   any of the following names:
+[0.816s] 
+[0.816s]     ament_cmakeConfig.cmake
+[0.816s]     ament_cmake-config.cmake
+[0.817s] 
+[0.817s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[0.817s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[0.817s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[0.818s]   has been installed.
+[0.819s] 
+[0.819s] [0m
+[0.820s] -- Configuring incomplete, errors occurred!
+[0.820s] See also "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/CMakeFiles/CMakeOutput.log".
+[0.821s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs' returned '1': /usr/bin/cmake /workspace/unitree_go2_hoehlenforscher/src/go2_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspace/unitree_go2_hoehlenforscher/install/go2_msgs

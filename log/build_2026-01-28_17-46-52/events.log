@@ -1,0 +1,329 @@
+[0.000000] (-) TimerEvent: {}
+[0.000458] (go2_msgs) JobQueued: {'identifier': 'go2_msgs', 'dependencies': OrderedDict()}
+[0.000538] (go2_my_nodes_py) JobQueued: {'identifier': 'go2_my_nodes_py', 'dependencies': OrderedDict()}
+[0.000593] (go2_msgs) JobStarted: {'identifier': 'go2_msgs'}
+[0.005950] (go2_my_nodes_py) JobStarted: {'identifier': 'go2_my_nodes_py'}
+[0.011030] (go2_msgs) JobProgress: {'identifier': 'go2_msgs', 'progress': 'cmake'}
+[0.011623] (go2_msgs) Command: {'cmd': ['/usr/bin/cmake', '/workspace/unitree_go2_hoehlenforscher/src/go2_msgs', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/workspace/unitree_go2_hoehlenforscher/install/go2_msgs'], 'cwd': '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs', 'env': OrderedDict([('HOSTNAME', 'cobots-mdz-tower'), ('GIT_ASKPASS', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('BROWSER', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/helpers/browser.sh'), ('AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS', '1'), ('HOME', '/root'), ('TERM_PROGRAM_VERSION', '1.108.2'), ('VSCODE_IPC_HOOK_CLI', '/tmp/vscode-ipc-33416015-f360-4e3b-9d2a-9a6d525e4491.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/node'), ('VSCODE_PYTHON_AUTOACTIVATE_GUARD', '1'), ('COLORTERM', 'truecolor'), ('REMOTE_CONTAINERS', 'true'), ('DEBUGINFOD_URLS', ''), ('ROS_DISTRO', 'humble'), ('REMOTE_CONTAINERS_IPC', '/tmp/vscode-remote-containers-ipc-d64a77dc-48ed-46d1-810f-52af9f48aace.sock'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('HISTCONTROL', 'ignorespace'), ('QT_X11_NO_MITSHM', '1'), ('PATH', '/opt/ros/humble/bin:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('REMOTE_CONTAINERS_SOCKETS', '["/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock","/root/.gnupg/S.gpg-agent"]'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/tmp/vscode-git-c836799ec8.sock'), ('TERM_PROGRAM', 'vscode'), ('SSH_AUTH_SOCK', '/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('DEBIAN_FRONTEND', ''), ('SHELL', '/bin/bash'), ('CXX', '/usr/bin/clang++-18'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('GIT_PAGER', 'cat'), ('PWD', '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('TZ', 'Asia/Shanghai'), ('CC', '/usr/bin/clang-18'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.046601] (go2_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.099470] (-) TimerEvent: {}
+[0.199998] (-) TimerEvent: {}
+[0.300519] (-) TimerEvent: {}
+[0.319521] (go2_msgs) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.400694] (-) TimerEvent: {}
+[0.453975] (go2_msgs) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[0.500888] (-) TimerEvent: {}
+[0.501473] (go2_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)\n'}
+[0.508922] (go2_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.525086] (go2_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.590415] (go2_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.601072] (-) TimerEvent: {}
+[0.635842] (go2_msgs) StdoutLine: {'line': b'-- Found std_msgs: 4.9.0 (/opt/ros/humble/share/std_msgs/cmake)\n'}
+[0.679643] (go2_msgs) StdoutLine: {'line': b'-- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)\n'}
+[0.694373] (go2_msgs) StdoutLine: {'line': b'-- Found action_msgs: 1.2.2 (/opt/ros/humble/share/action_msgs/cmake)\n'}
+[0.701247] (-) TimerEvent: {}
+[0.743863] (go2_my_nodes_py) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build', '--no-deps', 'symlink_data'], 'cwd': '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py', 'env': {'HOSTNAME': 'cobots-mdz-tower', 'GIT_ASKPASS': '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass.sh', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib', 'BROWSER': '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/helpers/browser.sh', 'AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS': '1', 'HOME': '/root', 'TERM_PROGRAM_VERSION': '1.108.2', 'VSCODE_IPC_HOOK_CLI': '/tmp/vscode-ipc-33416015-f360-4e3b-9d2a-9a6d525e4491.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/node', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'COLORTERM': 'truecolor', 'REMOTE_CONTAINERS': 'true', 'DEBUGINFOD_URLS': '', 'ROS_DISTRO': 'humble', 'REMOTE_CONTAINERS_IPC': '/tmp/vscode-remote-containers-ipc-d64a77dc-48ed-46d1-810f-52af9f48aace.sock', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'HISTCONTROL': 'ignorespace', 'QT_X11_NO_MITSHM': '1', 'PATH': '/opt/ros/humble/bin:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'REMOTE_CONTAINERS_SOCKETS': '["/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock","/root/.gnupg/S.gpg-agent"]', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/tmp/vscode-git-c836799ec8.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock', 'AMENT_PREFIX_PATH': '/opt/ros/humble', 'DEBIAN_FRONTEND': '', 'SHELL': '/bin/bash', 'CXX': '/usr/bin/clang++-18', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'GIT_PAGER': 'cat', 'PWD': '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py', 'PYTHONPATH': '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'TZ': 'Asia/Shanghai', 'CC': '/usr/bin/clang-18', 'COLCON': '1'}, 'shell': False}
+[0.801425] (-) TimerEvent: {}
+[0.901840] (-) TimerEvent: {}
+[0.977061] (go2_my_nodes_py) StdoutLine: {'line': b'running develop\n'}
+[1.001942] (-) TimerEvent: {}
+[1.099098] (go2_my_nodes_py) StdoutLine: {'line': b'running egg_info\n'}
+[1.099299] (go2_my_nodes_py) StdoutLine: {'line': b'writing go2_my_nodes_py.egg-info/PKG-INFO\n'}
+[1.099404] (go2_my_nodes_py) StdoutLine: {'line': b'writing dependency_links to go2_my_nodes_py.egg-info/dependency_links.txt\n'}
+[1.099484] (go2_my_nodes_py) StdoutLine: {'line': b'writing entry points to go2_my_nodes_py.egg-info/entry_points.txt\n'}
+[1.099571] (go2_my_nodes_py) StdoutLine: {'line': b'writing requirements to go2_my_nodes_py.egg-info/requires.txt\n'}
+[1.099660] (go2_my_nodes_py) StdoutLine: {'line': b'writing top-level names to go2_my_nodes_py.egg-info/top_level.txt\n'}
+[1.101151] (go2_my_nodes_py) StdoutLine: {'line': b"reading manifest file 'go2_my_nodes_py.egg-info/SOURCES.txt'\n"}
+[1.101891] (go2_my_nodes_py) StdoutLine: {'line': b"writing manifest file 'go2_my_nodes_py.egg-info/SOURCES.txt'\n"}
+[1.102018] (-) TimerEvent: {}
+[1.103130] (go2_my_nodes_py) StdoutLine: {'line': b'running build_ext\n'}
+[1.103268] (go2_my_nodes_py) StdoutLine: {'line': b'Creating /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2-my-nodes-py.egg-link (link to .)\n'}
+[1.103927] (go2_my_nodes_py) StdoutLine: {'line': b'Installing cloud_to_entrance_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py\n'}
+[1.104102] (go2_my_nodes_py) StdoutLine: {'line': b'Installing entrance_decision_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py\n'}
+[1.104218] (go2_my_nodes_py) StdoutLine: {'line': b'Installing navigation_action_server_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py\n'}
+[1.104351] (go2_my_nodes_py) StdoutLine: {'line': b'\n'}
+[1.104420] (go2_my_nodes_py) StdoutLine: {'line': b'Installed /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py\n'}
+[1.104482] (go2_my_nodes_py) StdoutLine: {'line': b'running symlink_data\n'}
+[1.131851] (go2_my_nodes_py) CommandEnded: {'returncode': 0}
+[1.152069] (go2_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)\n'}
+[1.166370] (go2_my_nodes_py) JobEnded: {'identifier': 'go2_my_nodes_py', 'rc': 0}
+[1.202264] (-) TimerEvent: {}
+[1.302688] (-) TimerEvent: {}
+[1.403129] (-) TimerEvent: {}
+[1.503665] (-) TimerEvent: {}
+[1.604195] (-) TimerEvent: {}
+[1.606407] (go2_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[1.704397] (-) TimerEvent: {}
+[1.804943] (-) TimerEvent: {}
+[1.905468] (-) TimerEvent: {}
+[2.005982] (-) TimerEvent: {}
+[2.106486] (-) TimerEvent: {}
+[2.206953] (-) TimerEvent: {}
+[2.224456] (go2_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[2.275195] (go2_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") \n'}
+[2.277639] (go2_msgs) StdoutLine: {'line': b'-- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)\n'}
+[2.307092] (-) TimerEvent: {}
+[2.339888] (go2_msgs) StdoutLine: {'line': b'-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") \n'}
+[2.341061] (go2_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[2.341487] (go2_msgs) StdoutLine: {'line': b'-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10\n'}
+[2.341733] (go2_msgs) StdoutLine: {'line': b'-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so\n'}
+[2.365539] (go2_msgs) StdoutLine: {'line': b'-- Found PythonExtra: .so  \n'}
+[2.407216] (-) TimerEvent: {}
+[2.507772] (-) TimerEvent: {}
+[2.525416] (go2_msgs) StdoutLine: {'line': b'-- Configuring done\n'}
+[2.585198] (go2_msgs) StdoutLine: {'line': b'-- Generating done\n'}
+[2.600709] (go2_msgs) StdoutLine: {'line': b'-- Build files have been written to: /workspace/unitree_go2_hoehlenforscher/build/go2_msgs\n'}
+[2.607935] (-) TimerEvent: {}
+[2.610041] (go2_msgs) CommandEnded: {'returncode': 0}
+[2.611311] (go2_msgs) JobProgress: {'identifier': 'go2_msgs', 'progress': 'build'}
+[2.613430] (go2_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs', '--', '-j16', '-l16'], 'cwd': '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs', 'env': OrderedDict([('HOSTNAME', 'cobots-mdz-tower'), ('GIT_ASKPASS', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('BROWSER', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/helpers/browser.sh'), ('AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS', '1'), ('HOME', '/root'), ('TERM_PROGRAM_VERSION', '1.108.2'), ('VSCODE_IPC_HOOK_CLI', '/tmp/vscode-ipc-33416015-f360-4e3b-9d2a-9a6d525e4491.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/node'), ('VSCODE_PYTHON_AUTOACTIVATE_GUARD', '1'), ('COLORTERM', 'truecolor'), ('REMOTE_CONTAINERS', 'true'), ('DEBUGINFOD_URLS', ''), ('ROS_DISTRO', 'humble'), ('REMOTE_CONTAINERS_IPC', '/tmp/vscode-remote-containers-ipc-d64a77dc-48ed-46d1-810f-52af9f48aace.sock'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('HISTCONTROL', 'ignorespace'), ('QT_X11_NO_MITSHM', '1'), ('PATH', '/opt/ros/humble/bin:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('REMOTE_CONTAINERS_SOCKETS', '["/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock","/root/.gnupg/S.gpg-agent"]'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/tmp/vscode-git-c836799ec8.sock'), ('TERM_PROGRAM', 'vscode'), ('SSH_AUTH_SOCK', '/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('DEBIAN_FRONTEND', ''), ('SHELL', '/bin/bash'), ('CXX', '/usr/bin/clang++-18'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('GIT_PAGER', 'cat'), ('PWD', '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('TZ', 'Asia/Shanghai'), ('CC', '/usr/bin/clang-18'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[2.693672] (go2_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[2.708085] (-) TimerEvent: {}
+[2.716826] (go2_msgs) StdoutLine: {'line': b'[  5%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[2.732216] (go2_msgs) StdoutLine: {'line': b'[  5%] Built target ament_cmake_python_symlink_go2_msgs\n'}
+[2.808224] (-) TimerEvent: {}
+[2.908746] (-) TimerEvent: {}
+[3.009287] (-) TimerEvent: {}
+[3.014285] (go2_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[3.014898] (go2_msgs) StdoutLine: {'line': b'creating go2_msgs.egg-info\n'}
+[3.015163] (go2_msgs) StdoutLine: {'line': b'writing go2_msgs.egg-info/PKG-INFO\n'}
+[3.015396] (go2_msgs) StdoutLine: {'line': b'writing dependency_links to go2_msgs.egg-info/dependency_links.txt\n'}
+[3.015550] (go2_msgs) StdoutLine: {'line': b'writing top-level names to go2_msgs.egg-info/top_level.txt\n'}
+[3.015697] (go2_msgs) StdoutLine: {'line': b"writing manifest file 'go2_msgs.egg-info/SOURCES.txt'\n"}
+[3.016815] (go2_msgs) StdoutLine: {'line': b"reading manifest file 'go2_msgs.egg-info/SOURCES.txt'\n"}
+[3.017233] (go2_msgs) StdoutLine: {'line': b"writing manifest file 'go2_msgs.egg-info/SOURCES.txt'\n"}
+[3.055309] (go2_msgs) StdoutLine: {'line': b'[  5%] Built target ament_cmake_python_build_go2_msgs_egg\n'}
+[3.109476] (-) TimerEvent: {}
+[3.209955] (-) TimerEvent: {}
+[3.310428] (-) TimerEvent: {}
+[3.322995] (go2_msgs) StdoutLine: {'line': b'[  7%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__functions.c.o\x1b[0m\n'}
+[3.329182] (go2_msgs) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o\x1b[0m\n'}
+[3.410538] (-) TimerEvent: {}
+[3.439524] (go2_msgs) StdoutLine: {'line': b'[ 12%] \x1b[32m\x1b[1mLinking C shared library libgo2_msgs__rosidl_generator_c.so\x1b[0m\n'}
+[3.440071] (go2_msgs) StdoutLine: {'line': b'[ 12%] Built target go2_msgs__cpp\n'}
+[3.460951] (go2_msgs) StdoutLine: {'line': b'[ 15%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[3.462553] (go2_msgs) StdoutLine: {'line': b'[ 17%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[3.463247] (go2_msgs) StdoutLine: {'line': b'[ 20%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[3.510662] (-) TimerEvent: {}
+[3.511826] (go2_msgs) StdoutLine: {'line': b'[ 20%] Built target go2_msgs__rosidl_generator_c\n'}
+[3.524588] (go2_msgs) StdoutLine: {'line': b'[ 23%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[3.538988] (go2_msgs) StdoutLine: {'line': b'[ 25%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[3.539295] (go2_msgs) StdoutLine: {'line': b'[ 28%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[3.610759] (-) TimerEvent: {}
+[3.711068] (-) TimerEvent: {}
+[3.811356] (-) TimerEvent: {}
+[3.872711] (go2_msgs) StdoutLine: {'line': b'[ 30%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/go2_msgs/action/navigate_to_entrance__type_support.cpp.o\x1b[0m\n'}
+[3.881027] (go2_msgs) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/go2_msgs/msg/entrance__type_support.cpp.o\x1b[0m\n'}
+[3.911462] (-) TimerEvent: {}
+[3.919548] (go2_msgs) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/go2_msgs/msg/detail/entrance__type_support.cpp.o\x1b[0m\n'}
+[3.925925] (go2_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/go2_msgs/action/detail/navigate_to_entrance__type_support.cpp.o\x1b[0m\n'}
+[3.962421] (go2_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/go2_msgs/msg/entrance__type_support.cpp.o\x1b[0m\n'}
+[3.966452] (go2_msgs) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/go2_msgs/action/navigate_to_entrance__type_support.cpp.o\x1b[0m\n'}
+[3.996890] (go2_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/action/detail/dds_fastrtps/navigate_to_entrance__type_support.cpp.o\x1b[0m\n'}
+[3.997652] (go2_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/detail/dds_fastrtps/entrance__type_support.cpp.o\x1b[0m\n'}
+[4.011566] (-) TimerEvent: {}
+[4.016821] (go2_msgs) StdoutLine: {'line': b'[ 51%] \x1b[32m\x1b[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_c.so\x1b[0m\n'}
+[4.025793] (go2_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/go2_msgs/msg/detail/entrance__type_support_c.cpp.o\x1b[0m\n'}
+[4.030643] (go2_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/go2_msgs/action/detail/navigate_to_entrance__type_support_c.cpp.o\x1b[0m\n'}
+[4.076088] (go2_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/go2_msgs/msg/detail/entrance__type_support.c.o\x1b[0m\n'}
+[4.076355] (go2_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/go2_msgs/action/detail/navigate_to_entrance__type_support.c.o\x1b[0m\n'}
+[4.111685] (-) TimerEvent: {}
+[4.139552] (go2_msgs) StdoutLine: {'line': b'[ 61%] Built target go2_msgs__rosidl_typesupport_c\n'}
+[4.140193] (go2_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32m\x1b[1mLinking C shared library libgo2_msgs__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[4.195628] (go2_msgs) StdoutLine: {'line': b'[ 64%] Built target go2_msgs__rosidl_typesupport_introspection_c\n'}
+[4.211808] (-) TimerEvent: {}
+[4.312198] (-) TimerEvent: {}
+[4.412539] (-) TimerEvent: {}
+[4.416657] (go2_msgs) StdoutLine: {'line': b'[ 66%] \x1b[32m\x1b[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[4.470459] (go2_msgs) StdoutLine: {'line': b'[ 69%] \x1b[32m\x1b[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[4.512655] (-) TimerEvent: {}
+[4.573672] (go2_msgs) StdoutLine: {'line': b'[ 69%] Built target go2_msgs__rosidl_typesupport_cpp\n'}
+[4.587477] (go2_msgs) StdoutLine: {'line': b'[ 71%] \x1b[32m\x1b[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[4.609581] (go2_msgs) StdoutLine: {'line': b'[ 71%] Built target go2_msgs__rosidl_typesupport_fastrtps_c\n'}
+[4.612737] (-) TimerEvent: {}
+[4.615324] (go2_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32m\x1b[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[4.712945] (-) TimerEvent: {}
+[4.716279] (go2_msgs) StdoutLine: {'line': b'[ 74%] Built target go2_msgs__rosidl_typesupport_introspection_cpp\n'}
+[4.769046] (go2_msgs) StdoutLine: {'line': b'[ 74%] Built target go2_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[4.804229] (go2_msgs) StdoutLine: {'line': b'[ 74%] Built target go2_msgs\n'}
+[4.813086] (-) TimerEvent: {}
+[4.848511] (go2_msgs) StdoutLine: {'line': b'[ 76%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[4.913307] (-) TimerEvent: {}
+[5.013813] (-) TimerEvent: {}
+[5.114335] (-) TimerEvent: {}
+[5.214757] (-) TimerEvent: {}
+[5.315177] (-) TimerEvent: {}
+[5.415660] (-) TimerEvent: {}
+[5.516158] (-) TimerEvent: {}
+[5.616652] (-) TimerEvent: {}
+[5.717143] (-) TimerEvent: {}
+[5.817611] (-) TimerEvent: {}
+[5.907612] (go2_msgs) StdoutLine: {'line': b'[ 76%] Built target go2_msgs__py\n'}
+[5.917797] (-) TimerEvent: {}
+[5.946335] (go2_msgs) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_py.dir/rosidl_generator_py/go2_msgs/msg/_entrance_s.c.o\x1b[0m\n'}
+[5.947448] (go2_msgs) StdoutLine: {'line': b'[ 82%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_py.dir/rosidl_generator_py/go2_msgs/action/_navigate_to_entrance_s.c.o\x1b[0m\n'}
+[6.017936] (-) TimerEvent: {}
+[6.118481] (-) TimerEvent: {}
+[6.161186] (go2_msgs) StdoutLine: {'line': b'[ 84%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/go2_msgs/libgo2_msgs__rosidl_generator_py.so\x1b[0m\n'}
+[6.218690] (-) TimerEvent: {}
+[6.253377] (go2_msgs) StdoutLine: {'line': b'[ 84%] Built target go2_msgs__rosidl_generator_py\n'}
+[6.284350] (go2_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[6.288276] (go2_msgs) StdoutLine: {'line': b'[ 89%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[6.291312] (go2_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_introspection_c.c.o\x1b[0m\n'}
+[6.318825] (-) TimerEvent: {}
+[6.419243] (-) TimerEvent: {}
+[6.436862] (go2_msgs) StdoutLine: {'line': b'[ 94%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/go2_msgs/go2_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so\x1b[0m\n'}
+[6.487149] (go2_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/go2_msgs/go2_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so\x1b[0m\n'}
+[6.490875] (go2_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/go2_msgs/go2_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so\x1b[0m\n'}
+[6.519352] (-) TimerEvent: {}
+[6.525441] (go2_msgs) StdoutLine: {'line': b'[100%] Built target go2_msgs__rosidl_typesupport_c__pyext\n'}
+[6.609665] (go2_msgs) StdoutLine: {'line': b'[100%] Built target go2_msgs__rosidl_typesupport_introspection_c__pyext\n'}
+[6.610443] (go2_msgs) StdoutLine: {'line': b'[100%] Built target go2_msgs__rosidl_typesupport_fastrtps_c__pyext\n'}
+[6.619532] (-) TimerEvent: {}
+[6.633774] (go2_msgs) CommandEnded: {'returncode': 0}
+[6.635238] (go2_msgs) JobProgress: {'identifier': 'go2_msgs', 'progress': 'install'}
+[6.655007] (go2_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs'], 'cwd': '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs', 'env': OrderedDict([('HOSTNAME', 'cobots-mdz-tower'), ('GIT_ASKPASS', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass.sh'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('BROWSER', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/helpers/browser.sh'), ('AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS', '1'), ('HOME', '/root'), ('TERM_PROGRAM_VERSION', '1.108.2'), ('VSCODE_IPC_HOOK_CLI', '/tmp/vscode-ipc-33416015-f360-4e3b-9d2a-9a6d525e4491.sock'), ('ROS_PYTHON_VERSION', '3'), ('VSCODE_GIT_ASKPASS_MAIN', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/extensions/git/dist/askpass-main.js'), ('VSCODE_GIT_ASKPASS_NODE', '/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/node'), ('VSCODE_PYTHON_AUTOACTIVATE_GUARD', '1'), ('COLORTERM', 'truecolor'), ('REMOTE_CONTAINERS', 'true'), ('DEBUGINFOD_URLS', ''), ('ROS_DISTRO', 'humble'), ('REMOTE_CONTAINERS_IPC', '/tmp/vscode-remote-containers-ipc-d64a77dc-48ed-46d1-810f-52af9f48aace.sock'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('HISTCONTROL', 'ignorespace'), ('QT_X11_NO_MITSHM', '1'), ('PATH', '/opt/ros/humble/bin:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/root/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli:/root/.vscode-server/bin/c9d77990917f3102ada88be140d28b038d1dd7c7/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('REMOTE_CONTAINERS_SOCKETS', '["/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock","/root/.gnupg/S.gpg-agent"]'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('VSCODE_GIT_IPC_HANDLE', '/tmp/vscode-git-c836799ec8.sock'), ('TERM_PROGRAM', 'vscode'), ('SSH_AUTH_SOCK', '/tmp/vscode-ssh-auth-d64a77dc-48ed-46d1-810f-52af9f48aace.sock'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('DEBIAN_FRONTEND', ''), ('SHELL', '/bin/bash'), ('CXX', '/usr/bin/clang++-18'), ('VSCODE_GIT_ASKPASS_EXTRA_ARGS', ''), ('GIT_PAGER', 'cat'), ('PWD', '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('TZ', 'Asia/Shanghai'), ('CC', '/usr/bin/clang-18'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[6.673636] (go2_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[6.675161] (go2_msgs) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[6.675659] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/rosidl_interfaces/go2_msgs\n'}
+[6.691150] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__functions.h\n'}
+[6.707743] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__struct.h\n'}
+[6.719649] (-) TimerEvent: {}
+[6.723248] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__type_support.h\n'}
+[6.739051] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/navigate_to_entrance.h\n'}
+[6.758639] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__functions.h\n'}
+[6.775156] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__struct.h\n'}
+[6.789789] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__type_support.h\n'}
+[6.806696] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/entrance.h\n'}
+[6.819777] (-) TimerEvent: {}
+[6.823970] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[6.841353] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/library_path.sh\n'}
+[6.862013] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/library_path.dsv\n'}
+[6.880129] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_fastrtps_c.h\n'}
+[6.895014] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_fastrtps_c.h\n'}
+[6.911178] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[6.919963] (-) TimerEvent: {}
+[6.928170] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_introspection_c.h\n'}
+[6.945654] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_introspection_c.h\n'}
+[6.967905] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[6.985868] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__builder.hpp\n'}
+[7.001254] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__struct.hpp\n'}
+[7.018333] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__traits.hpp\n'}
+[7.020155] (-) TimerEvent: {}
+[7.034222] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__type_support.hpp\n'}
+[7.050967] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/navigate_to_entrance.hpp\n'}
+[7.072266] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__builder.hpp\n'}
+[7.086408] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__struct.hpp\n'}
+[7.101817] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__traits.hpp\n'}
+[7.117399] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__type_support.hpp\n'}
+[7.120350] (-) TimerEvent: {}
+[7.133390] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/entrance.hpp\n'}
+[7.153167] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[7.173983] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[7.190091] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[7.206226] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[7.220542] (-) TimerEvent: {}
+[7.223458] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_introspection_cpp.hpp\n'}
+[7.240721] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_introspection_cpp.hpp\n'}
+[7.259124] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/pythonpath.sh\n'}
+[7.278631] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/pythonpath.dsv\n'}
+[7.294246] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/PKG-INFO\n'}
+[7.310560] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/SOURCES.txt\n'}
+[7.320741] (-) TimerEvent: {}
+[7.327234] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/dependency_links.txt\n'}
+[7.344398] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/top_level.txt\n'}
+[7.368590] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/__init__.py\n'}
+[7.383413] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[7.398920] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[7.414807] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[7.420933] (-) TimerEvent: {}
+[7.431784] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/__init__.py\n'}
+[7.449485] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/_navigate_to_entrance.py\n'}
+[7.467473] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/_navigate_to_entrance_s.c\n'}
+[7.482506] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so\n'}
+[7.499966] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so\n'}
+[7.516736] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so\n'}
+[7.521116] (-) TimerEvent: {}
+[7.533739] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/libgo2_msgs__rosidl_generator_py.so\n'}
+[7.553187] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/__init__.py\n'}
+[7.571684] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/_entrance.py\n'}
+[7.584257] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/_entrance_s.c\n'}
+[7.602207] (go2_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so\n'}
+[7.603126] (go2_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so\n'}
+[7.603893] (go2_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so\n'}
+[7.604336] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/msg/Entrance.idl\n'}
+[7.621307] (-) TimerEvent: {}
+[7.623108] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/action/NavigateToEntrance.idl\n'}
+[7.640051] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/msg/Entrance.msg\n'}
+[7.659881] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/action/NavigateToEntrance.action\n'}
+[7.676814] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/package_run_dependencies/go2_msgs\n'}
+[7.691673] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/parent_prefix_path/go2_msgs\n'}
+[7.708185] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/ament_prefix_path.sh\n'}
+[7.721497] (-) TimerEvent: {}
+[7.725101] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/ament_prefix_path.dsv\n'}
+[7.741797] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/path.sh\n'}
+[7.761902] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/path.dsv\n'}
+[7.779721] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.bash\n'}
+[7.796134] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.sh\n'}
+[7.811689] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.zsh\n'}
+[7.821693] (-) TimerEvent: {}
+[7.828416] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.dsv\n'}
+[7.847102] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/package.dsv\n'}
+[7.867425] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/packages/go2_msgs\n'}
+[7.884813] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[7.902305] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[7.919177] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[7.921869] (-) TimerEvent: {}
+[7.936464] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[7.956587] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[7.974434] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[7.989603] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[8.006479] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgsConfig.cmake\n'}
+[8.022069] (-) TimerEvent: {}
+[8.022844] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgsConfig-version.cmake\n'}
+[8.041367] (go2_msgs) StdoutLine: {'line': b'-- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/package.xml\n'}
+[8.063219] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_c.so\n'}
+[8.064616] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_c.so" to ""\n'}
+[8.064988] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[8.066153] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[8.066674] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_c.so\n'}
+[8.067289] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_c.so" to ""\n'}
+[8.067584] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_c.so\n'}
+[8.068714] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_c.so" to ""\n'}
+[8.069071] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[8.069937] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""\n'}
+[8.070333] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[8.071154] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_cpp.so" to ""\n'}
+[8.071493] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_cpp.so\n'}
+[8.072325] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_cpp.so" to ""\n'}
+[8.122283] (-) TimerEvent: {}
+[8.150371] (go2_msgs) StdoutLine: {'line': b"Listing '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs'...\n"}
+[8.150859] (go2_msgs) StdoutLine: {'line': b"Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/__init__.py'...\n"}
+[8.151115] (go2_msgs) StdoutLine: {'line': b"Listing '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action'...\n"}
+[8.151357] (go2_msgs) StdoutLine: {'line': b"Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/__init__.py'...\n"}
+[8.151586] (go2_msgs) StdoutLine: {'line': b"Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/_navigate_to_entrance.py'...\n"}
+[8.151813] (go2_msgs) StdoutLine: {'line': b"Listing '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg'...\n"}
+[8.152035] (go2_msgs) StdoutLine: {'line': b"Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/__init__.py'...\n"}
+[8.152256] (go2_msgs) StdoutLine: {'line': b"Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/_entrance.py'...\n"}
+[8.159596] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_py.so\n'}
+[8.161144] (go2_msgs) StdoutLine: {'line': b'-- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_py.so" to ""\n'}
+[8.161534] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_cExport.cmake\n'}
+[8.161978] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[8.162577] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[8.163112] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[8.163683] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[8.164304] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[8.164814] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cExport.cmake\n'}
+[8.165296] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[8.165699] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_cppExport.cmake\n'}
+[8.166109] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[8.166651] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[8.167171] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[8.167659] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[8.168166] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[8.168658] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[8.169140] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_pyExport.cmake\n'}
+[8.169607] (go2_msgs) StdoutLine: {'line': b'-- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[8.174314] (go2_msgs) CommandEnded: {'returncode': 0}
+[8.194924] (go2_msgs) JobEnded: {'identifier': 'go2_msgs', 'rc': 0}
+[8.196273] (-) EventReactorShutdown: {}

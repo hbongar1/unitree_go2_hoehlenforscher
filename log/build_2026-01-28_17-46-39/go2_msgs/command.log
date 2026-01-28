@@ -1,0 +1,2 @@
+Invoking command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs': /usr/bin/cmake /workspace/unitree_go2_hoehlenforscher/src/go2_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspace/unitree_go2_hoehlenforscher/install/go2_msgs
+Invoked command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs' returned '1': /usr/bin/cmake /workspace/unitree_go2_hoehlenforscher/src/go2_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspace/unitree_go2_hoehlenforscher/install/go2_msgs

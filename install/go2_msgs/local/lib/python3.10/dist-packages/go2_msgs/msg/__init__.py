@@ -1,1 +1,1 @@
-from go2_msgs.msg._entrance import Entrance  # noqa: F401
+/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_py/go2_msgs/msg/__init__.py

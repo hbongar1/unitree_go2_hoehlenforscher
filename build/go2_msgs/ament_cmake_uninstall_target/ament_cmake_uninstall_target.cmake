@@ -55,3 +55,6 @@ endforeach()
 message(STATUS "Execute custom uninstall script")
 
 # begin of custom uninstall code
+
+# uninstall files installed using the symlink install functions
+include("/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/ament_cmake_symlink_install/ament_cmake_symlink_install_uninstall_script.cmake")

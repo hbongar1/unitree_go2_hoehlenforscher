@@ -4,5 +4,7 @@ go2_msgs.egg-info/PKG-INFO
 go2_msgs.egg-info/SOURCES.txt
 go2_msgs.egg-info/dependency_links.txt
 go2_msgs.egg-info/top_level.txt
+go2_msgs/action/__init__.py
+go2_msgs/action/_navigate_to_entrance.py
 go2_msgs/msg/__init__.py
 go2_msgs/msg/_entrance.py
