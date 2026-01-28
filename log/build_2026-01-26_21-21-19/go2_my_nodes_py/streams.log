@@ -1,0 +1,25 @@
+[0.690s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/src/go2_my_nodes_py': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/go2_my_nodes_py build --build-base /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build install --record /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log --single-version-externally-managed install_data
+[0.959s] running egg_info
+[0.959s] writing ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/PKG-INFO
+[0.959s] writing dependency_links to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/dependency_links.txt
+[0.959s] writing entry points to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/entry_points.txt
+[0.960s] writing requirements to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/requires.txt
+[0.960s] writing top-level names to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/top_level.txt
+[0.961s] reading manifest file '../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt'
+[0.962s] writing manifest file '../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt'
+[0.962s] running build
+[0.962s] running build_py
+[0.962s] copying go2_my_nodes_py/entrance_decision_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[0.963s] running install
+[0.963s] running install_lib
+[0.963s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/entrance_decision_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[0.964s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/entrance_decision_node.py to entrance_decision_node.cpython-310.pyc
+[0.965s] running install_data
+[0.965s] running install_egg_info
+[0.966s] removing '/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py-0.0.0-py3.10.egg-info' (and everything under it)
+[0.967s] Copying ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py-0.0.0-py3.10.egg-info
+[0.967s] running install_scripts
+[0.985s] Installing cloud_to_entrance_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[0.986s] Installing entrance_decision_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[0.986s] writing list of installed files to '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log'
+[1.010s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/src/go2_my_nodes_py' returned '0': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/go2_my_nodes_py build --build-base /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build install --record /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log --single-version-externally-managed install_data

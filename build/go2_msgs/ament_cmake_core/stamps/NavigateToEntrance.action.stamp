@@ -1,0 +1,16 @@
+# NavigateToEntrance.action
+# Action definition for navigating through an entrance
+
+# Goal: Target entrance to navigate through
+geometry_msgs/Point target_position
+float32 entrance_width
+float32 entrance_height
+---
+# Result: Was the navigation successful?
+bool success
+string message
+---
+# Feedback: Current progress
+string status
+float32 distance_remaining
+float32 progress_percentage

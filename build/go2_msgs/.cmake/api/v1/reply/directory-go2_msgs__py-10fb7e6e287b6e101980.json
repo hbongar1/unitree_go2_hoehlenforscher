@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "go2_msgs__py",
+		"source" : "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/go2_msgs__py"
+	}
+}
