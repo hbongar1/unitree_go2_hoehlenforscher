@@ -66,6 +66,12 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
         self.gaussian_sigma = 1.0  # Glättungs-Parameter
         
+        # Ground Plane Detection Parameter
+        self.enable_ground_detection = True
+        self.ground_plane_distance_threshold = 0.02  # 2cm tolerance for RANSAC
+        self.ground_plane_min_points = 100  # Min points to fit plane
+        self.min_height_above_ground = 0.15  # Ignore points < 15cm above ground
+        
         # Multi-Frame-Akkumulation
         self.frame_buffer_size = 20
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
@@ -82,7 +88,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
             f"Voxel Grid Node initialisiert:\n"
             f"  - Voxel-Größe: {self.voxel_size}m\n"
             f"  - Gradient-Perzentil: {self.gradient_percentile}%\n"
-            f"  - Low-Dichte-Perzentil: {self.low_density_percentile}%"
+            f"  - Low-Dichte-Perzentil: {self.low_density_percentile}%\n"
+            f"  - Bodenerkennung: {'Aktiviert' if self.enable_ground_detection else 'Deaktiviert'}"
         )
     
     def cloud_data_callback(self, msg: PointCloud2):
@@ -97,6 +104,20 @@ class HoleDetectionVoxelGridNode(BaseNode):
             filtered_points = self.filter_points(points)
             if len(filtered_points) == 0:
                 return
+            
+            # Ground plane detection
+            if self.enable_ground_detection:
+                ground_result = self.detect_ground_plane(filtered_points)
+                if ground_result is not None:
+                    plane_model, ground_height = ground_result
+                    above_ground, ground = self.filter_ground_points(
+                        filtered_points, plane_model
+                    )
+                    filtered_points = above_ground
+                    self.get_logger().debug(
+                        f"Boden erkannt bei {ground_height:.2f}m, "
+                        f"{len(above_ground)} Punkte über dem Boden"
+                    )
             
             self.point_buffer.append(filtered_points)
             
@@ -185,6 +206,95 @@ class HoleDetectionVoxelGridNode(BaseNode):
         
         valid_mask = x_range & y_range & z_range
         return points[valid_mask]
+    
+    def detect_ground_plane(self, points: np.ndarray) -> Optional[Tuple[np.ndarray, float]]:
+        """
+        Detects ground plane using RANSAC.
+        
+        Returns:
+            (plane_model, ground_height): Plane coefficients [a,b,c,d] and avg height
+            None if detection fails
+        """
+        if len(points) < self.ground_plane_min_points:
+            return None
+        
+        try:
+            from sklearn.linear_model import RANSACRegressor
+            
+            # Use bottom 50% of points (likely ground)
+            z_sorted_indices = np.argsort(points[:, 2])
+            bottom_half_count = min(len(points) // 2, 1000)  # Max 1000 points for speed
+            bottom_indices = z_sorted_indices[:bottom_half_count]
+            bottom_points = points[bottom_indices]
+            
+            if len(bottom_points) < self.ground_plane_min_points:
+                return None
+            
+            # RANSAC: Fit plane ax + by + c = z
+            X = bottom_points[:, :2]  # x, y
+            y = bottom_points[:, 2]   # z
+            
+            ransac = RANSACRegressor(
+                residual_threshold=self.ground_plane_distance_threshold,
+                min_samples=50,
+                max_trials=100,
+                random_state=42
+            )
+            ransac.fit(X, y)
+            
+            # Plane model: z = ax + by + c  →  ax + by - z + c = 0
+            a, b = ransac.estimator_.coef_
+            c = ransac.estimator_.intercept_
+            
+            # Average ground height (z when x=0, y=0)
+            ground_height = float(c)
+            
+            # Store as [a, b, -1, c] for easier distance calculation
+            plane_model = np.array([a, b, -1.0, c])
+            
+            return plane_model, ground_height
+        
+        except ImportError:
+            self.get_logger().warn("sklearn nicht verfügbar, Bodenerkennung übersprungen")
+            return None
+        except Exception as e:
+            self.get_logger().warn(f"Bodenerkennung fehlgeschlagen: {e}")
+            return None
+    
+    def filter_ground_points(
+        self, points: np.ndarray, plane_model: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Separates ground points from above-ground points.
+        
+        Args:
+            points: All points
+            plane_model: [a, b, c, d] from plane equation ax + by + cz + d = 0
+        
+        Returns:
+            (above_ground_points, ground_points)
+        """
+        # Calculate distance to plane: |ax + by + cz + d| / sqrt(a² + b² + c²)
+        a, b, c, d = plane_model
+        numerator = np.abs(a * points[:, 0] + b * points[:, 1] + c * points[:, 2] + d)
+        denominator = np.sqrt(a**2 + b**2 + c**2)
+        distances = numerator / denominator
+        
+        # Points within threshold are ground
+        is_ground = distances < self.ground_plane_distance_threshold
+        
+        # Additionally: Points must be at least min_height_above_ground above the plane
+        # Calculate signed distance (positive = above plane)
+        signed_distances = (a * points[:, 0] + b * points[:, 1] + c * points[:, 2] + d) / denominator
+        is_above_threshold = signed_distances > self.min_height_above_ground
+        
+        # Above ground = not ground AND above height threshold
+        is_above_ground = (~is_ground) & is_above_threshold
+        
+        above_ground_points = points[is_above_ground]
+        ground_points = points[~is_above_ground]
+        
+        return above_ground_points, ground_points
     
     def find_hole_regions_in_cloud(self, points: np.ndarray) -> List[dict]:
         """

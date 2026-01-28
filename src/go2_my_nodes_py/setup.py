@@ -15,9 +15,15 @@ setup(
             'launch/hole_detection_normal_vector.launch.py',
             'launch/hole_detection_convex_hull.launch.py',
             'launch/hole_detection_voxel_grid.launch.py',
-        ]),        ('share/' + package_name + '/rviz', [
+            'launch/cardboard_test.launch.py',  # Neu: Pappe-Test
+        ]),
+        ('share/' + package_name + '/rviz', [
             'rviz/hole_detection.rviz',
-        ]),    ],
+        ]),
+        ('share/' + package_name + '/config', [  # Neu: Config-Verzeichnis
+            'config/cardboard_detection_params.yaml',
+        ]),
+    ],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='root',
