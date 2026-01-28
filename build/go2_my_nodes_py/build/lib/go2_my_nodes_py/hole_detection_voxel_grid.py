@@ -51,7 +51,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         # Publisher
         self.entrance_pub = self.create_publisher(Entrance, 'detected_entrances_voxel_grid', 10)
         self.marker_pub = self.create_publisher(MarkerArray, 'entrance_markers_voxel_grid', 10)
-        self.cluster_marker_pub = self.create_publisher(MarkerArray, 'cluster_markers_voxel_grid', 10)
+        self.region_marker_pub = self.create_publisher(MarkerArray, 'hole_region_markers_voxel_grid', 10)
         self.filtered_cloud_pub = self.create_publisher(PointCloud2, 'filtered_cloud_voxel_grid', 10)
         
         # Parameter aus aktuellen Thresholds
@@ -61,10 +61,16 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.cluster_distance = 0.5
         
         # Voxel Grid spezifische Parameter
-        self.voxel_size = 0.05  # 5cm Voxel-Größe (adaptive Option verfügbar)
+        self.voxel_size = 0.02  # 2cm Voxel-Größe (adaptive Option verfügbar)
         self.gradient_percentile = 75  # Top 25% Gradienten = Kanten
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
         self.gaussian_sigma = 1.0  # Glättungs-Parameter
+        
+        # Ground Plane Detection Parameter
+        self.enable_ground_detection = True
+        self.ground_plane_distance_threshold = 0.02  # 2cm tolerance for RANSAC
+        self.ground_plane_min_points = 100  # Min points to fit plane
+        self.min_height_above_ground = 0.15  # Ignore points < 15cm above ground
         
         # Multi-Frame-Akkumulation
         self.frame_buffer_size = 20
@@ -82,7 +88,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
             f"Voxel Grid Node initialisiert:\n"
             f"  - Voxel-Größe: {self.voxel_size}m\n"
             f"  - Gradient-Perzentil: {self.gradient_percentile}%\n"
-            f"  - Low-Dichte-Perzentil: {self.low_density_percentile}%"
+            f"  - Low-Dichte-Perzentil: {self.low_density_percentile}%\n"
+            f"  - Bodenerkennung: {'Aktiviert' if self.enable_ground_detection else 'Deaktiviert'}"
         )
     
     def cloud_data_callback(self, msg: PointCloud2):
@@ -98,6 +105,20 @@ class HoleDetectionVoxelGridNode(BaseNode):
             if len(filtered_points) == 0:
                 return
             
+            # Ground plane detection
+            if self.enable_ground_detection:
+                ground_result = self.detect_ground_plane(filtered_points)
+                if ground_result is not None:
+                    plane_model, ground_height = ground_result
+                    above_ground, ground = self.filter_ground_points(
+                        filtered_points, plane_model
+                    )
+                    filtered_points = above_ground
+                    self.get_logger().debug(
+                        f"Boden erkannt bei {ground_height:.2f}m, "
+                        f"{len(above_ground)} Punkte über dem Boden"
+                    )
+            
             self.point_buffer.append(filtered_points)
             
             if self.frame_counter % self.process_every_n_frames != 0:
@@ -111,18 +132,19 @@ class HoleDetectionVoxelGridNode(BaseNode):
             
             self.publish_filtered_cloud(combined_points, msg.header)
             
-            clusters = self.cluster_points(combined_points)
-            self.get_logger().info(f"[Voxel Grid] Gefundene Cluster: {len(clusters)}")
+            # Analysiere gesamte Point Cloud direkt
+            hole_regions = self.find_hole_regions_in_cloud(combined_points)
+            self.get_logger().info(f"[Voxel Grid] Gefundene Loch-Regionen: {len(hole_regions)}")
             
-            self.publish_cluster_markers(clusters, msg.header)
+            self.publish_region_markers(hole_regions, msg.header)
             
             current_entrances = []
-            for i, cluster in enumerate(clusters):
-                entrance = self.analyze_cluster_with_voxel_grid(cluster, msg.header)
+            for i, region in enumerate(hole_regions):
+                entrance = self.analyze_hole_region(region, msg.header)
                 if entrance:
                     current_entrances.append(entrance)
                     self.get_logger().debug(
-                        f"Cluster {i}: Eingangs-Kandidat (Voxel Grid-basiert) bei "
+                        f"Region {i}: Eingangs-Kandidat bei "
                         f"({entrance.position.x:.2f}, {entrance.position.y:.2f})"
                     )
             
@@ -185,40 +207,172 @@ class HoleDetectionVoxelGridNode(BaseNode):
         valid_mask = x_range & y_range & z_range
         return points[valid_mask]
     
-    def cluster_points(self, points: np.ndarray) -> List[np.ndarray]:
-        """DBSCAN-ähnliches Clustering"""
-        if len(points) < 10:
+    def detect_ground_plane(self, points: np.ndarray) -> Optional[Tuple[np.ndarray, float]]:
+        """
+        Detects ground plane using RANSAC.
+        
+        Returns:
+            (plane_model, ground_height): Plane coefficients [a,b,c,d] and avg height
+            None if detection fails
+        """
+        if len(points) < self.ground_plane_min_points:
+            return None
+        
+        try:
+            from sklearn.linear_model import RANSACRegressor
+            
+            # Use bottom 50% of points (likely ground)
+            z_sorted_indices = np.argsort(points[:, 2])
+            bottom_half_count = min(len(points) // 2, 1000)  # Max 1000 points for speed
+            bottom_indices = z_sorted_indices[:bottom_half_count]
+            bottom_points = points[bottom_indices]
+            
+            if len(bottom_points) < self.ground_plane_min_points:
+                return None
+            
+            # RANSAC: Fit plane ax + by + c = z
+            X = bottom_points[:, :2]  # x, y
+            y = bottom_points[:, 2]   # z
+            
+            ransac = RANSACRegressor(
+                residual_threshold=self.ground_plane_distance_threshold,
+                min_samples=50,
+                max_trials=100,
+                random_state=42
+            )
+            ransac.fit(X, y)
+            
+            # Plane model: z = ax + by + c  →  ax + by - z + c = 0
+            a, b = ransac.estimator_.coef_
+            c = ransac.estimator_.intercept_
+            
+            # Average ground height (z when x=0, y=0)
+            ground_height = float(c)
+            
+            # Store as [a, b, -1, c] for easier distance calculation
+            plane_model = np.array([a, b, -1.0, c])
+            
+            return plane_model, ground_height
+        
+        except ImportError:
+            self.get_logger().warn("sklearn nicht verfügbar, Bodenerkennung übersprungen")
+            return None
+        except Exception as e:
+            self.get_logger().warn(f"Bodenerkennung fehlgeschlagen: {e}")
+            return None
+    
+    def filter_ground_points(
+        self, points: np.ndarray, plane_model: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Separates ground points from above-ground points.
+        
+        Args:
+            points: All points
+            plane_model: [a, b, c, d] from plane equation ax + by + cz + d = 0
+        
+        Returns:
+            (above_ground_points, ground_points)
+        """
+        # Calculate distance to plane: |ax + by + cz + d| / sqrt(a² + b² + c²)
+        a, b, c, d = plane_model
+        numerator = np.abs(a * points[:, 0] + b * points[:, 1] + c * points[:, 2] + d)
+        denominator = np.sqrt(a**2 + b**2 + c**2)
+        distances = numerator / denominator
+        
+        # Points within threshold are ground
+        is_ground = distances < self.ground_plane_distance_threshold
+        
+        # Additionally: Points must be at least min_height_above_ground above the plane
+        # Calculate signed distance (positive = above plane)
+        signed_distances = (a * points[:, 0] + b * points[:, 1] + c * points[:, 2] + d) / denominator
+        is_above_threshold = signed_distances > self.min_height_above_ground
+        
+        # Above ground = not ground AND above height threshold
+        is_above_ground = (~is_ground) & is_above_threshold
+        
+        above_ground_points = points[is_above_ground]
+        ground_points = points[~is_above_ground]
+        
+        return above_ground_points, ground_points
+    
+    def find_hole_regions_in_cloud(self, points: np.ndarray) -> List[dict]:
+        """
+        Findet Loch-Regionen in der gesamten Point Cloud durch Voxel-Dichte-Analyse.
+        
+        Returns:
+            Liste von Loch-Regionen mit Zentroid, Bounding Box und Punkten
+        """
+        try:
+            from scipy.ndimage import gaussian_filter, label
+        except ImportError:
+            self.get_logger().error("scipy wird benötigt")
             return []
         
-        clusters = []
-        used = np.zeros(len(points), dtype=bool)
+        if len(points) < 50:
+            return []
         
-        for i in range(len(points)):
-            if used[i]:
+        # Voxel Grid der gesamten Szene erstellen
+        min_bounds = np.min(points, axis=0)
+        max_bounds = np.max(points, axis=0)
+        
+        voxel_indices = ((points - min_bounds) / self.voxel_size).astype(int)
+        
+        # Zähle Punkte pro Voxel
+        voxel_counts = defaultdict(int)
+        for idx in voxel_indices:
+            key = tuple(idx)
+            voxel_counts[key] += 1
+        
+        max_idx = np.max(voxel_indices, axis=0)
+        grid_shape = max_idx + 1
+        
+        # Dichte-Gitter aufbauen
+        density_grid = np.zeros(grid_shape, dtype=np.float32)
+        for (x, y, z), count in voxel_counts.items():
+            if 0 <= x < grid_shape[0] and 0 <= y < grid_shape[1] and 0 <= z < grid_shape[2]:
+                density_grid[x, y, z] = count
+        
+        # Glättung
+        smoothed_grid = gaussian_filter(density_grid.astype(float), sigma=self.gaussian_sigma)
+        
+        # Finde niedrig-Dichte Bereiche (= potenzielle Löcher)
+        if np.any(smoothed_grid > 0):
+            low_density_threshold = np.percentile(
+                smoothed_grid[smoothed_grid > 0], 
+                self.low_density_percentile
+            )
+        else:
+            return []
+        
+        low_density_mask = (smoothed_grid < low_density_threshold) & (smoothed_grid >= 0)
+        
+        # Finde zusammenhängende Loch-Regionen
+        labeled_array, num_features = label(low_density_mask)
+        
+        self.get_logger().info(f"Gefundene niedrig-Dichte Regionen: {num_features}")
+        
+        hole_regions = []
+        for region_id in range(1, num_features + 1):
+            # Voxel-Indizes dieser Region
+            region_voxels = np.argwhere(labeled_array == region_id)
+            
+            if len(region_voxels) < 5:  # Mindestgröße
                 continue
             
-            current_cluster = [i]
-            used[i] = True
+            # Zurück zu Weltkoordinaten
+            region_bounds_min = region_voxels.min(axis=0) * self.voxel_size + min_bounds
+            region_bounds_max = region_voxels.max(axis=0) * self.voxel_size + min_bounds
+            centroid = (region_bounds_min + region_bounds_max) / 2.0
             
-            j = 0
-            while j < len(current_cluster):
-                point_idx = current_cluster[j]
-                point = points[point_idx]
-                
-                distances = np.linalg.norm(points - point, axis=1)
-                neighbors = np.where((distances < self.cluster_distance) & (~used))[0]
-                
-                for neighbor_idx in neighbors:
-                    if not used[neighbor_idx]:
-                        current_cluster.append(neighbor_idx)
-                        used[neighbor_idx] = True
-                
-                j += 1
-            
-            if len(current_cluster) > 20:
-                clusters.append(points[current_cluster])
+            hole_regions.append({
+                'centroid': centroid,
+                'bounds_min': region_bounds_min,
+                'bounds_max': region_bounds_max,
+                'voxel_count': len(region_voxels)
+            })
         
-        return clusters
+        return hole_regions
     
     def create_voxel_grid(self, cluster: np.ndarray) -> Tuple[dict, np.ndarray, np.ndarray]:
         """
@@ -322,32 +476,33 @@ class HoleDetectionVoxelGridNode(BaseNode):
         
         return has_hole
     
-    def analyze_cluster_with_voxel_grid(
-        self, cluster: np.ndarray, header: Header
+    def analyze_hole_region(
+        self, region: dict, header: Header
     ) -> Optional[Entrance]:
         """
-        Analysiert Cluster mit Voxel Grid Methode.
+        Analysiert eine gefundene Loch-Region.
         """
-        # Grund-Merkmale
-        z_min, z_max = np.min(cluster[:, 2]), np.max(cluster[:, 2])
-        x_min, x_max = np.min(cluster[:, 0]), np.max(cluster[:, 0])
-        y_min, y_max = np.min(cluster[:, 1]), np.max(cluster[:, 1])
+        centroid = region['centroid']
+        bounds_min = region['bounds_min']
+        bounds_max = region['bounds_max']
         
-        height = z_max - z_min
-        x_range = x_max - x_min
-        y_range = y_max - y_min
+        # Dimensionen berechnen
+        height = bounds_max[2] - bounds_min[2]
+        x_range = bounds_max[0] - bounds_min[0]
+        y_range = bounds_max[1] - bounds_min[1]
         width = max(x_range, y_range)
         
-        # Grund-Filter
+        # Tiefenfilter - nur nahe Löcher
+        distance_from_robot = np.sqrt(centroid[0]**2 + centroid[1]**2)
+        if distance_from_robot > 2.5:
+            self.get_logger().debug(
+                f"Region verworfen: zu weit ({distance_from_robot:.2f}m > 2.5m)"
+            )
+            return None
+        
+        # Größenfilter
         if height < self.height_threshold or width < self.width_threshold or width > self.max_width:
             return None
-        
-        # Voxel Grid Analyse
-        if not self.detect_hole_regions(cluster):
-            return None
-        
-        # Position
-        centroid = np.mean(cluster, axis=0)
         
         entrance = Entrance()
         entrance.header = header
@@ -435,35 +590,38 @@ class HoleDetectionVoxelGridNode(BaseNode):
         cloud_msg.data = points.astype(np.float32).tobytes()
         self.filtered_cloud_pub.publish(cloud_msg)
     
-    def publish_cluster_markers(self, clusters: List[np.ndarray], header: Header):
-        """Visualisiert Cluster"""
+    def publish_region_markers(self, regions: List[dict], header: Header):
+        """Visualisiert Loch-Regionen"""
         marker_array = MarkerArray()
         
-        for i, cluster in enumerate(clusters):
+        for i, region in enumerate(regions):
             marker = Marker()
             marker.header = header
             marker.id = i
-            marker.type = Marker.SPHERE
+            marker.type = Marker.CUBE
             marker.action = Marker.ADD
             
-            centroid = np.mean(cluster, axis=0)
+            centroid = region['centroid']
+            bounds_min = region['bounds_min']
+            bounds_max = region['bounds_max']
+            
             marker.pose.position.x = float(centroid[0])
             marker.pose.position.y = float(centroid[1])
             marker.pose.position.z = float(centroid[2])
             marker.pose.orientation.w = 1.0
             
-            marker.scale.x = 0.1
-            marker.scale.y = 0.1
-            marker.scale.z = 0.1
+            marker.scale.x = float(bounds_max[0] - bounds_min[0])
+            marker.scale.y = float(bounds_max[1] - bounds_min[1])
+            marker.scale.z = float(bounds_max[2] - bounds_min[2])
             
-            marker.color.r = 0.0
+            marker.color.r = 1.0
             marker.color.g = 1.0
-            marker.color.b = 1.0
-            marker.color.a = 0.7
+            marker.color.b = 0.0
+            marker.color.a = 0.3
             
             marker_array.markers.append(marker)
         
-        self.cluster_marker_pub.publish(marker_array)
+        self.region_marker_pub.publish(marker_array)
     
     def publish_entrance_markers(self, header: Header):
         """Visualisiert Eingänge"""

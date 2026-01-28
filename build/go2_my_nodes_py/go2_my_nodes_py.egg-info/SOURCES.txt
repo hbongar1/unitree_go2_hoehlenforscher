@@ -8,6 +8,7 @@ setup.py
 ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/requires.txt
 ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/top_level.txt
 ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/zip-safe
+config/cardboard_detection_params.yaml
 go2_my_nodes_py/__init__.py
 go2_my_nodes_py/base_node.py
 go2_my_nodes_py/cloud_to_entrance_node.py
@@ -16,6 +17,7 @@ go2_my_nodes_py/hole_detection_convex_hull.py
 go2_my_nodes_py/hole_detection_normal_vector.py
 go2_my_nodes_py/hole_detection_voxel_grid.py
 go2_my_nodes_py/navigation_action_server_node.py
+go2_my_nodes_py/surface_detection.py
 go2_my_nodes_py.egg-info/PKG-INFO
 go2_my_nodes_py.egg-info/SOURCES.txt
 go2_my_nodes_py.egg-info/dependency_links.txt
@@ -23,6 +25,7 @@ go2_my_nodes_py.egg-info/entry_points.txt
 go2_my_nodes_py.egg-info/requires.txt
 go2_my_nodes_py.egg-info/top_level.txt
 go2_my_nodes_py.egg-info/zip-safe
+launch/cardboard_test.launch.py
 launch/hole_detection_all.launch.py
 launch/hole_detection_convex_hull.launch.py
 launch/hole_detection_normal_vector.launch.py

@@ -5,4 +5,5 @@ hole_detection_convex_hull = go2_my_nodes_py.hole_detection_convex_hull:main
 hole_detection_normal_vector = go2_my_nodes_py.hole_detection_normal_vector:main
 hole_detection_voxel_grid = go2_my_nodes_py.hole_detection_voxel_grid:main
 navigation_action_server_node = go2_my_nodes_py.navigation_action_server_node:main
+surface_detection = go2_my_nodes_py.surface_detection:main
 

@@ -187,7 +187,7 @@ class HoleDetectionNormalVectorNode(BaseNode):
         
         x_range = np.abs(points[:, 0]) < 5.0
         y_range = np.abs(points[:, 1]) < 5.0
-        z_range = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
+        z_range = (points[:, 2] > 0.1) & (points[:, 2] < 3.0)
         
         valid_mask = x_range & y_range & z_range
         return points[valid_mask]
