@@ -173,14 +173,14 @@ class HoleDetectionRansacNode(BaseNode):
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
-        # Filter 1: Winkel (±25° = nur direkt voraus)
-        angle_filter = np.abs(angles) < 25.0
+        # Filter 1: Winkel (±35° = fokussiert aber nicht zu eng)
+        angle_filter = np.abs(angles) < 35.0
         
-        # Filter 2: Distanz (0.4-1.5m fokussiert)
-        distance_filter = (distances_xy > 0.4) & (distances_xy < 1.5)
+        # Filter 2: Distanz (0.2-1.8m - breiter als vorher)
+        distance_filter = (distances_xy > 0.2) & (distances_xy < 2.5)
         
-        # Filter 3: Höhe (15cm-2m, typische Eingangshöhe)
-        z_filter = (points[:, 2] > 0.15) & (points[:, 2] < 2.0)
+        # Filter 3: Höhe (10cm-2.5m)
+        z_filter = (points[:, 2] > 0.01) & (points[:, 2] < 2.5)
         
         return points[angle_filter & distance_filter & z_filter]
     
