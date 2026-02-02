@@ -915,18 +915,18 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 marker.action = Marker.ADD
                 
                 marker.pose.position = entrance.position
-                # KEINE Rotation - Marker steht parallel zur YZ-Ebene (Wand)
+                # 90° Rotation um Y-Achse für X-Z-Ebene (frontal)
                 marker.pose.orientation.x = 0.0
-                marker.pose.orientation.y = 0.0
+                marker.pose.orientation.y = 0.7071068  # sin(45°) für 90° Y-Rotation
                 marker.pose.orientation.z = 0.0
-                marker.pose.orientation.w = 1.0
+                marker.pose.orientation.w = 0.7071068  # cos(45°)
                 
-                # Für vertikale Löcher in Wänden:
-                # X = Tiefe (dünn, senkrecht zur Wand)
-                # Y = Breite (horizontal entlang der Wand)
+                # Für frontale Löcher in X-Z-Ebene:
+                # X = Breite (horizontal)
+                # Y = Tiefe (dünn, senkrecht zur Wand)
                 # Z = Höhe (vertikal)
-                marker.scale.x = entrance.width  # Tiefe/Breite des Lochs
-                marker.scale.y = 0.1             # Dünn (Marker-Dicke)
+                marker.scale.x = entrance.width  # Breite des Lochs
+                marker.scale.y = 0.1             # Dünn (Marker-Dicke, zur Wand)
                 marker.scale.z = entrance.height # Höhe des Lochs
                 
                 marker.color.r = 0.0
