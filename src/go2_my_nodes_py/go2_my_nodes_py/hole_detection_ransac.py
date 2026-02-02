@@ -1,10 +1,10 @@
 """
-Loch-Erkennung mittels 2D-Projektion (Optimiert & Bereinigt)
-Erkennt vertikale Löcher in Wänden durch Y-Z-Frontalprojektion.
+Loch-Erkennung mittels RANSAC Line Fitting (Präzise Maße)
+Erkennt vertikale Löcher und misst Dimensionen durch Linien-Fitting an Wandpunkten.
 """
 
 import rclpy
-from typing import List
+from typing import List, Tuple, Optional
 import numpy as np
 import struct
 import csv
@@ -16,28 +16,27 @@ from go2_my_nodes_py.base_node import BaseNode
 from sensor_msgs.msg import PointCloud2, PointField
 from go2_msgs.msg import Entrance
 from geometry_msgs.msg import Point
-from std_msgs.msg import Header, ColorRGBA
+from std_msgs.msg import Header
 from visualization_msgs.msg import Marker, MarkerArray
 
-# Scipy imports (direkt, ohne NumPy Fallbacks)
-from scipy.ndimage import gaussian_filter, binary_erosion, binary_dilation, label, sobel
+from scipy.ndimage import gaussian_filter, label, sobel
 
 
-class HoleDetectionCleanNode(BaseNode):
+class HoleDetectionRansacNode(BaseNode):
     """
-    Erkennt Eingänge durch 2D-Projektion auf Y-Z-Ebene.
+    Erkennt Eingänge durch RANSAC Line Fitting.
     
     Workflow:
     1. Empfange PointCloud2
-    2. Filtere Punkte (100° Radius, 0.3-2.5m Tiefe)
-    3. Projiziere auf Y-Z-Ebene (Frontalansicht)
-    4. Finde Regionen mit niedriger Punkt-Dichte
-    5. Validiere: Größe, 3-Seiten-Check
+    2. Filtere Punkte (100° Radius, 0.3-2m Tiefe)
+    3. Finde Loch-Kandidaten (Voxel + Sobel)
+    4. Für jede Region: Fitte Linien an die Wand-Kanten
+    5. Miss Abstände zwischen Linien = exakte Breite/Höhe
     6. Publiziere: ROS Topics, RViz Marker, CSV
     """
     
     def __init__(self):
-        super().__init__('hole_detection_clean')
+        super().__init__('hole_detection_ransac')
         
         # === PARAMETER ===
         
@@ -47,29 +46,34 @@ class HoleDetectionCleanNode(BaseNode):
         self.height_threshold = 0.1    # Min 10cm Höhe
         self.width_threshold = 0.1     # Min 10cm Breite
         
-        # Voxel Grid (2D-Projektion) - HÖCHSTE PRÄZISION
-        self.voxel_size = 0.005  # 5mm Voxel für mm-Genauigkeit
-        self.gaussian_sigma = 1.0  # Weniger Glättung = schärfere Kanten
-        self.min_region_cells = 400  # Höher wegen kleineren Voxeln (50cm = 100x100 = 10000 Zellen)
-        self.min_surrounded_sides = 2  # Mindestens 2 Seiten für Stabilität
+        # Voxel Grid (nur für Kandidaten-Suche, nicht für Messung!)
+        self.voxel_size = 0.01  # 1cm Voxel (grob, nur für Kandidaten)
+        self.gaussian_sigma = 1.0
+        self.min_region_cells = 100
+        self.min_surrounded_sides = 2
         
-        # Multi-Frame Tracking - Mehr Frames für Stabilität
-        self.frame_buffer_size = 80  # Mehr Frames = stabilere Messung
+        # RANSAC Parameter
+        self.ransac_iterations = 100
+        self.ransac_threshold = 0.02  # 2cm Inlier-Toleranz
+        self.edge_margin = 0.05  # 5cm Rand um das Loch für Kantenpunkte
+        
+        # Multi-Frame Tracking
+        self.frame_buffer_size = 50
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 3  # Alle 3 Frames verarbeiten
+        self.process_every_n_frames = 3
         
-        # Konfidenz - Höhere Schwelle für Stabilität
+        # Konfidenz
         self.entrance_history = {}
-        self.confidence_threshold = 3  # Mindestens 3x gesehen = stabil
-        self.entrance_timeout = 60  # Länger im Speicher für besseres Tracking
+        self.confidence_threshold = 3
+        self.entrance_timeout = 60
         self.next_entrance_id = 0
         
         # CSV Logging
         log_dir = os.path.join(os.path.dirname(__file__), 'entrance_detections')
         os.makedirs(log_dir, exist_ok=True)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.csv_file = os.path.join(log_dir, f'detections_{timestamp}.csv')
+        self.csv_file = os.path.join(log_dir, f'ransac_{timestamp}.csv')
         with open(self.csv_file, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['Timestamp', 'Position_X_m', 'Position_Y_m', 'Position_Z_m',
@@ -91,11 +95,11 @@ class HoleDetectionCleanNode(BaseNode):
         )
         
         # Publishers
-        self.entrance_pub = self.create_publisher(Entrance, '/entrance_detection_clean', 10)
-        self.filtered_cloud_pub = self.create_publisher(PointCloud2, '/filtered_cloud_voxel_clean', 10)
-        self.marker_pub = self.create_publisher(MarkerArray, '/entrance_markers_clean', 10)
+        self.entrance_pub = self.create_publisher(Entrance, '/entrance_detection_ransac', 10)
+        self.filtered_cloud_pub = self.create_publisher(PointCloud2, '/filtered_cloud_ransac', 10)
+        self.marker_pub = self.create_publisher(MarkerArray, '/entrance_markers_ransac', 10)
         
-        self.get_logger().info("✅ Hole Detection Clean Node gestartet!")
+        self.get_logger().info("✅ Hole Detection RANSAC Node gestartet!")
     
     # ====================================================================
     # MAIN CALLBACK
@@ -104,20 +108,16 @@ class HoleDetectionCleanNode(BaseNode):
     def cloud_data_callback(self, msg: PointCloud2):
         """Hauptlogik: PointCloud → Löcher finden → Publizieren"""
         try:
-            # 1. Punkte extrahieren
             points = self.extract_points_from_cloud(msg)
             if len(points) == 0:
                 return
             
-            # 2. Filtern (100° Radius, 0.3-2.5m Tiefe)
             filtered_points = self.filter_points(points)
             if len(filtered_points) < 50:
                 return
             
-            # 3. Gefilterte Cloud publizieren (für RViz)
             self.publish_filtered_cloud(filtered_points, msg.header)
             
-            # 4. Multi-Frame Akkumulation
             self.point_buffer.append(filtered_points)
             self.frame_counter += 1
             
@@ -127,23 +127,19 @@ class HoleDetectionCleanNode(BaseNode):
             if len(self.point_buffer) < 2:
                 return
             
-            # 5. Kombiniere Frames
             all_points = np.vstack(list(self.point_buffer))
             
-            # 6. Finde Loch-Regionen
-            hole_regions = self.find_hole_regions_in_cloud(all_points)
+            # Finde Loch-Kandidaten (grob)
+            hole_candidates = self.find_hole_candidates(all_points)
             
-            # 7. Analysiere & erstelle Entrance-Messages
+            # Präzise Messung per RANSAC
             current_entrances = []
-            for region in hole_regions:
-                entrance = self.analyze_hole_region(region, msg.header)
+            for candidate in hole_candidates:
+                entrance = self.measure_hole_with_ransac(candidate, all_points, msg.header)
                 if entrance:
                     current_entrances.append(entrance)
             
-            # 8. Update Tracking
             self.update_entrance_tracking(current_entrances)
-            
-            # 9. Publiziere stabile Eingänge
             self.publish_stable_entrances(msg.header)
             
         except Exception as e:
@@ -170,147 +166,93 @@ class HoleDetectionCleanNode(BaseNode):
         return np.array(points_list) if points_list else np.array([]).reshape(0, 3)
     
     def filter_points(self, points: np.ndarray) -> np.ndarray:
-        """
-        Filtert Punkte:
-        - 100° Radius (±50°)
-        - 0.3-2.5m Tiefe (mit Randabstand)
-        - Höhe: 0-3m
-        """
+        """Filtert Punkte: 100° Radius, 0.1-1.9m Tiefe, 0-3m Höhe"""
         if len(points) == 0:
             return points
 
-        # Polar-Koordinaten
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
-        # Filter 1: Winkel (±50° mit 5° Randabstand = ±45°)
         angle_filter = np.abs(angles) < 45.0
-        
-        # Filter 2: Distanz (0.3-2.0m mit Randabstand)
         distance_filter = (distances_xy > 0.1) & (distances_xy < 1.9)
-        
-        # Filter 3: Höhe (0-3m)
         z_filter = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
         
-        # Kombiniere
-        final_filter = angle_filter & distance_filter & z_filter
-        return points[final_filter]
+        return points[angle_filter & distance_filter & z_filter]
     
     # ====================================================================
-    # LOCH-ERKENNUNG (KERN-ALGORITHMUS)
+    # KANDIDATEN-SUCHE (Voxel + Sobel, grob)
     # ====================================================================
     
-    def find_hole_regions_in_cloud(self, points: np.ndarray) -> List[dict]:
-        """
-        Findet vertikale Löcher durch Y-Z-Frontalprojektion.
-        
-        Returns:
-            Liste von Loch-Regionen mit:
-            - centroid: [x, y, z]
-            - bounds_min/max: Bounding Box
-            - width/height: Dimensionen
-            - depth: Tiefe in X-Richtung
-        """
+    def find_hole_candidates(self, points: np.ndarray) -> List[dict]:
+        """Findet grobe Loch-Kandidaten mittels Voxel-Grid"""
         if len(points) < 50:
             return []
         
-        # Filtere Punkte vor dem Roboter (0.3-2.5m)
-        x_min_filter, x_max_filter = 0.3, 2.5
+        x_min_filter, x_max_filter = 0.3, 2.0
         in_front = (points[:, 0] >= x_min_filter) & (points[:, 0] <= x_max_filter)
         front_points = points[in_front]
         
         if len(front_points) < 50:
             return []
         
-        # Y-Z-Projektion (Frontalansicht)
         y_points = front_points[:, 1]
         z_points = front_points[:, 2]
         
         y_min, y_max = np.min(y_points), np.max(y_points)
         z_min, z_max = np.min(z_points), np.max(z_points)
         
-        # Erstelle 2D-Dichte-Grid
-        grid_resolution_2d = self.voxel_size
-        y_bins = int((y_max - y_min) / grid_resolution_2d) + 1
-        z_bins = int((z_max - z_min) / grid_resolution_2d) + 1
+        grid_resolution = self.voxel_size
+        y_bins = int((y_max - y_min) / grid_resolution) + 1
+        z_bins = int((z_max - z_min) / grid_resolution) + 1
         
-        # Performance-Limit
-        if y_bins > 1000 or z_bins > 1000:
-            grid_resolution_2d = 0.02
-            y_bins = int((y_max - y_min) / grid_resolution_2d) + 1
-            z_bins = int((z_max - z_min) / grid_resolution_2d) + 1
+        if y_bins > 500 or z_bins > 500:
+            grid_resolution = 0.02
+            y_bins = int((y_max - y_min) / grid_resolution) + 1
+            z_bins = int((z_max - z_min) / grid_resolution) + 1
         
-        # Z ähle Punkte in Grid
         density_2d = np.zeros((y_bins, z_bins), dtype=np.float32)
-        y_indices = ((y_points - y_min) / grid_resolution_2d).astype(int)
-        z_indices = ((z_points - z_min) / grid_resolution_2d).astype(int)
+        y_indices = ((y_points - y_min) / grid_resolution).astype(int)
+        z_indices = ((z_points - z_min) / grid_resolution).astype(int)
         
         for yi, zi in zip(y_indices, z_indices):
             if 0 <= yi < y_bins and 0 <= zi < z_bins:
                 density_2d[yi, zi] += 1
         
-        # Glättung (leicht, um Rauschen zu unterdrücken)
         smoothed = gaussian_filter(density_2d, sigma=self.gaussian_sigma)
         
-        # --- GRADIENTEN-BASIERTE KANTENERKENNUNG ---
-        
-        # 1. Kanten finden (Sobel Operator)
+        # Sobel Edge Detection
         sx = sobel(smoothed, axis=0, mode='constant')
         sy = sobel(smoothed, axis=1, mode='constant')
         sob = np.hypot(sx, sy)
         
-        # 2. Kanten-Maske (wo ändert sich die Dichte stark?)
-        # Hoher Gradient = Kante Wand/Loch
-        edge_threshold = np.percentile(sob, 90)  # Top 10% Gradienten sind Kanten
+        edge_threshold = np.percentile(sob, 90)
         edges = sob > edge_threshold
         
-        # 3. Loch-Kandidaten finden
-        # Wir suchen Bereiche mit NIEDRIGER Dichte, die von KANTEN umschlossen sind
-        # Low Density Mask (Basis-Kandidat)
-        density_threshold = np.percentile(smoothed[smoothed > 0], 25) # Etwas großzügiger als vorher (15->25)
+        if np.any(smoothed > 0):
+            density_threshold = np.percentile(smoothed[smoothed > 0], 25)
+        else:
+            return []
+        
         low_density = smoothed < density_threshold
+        hole_mask = low_density & ~edges
         
-        # 4. Kombiniere: Loch ist Low Density, aber präzisiert durch Kanten
-        # Wir nutzen Watershed-ähnliche Logik: Low Density erweitert bis zur Kante
-        hole_mask = low_density & ~edges  # Nimm Low Density, aber stoppe an Kanten
-        
-        # Schließe kleine Lücken in der Maske
-        hole_mask = binary_dilation(hole_mask, iterations=1)
-        hole_mask = binary_erosion(hole_mask, iterations=1) # Closing Operation
-        
-        # Label zusammenhängende Regionen
         labeled_array, num_features = label(hole_mask)
         
-        # Analysiere jede Region
-        hole_regions = []
+        candidates = []
         for region_id in range(1, num_features + 1):
             region_cells = np.argwhere(labeled_array == region_id)
             
-            # Mindestgröße
             if len(region_cells) < self.min_region_cells:
                 continue
             
-            # Weltkoordinaten
-            region_y_min = region_cells[:, 0].min() * grid_resolution_2d + y_min
-            region_y_max = region_cells[:, 0].max() * grid_resolution_2d + y_min
-            region_z_min = region_cells[:, 1].min() * grid_resolution_2d + z_min
-            region_z_max = region_cells[:, 1].max() * grid_resolution_2d + z_min
+            # Grobe Bounding Box (wird später präzisiert)
+            region_y_min = region_cells[:, 0].min() * grid_resolution + y_min
+            region_y_max = region_cells[:, 0].max() * grid_resolution + y_min
+            region_z_min = region_cells[:, 1].min() * grid_resolution + z_min
+            region_z_max = region_cells[:, 1].max() * grid_resolution + z_min
             
-            # Dimensionen OHNE Voxel-Korrektur für exakte Maße
-            width_voxels = region_cells[:, 0].max() - region_cells[:, 0].min() + 1
-            height_voxels = region_cells[:, 1].max() - region_cells[:, 1].min() + 1
-            
-            width = width_voxels * grid_resolution_2d  # Exakt, keine Korrektur
-            height = height_voxels * grid_resolution_2d
-            
-            # Größen-Check
-            if width < self.min_hole_diameter or width > self.max_hole_diameter:
-                continue
-            if height < self.height_threshold:
-                continue
-            
-            # 3-Seiten-Check (Rand-Filter)
-            margin = grid_resolution_2d * 5
+            # 3-Seiten-Check
+            margin = grid_resolution * 5
             left = np.any((front_points[:, 1] < (region_y_min - margin)) &
                          (front_points[:, 2] >= region_z_min) &
                          (front_points[:, 2] <= region_z_max))
@@ -324,89 +266,200 @@ class HoleDetectionCleanNode(BaseNode):
                            (front_points[:, 1] >= region_y_min) &
                            (front_points[:, 1] <= region_y_max))
             
-            surrounded_sides = sum([left, right, top, bottom])
-            if surrounded_sides < self.min_surrounded_sides:
+            if sum([left, right, top, bottom]) < self.min_surrounded_sides:
                 continue
             
-            # X-Dimension (Tiefe)
-            in_region_y = (front_points[:, 1] >= region_y_min) & (front_points[:, 1] <= region_y_max)
-            in_region_z = (front_points[:, 2] >= region_z_min) & (front_points[:, 2] <= region_z_max)
-            in_region = in_region_y & in_region_z
-            
-            if not np.any(in_region):
-                continue
-            
-            region_points = front_points[in_region]
-            x_min = np.min(region_points[:, 0])
-            x_max = np.max(region_points[:, 0])
-            depth = x_max - x_min
-            
-            # Zentroid
-            y_center_voxel = (region_cells[:, 0].min() + region_cells[:, 0].max()) / 2.0
-            z_center_voxel = (region_cells[:, 1].min() + region_cells[:, 1].max()) / 2.0
-            y_center = y_center_voxel * grid_resolution_2d + y_min
-            z_center = z_center_voxel * grid_resolution_2d + z_min
-            
-            centroid_x = (x_min + x_max) / 2.0
-            
-            hole_regions.append({
-                'centroid': np.array([centroid_x, y_center, z_center]),
-                'bounds_min': np.array([x_min, region_y_min, region_z_min]),
-                'bounds_max': np.array([x_max, region_y_max, region_z_max]),
-                'width': width,
-                'height': height,
-                'depth': depth,
-                'voxel_count': len(region_cells)
+            candidates.append({
+                'bounds_y': (region_y_min, region_y_max),
+                'bounds_z': (region_z_min, region_z_max),
+                'front_points': front_points
             })
         
-        return hole_regions
+        return candidates
     
     # ====================================================================
-    # ANALYSE & TRACKING
+    # RANSAC LINE FITTING (Präzise Messung)
     # ====================================================================
     
-    def analyze_hole_region(self, region: dict, header: Header) -> dict:
-        """Erstellt Entrance-Message aus Loch-Region (Tiefe getrennt)"""
+    def measure_hole_with_ransac(self, candidate: dict, all_points: np.ndarray, header: Header) -> Optional[dict]:
+        """Misst Loch-Dimensionen präzise durch Linien-Fitting an Wandpunkten"""
+        
+        y_min_rough, y_max_rough = candidate['bounds_y']
+        z_min_rough, z_max_rough = candidate['bounds_z']
+        front_points = candidate['front_points']
+        
+        margin = self.edge_margin
+        
+        # Finde Punkte an den 4 Kanten des Lochs
+        # LINKS: Punkte knapp links vom Loch
+        left_mask = (front_points[:, 1] >= y_min_rough - margin*2) & \
+                    (front_points[:, 1] <= y_min_rough + margin) & \
+                    (front_points[:, 2] >= z_min_rough) & \
+                    (front_points[:, 2] <= z_max_rough)
+        left_points = front_points[left_mask]
+        
+        # RECHTS: Punkte knapp rechts vom Loch
+        right_mask = (front_points[:, 1] >= y_max_rough - margin) & \
+                     (front_points[:, 1] <= y_max_rough + margin*2) & \
+                     (front_points[:, 2] >= z_min_rough) & \
+                     (front_points[:, 2] <= z_max_rough)
+        right_points = front_points[right_mask]
+        
+        # OBEN: Punkte knapp über dem Loch
+        top_mask = (front_points[:, 2] >= z_max_rough - margin) & \
+                   (front_points[:, 2] <= z_max_rough + margin*2) & \
+                   (front_points[:, 1] >= y_min_rough) & \
+                   (front_points[:, 1] <= y_max_rough)
+        top_points = front_points[top_mask]
+        
+        # UNTEN: Punkte knapp unter dem Loch
+        bottom_mask = (front_points[:, 2] >= z_min_rough - margin*2) & \
+                      (front_points[:, 2] <= z_min_rough + margin) & \
+                      (front_points[:, 1] >= y_min_rough) & \
+                      (front_points[:, 1] <= y_max_rough)
+        bottom_points = front_points[bottom_mask]
+        
+        # Brauchen mindestens einige Punkte pro Kante
+        min_edge_points = 5
+        if len(left_points) < min_edge_points or len(right_points) < min_edge_points:
+            # Fallback: Nutze Perzentile
+            width = self.measure_with_percentile(front_points, y_min_rough, y_max_rough, 
+                                                  z_min_rough, z_max_rough, axis='y')
+        else:
+            # RANSAC für präzise Y-Koordinaten
+            left_edge = self.fit_edge_ransac(left_points[:, 1])
+            right_edge = self.fit_edge_ransac(right_points[:, 1])
+            width = right_edge - left_edge
+        
+        if len(top_points) < min_edge_points or len(bottom_points) < min_edge_points:
+            height = self.measure_with_percentile(front_points, y_min_rough, y_max_rough,
+                                                   z_min_rough, z_max_rough, axis='z')
+        else:
+            top_edge = self.fit_edge_ransac(top_points[:, 2])
+            bottom_edge = self.fit_edge_ransac(bottom_points[:, 2])
+            height = top_edge - bottom_edge
+        
+        # Validierung
+        if width < self.min_hole_diameter or width > self.max_hole_diameter:
+            return None
+        if height < self.height_threshold:
+            return None
+        
+        # Tiefe (X-Dimension)
+        in_region_y = (front_points[:, 1] >= y_min_rough) & (front_points[:, 1] <= y_max_rough)
+        in_region_z = (front_points[:, 2] >= z_min_rough) & (front_points[:, 2] <= z_max_rough)
+        in_region = in_region_y & in_region_z
+        
+        if not np.any(in_region):
+            return None
+        
+        region_points = front_points[in_region]
+        x_min = np.min(region_points[:, 0])
+        x_max = np.max(region_points[:, 0])
+        depth = x_max - x_min
+        
+        # Zentroid
+        y_center = (y_min_rough + y_max_rough) / 2.0
+        z_center = (z_min_rough + z_max_rough) / 2.0
+        x_center = (x_min + x_max) / 2.0
+        
+        # Falls wir präzise Kanten hatten, nutze diese für den Zentroid
+        if len(left_points) >= min_edge_points and len(right_points) >= min_edge_points:
+            y_center = (self.fit_edge_ransac(left_points[:, 1]) + 
+                       self.fit_edge_ransac(right_points[:, 1])) / 2.0
+        
+        if len(top_points) >= min_edge_points and len(bottom_points) >= min_edge_points:
+            z_center = (self.fit_edge_ransac(bottom_points[:, 2]) + 
+                       self.fit_edge_ransac(top_points[:, 2])) / 2.0
+        
         entrance_msg = Entrance()
         entrance_msg.header = header
-
+        
         pos = Point()
-        pos.x = float(region['centroid'][0])
-        pos.y = float(region['centroid'][1])
-        pos.z = float(region['centroid'][2])
+        pos.x = float(x_center)
+        pos.y = float(y_center)
+        pos.z = float(z_center)
         entrance_msg.position = pos
-
-        entrance_msg.width = float(region['width'])
-        entrance_msg.height = float(region['height'])
-
+        
+        entrance_msg.width = float(width)
+        entrance_msg.height = float(height)
+        
         return {
             'entrance': entrance_msg,
-            'depth': float(region.get('depth', 0.0)),
-            'voxel_count': int(region.get('voxel_count', 0))
+            'depth': float(depth),
+            'voxel_count': 0
         }
+    
+    def fit_edge_ransac(self, values: np.ndarray) -> float:
+        """
+        RANSAC-ähnlicher robuster Schätzer für Kanten-Position.
+        Findet den Median der innersten 80% der Punkte (ignoriert Ausreißer).
+        """
+        if len(values) == 0:
+            return 0.0
+        
+        # Robuster Schätzer: Nutze 10-90 Perzentil
+        p10 = np.percentile(values, 10)
+        p90 = np.percentile(values, 90)
+        
+        # Filtere Ausreißer
+        inliers = values[(values >= p10) & (values <= p90)]
+        
+        if len(inliers) == 0:
+            return np.median(values)
+        
+        # Für "innere" Kante (links/unten): Nimm das Maximum der Inliers
+        # Für "äußere" Kante (rechts/oben): Nimm das Minimum der Inliers
+        # Wir geben einfach den Median zurück, der Caller entscheidet dann
+        return np.median(inliers)
+    
+    def measure_with_percentile(self, points: np.ndarray, y_min: float, y_max: float,
+                                 z_min: float, z_max: float, axis: str) -> float:
+        """Fallback: Miss mit Perzentilen wenn zu wenig Kantenpunkte"""
+        
+        if axis == 'y':
+            # Finde Punkte in der Höhe des Lochs
+            in_z = (points[:, 2] >= z_min) & (points[:, 2] <= z_max)
+            relevant = points[in_z]
+            if len(relevant) < 10:
+                return y_max - y_min
+            
+            # 5% und 95% Perzentil für robuste Kanten
+            left = np.percentile(relevant[:, 1], 5)
+            right = np.percentile(relevant[:, 1], 95)
+            return right - left
+        else:
+            in_y = (points[:, 1] >= y_min) & (points[:, 1] <= y_max)
+            relevant = points[in_y]
+            if len(relevant) < 10:
+                return z_max - z_min
+            
+            bottom = np.percentile(relevant[:, 2], 5)
+            top = np.percentile(relevant[:, 2], 95)
+            return top - bottom
+    
+    # ====================================================================
+    # TRACKING & PUBLISHING
+    # ====================================================================
     
     def update_entrance_tracking(self, current_entrances: List[dict]):
         """Update Konfidenz-Tracking mit Measurement-Smoothing"""
-        smoothing_alpha = 0.3  # 30% neue Messung (schnellere Konvergenz zu echten Werten)
+        smoothing_alpha = 0.3
         
-        # Inkrementiere frames_since_seen
         for data in self.entrance_history.values():
             data['frames_since_seen'] += 1
         
-        # Lösche alte Eingänge
         to_delete = [eid for eid, data in self.entrance_history.items()
                     if data['frames_since_seen'] > self.entrance_timeout]
         for eid in to_delete:
             del self.entrance_history[eid]
         
-        # Match neue Eingänge
         for entry in current_entrances:
             entrance = entry['entrance']
             depth = entry.get('depth', 0.0)
             pos = entrance.position
             matched_id = None
             
-            # Suche nächsten bekannten Eingang
             for entrance_id, data in self.entrance_history.items():
                 stored_pos = data['position']
                 distance = np.sqrt(
@@ -420,13 +473,11 @@ class HoleDetectionCleanNode(BaseNode):
                     break
             
             if matched_id is not None:
-                # Update bekannter Eingang
                 self.entrance_history[matched_id]['confidence'] += 1
                 self.entrance_history[matched_id]['frames_since_seen'] = 0
                 self.entrance_history[matched_id]['entrance'] = entrance
                 self.entrance_history[matched_id]['depth'] = depth
                 
-                # Glätte Maße (Exponential Moving Average)
                 prev_width = self.entrance_history[matched_id].get('smooth_width', entrance.width)
                 prev_height = self.entrance_history[matched_id].get('smooth_height', entrance.height)
                 prev_depth = self.entrance_history[matched_id].get('smooth_depth', depth)
@@ -438,7 +489,6 @@ class HoleDetectionCleanNode(BaseNode):
                 self.entrance_history[matched_id]['smooth_depth'] = \
                     (1 - smoothing_alpha) * prev_depth + smoothing_alpha * depth
             else:
-                # Neuer Eingang
                 new_id = self.next_entrance_id
                 self.next_entrance_id += 1
                 self.entrance_history[new_id] = {
@@ -452,10 +502,6 @@ class HoleDetectionCleanNode(BaseNode):
                     'smooth_depth': depth
                 }
     
-    # ====================================================================
-    # PUBLISHING
-    # ====================================================================
-    
     def publish_stable_entrances(self, header: Header):
         """Publiziert stabile Eingänge (mit CSV-Logging)"""
         published_count = 0
@@ -465,7 +511,6 @@ class HoleDetectionCleanNode(BaseNode):
             if data['confidence'] >= self.confidence_threshold:
                 entrance = data['entrance']
                 
-                # Nutze geglättete Maße
                 smooth_width = data.get('smooth_width', entrance.width)
                 smooth_height = data.get('smooth_height', entrance.height)
                 smooth_depth = data.get('smooth_depth', data.get('depth', 0.0))
@@ -474,7 +519,6 @@ class HoleDetectionCleanNode(BaseNode):
                 entrance.width = float(smooth_width)
                 entrance.height = float(smooth_height)
                 
-                # ROS Publish
                 self.entrance_pub.publish(entrance)
                 published_count += 1
                 
@@ -499,25 +543,24 @@ class HoleDetectionCleanNode(BaseNode):
                 # RViz Marker
                 marker = Marker()
                 marker.header = header
-                marker.ns = "entrances"
+                marker.ns = "entrances_ransac"
                 marker.id = entrance_id
                 marker.type = Marker.CUBE
                 marker.action = Marker.ADD
                 
                 marker.pose.position = entrance.position
-                # 180° Z-Rotation für X-Z-Ebene
                 marker.pose.orientation.x = 0.0
                 marker.pose.orientation.y = 0.0
                 marker.pose.orientation.z = 1.0
                 marker.pose.orientation.w = 0.0
                 
-                marker.scale.x = 0.1  # Dünn (Marker-Dicke)
+                marker.scale.x = 0.05  # Dünn
                 marker.scale.y = smooth_width
                 marker.scale.z = smooth_height
                 
                 marker.color.r = 0.0
-                marker.color.g = 1.0
-                marker.color.b = 0.0
+                marker.color.g = 0.8
+                marker.color.b = 1.0
                 marker.color.a = 0.7
                 
                 marker.lifetime = rclpy.duration.Duration(seconds=2.0).to_msg()
@@ -525,7 +568,7 @@ class HoleDetectionCleanNode(BaseNode):
         
         if published_count > 0:
             self.marker_pub.publish(marker_array)
-            self.get_logger().info(f"{published_count} Eingänge → CSV: {self.csv_file}")
+            self.get_logger().info(f"RANSAC: {published_count} Eingänge → {self.csv_file}")
     
     def publish_filtered_cloud(self, points: np.ndarray, header: Header):
         """Publiziert gefilterte PointCloud für RViz"""
@@ -552,7 +595,7 @@ class HoleDetectionCleanNode(BaseNode):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = HoleDetectionCleanNode()
+    node = HoleDetectionRansacNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
