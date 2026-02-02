@@ -42,26 +42,26 @@ class HoleDetectionCleanNode(BaseNode):
         # === PARAMETER ===
         
         # Löcher Spezifikationen
-        self.min_hole_diameter = 0.10  # 10cm minimal
+        self.min_hole_diameter = 0.08  # 8cm minimal
         self.max_hole_diameter = 2.0   # 2m maximal
-        self.height_threshold = 0.2    # Min 20cm Höhe
-        self.width_threshold = 0.15    # Min 15cm Breite
+        self.height_threshold = 0.1    # Min 10cm Höhe
+        self.width_threshold = 0.1     # Min 10cm Breite
         
         # Voxel Grid (2D-Projektion)
         self.voxel_size = 0.02  # 2cm Auflösung
         self.gaussian_sigma = 1.5  # Glättung
-        self.min_region_cells = 400  # Min Zellen für 50cm Loch
-        self.min_surrounded_sides = 3  # Loch muss von 3 Seiten umgeben sein
+        self.min_region_cells = 80  # Weniger streng für kleine Löcher
+        self.min_surrounded_sides = 1  # Loch muss von mind. 1 Seite umgeben sein
         
         # Multi-Frame Tracking
         self.frame_buffer_size = 50
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 3
+        self.process_every_n_frames = 2
         
         # Konfidenz
         self.entrance_history = {}
-        self.confidence_threshold = 2
+        self.confidence_threshold = 1
         self.entrance_timeout = 40
         self.next_entrance_id = 0
         
@@ -259,8 +259,8 @@ class HoleDetectionCleanNode(BaseNode):
         threshold = np.percentile(smoothed[smoothed > 0], 15)
         hole_mask = smoothed < threshold
         
-        # Morphologie (keine Erosion!)
-        hole_mask = binary_dilation(hole_mask, iterations=2)
+        # Morphologie (weniger Aufblähung für genauere Maße)
+        hole_mask = binary_dilation(hole_mask, iterations=1)
         
         # Label zusammenhängende Regionen
         labeled_array, num_features = label(hole_mask)
@@ -280,12 +280,12 @@ class HoleDetectionCleanNode(BaseNode):
             region_z_min = region_cells[:, 1].min() * grid_resolution_2d + z_min
             region_z_max = region_cells[:, 1].max() * grid_resolution_2d + z_min
             
-            # Dimensionen mit Voxel-Korrektur
+            # Dimensionen mit Voxel-Korrektur (+1 statt +2)
             width_voxels = region_cells[:, 0].max() - region_cells[:, 0].min() + 1
             height_voxels = region_cells[:, 1].max() - region_cells[:, 1].min() + 1
             
-            width = (width_voxels + 2) * grid_resolution_2d  # +2 Voxel Rand-Korrektur
-            height = (height_voxels + 2) * grid_resolution_2d
+            width = (width_voxels + 1) * grid_resolution_2d  # +1 Voxel Rand-Korrektur
+            height = (height_voxels + 1) * grid_resolution_2d
             
             # Größen-Check
             if width < self.min_hole_diameter or width > self.max_hole_diameter:
@@ -368,7 +368,9 @@ class HoleDetectionCleanNode(BaseNode):
         return entrance_msg
     
     def update_entrance_tracking(self, current_entrances: List[Entrance]):
-        """Update Konfidenz-Tracking"""
+        """Update Konfidenz-Tracking mit Measurement-Smoothing"""
+        smoothing_alpha = 0.2  # 20% neue Messung, 80% alte
+        
         # Inkrementiere frames_since_seen
         for data in self.entrance_history.values():
             data['frames_since_seen'] += 1
@@ -402,6 +404,18 @@ class HoleDetectionCleanNode(BaseNode):
                 self.entrance_history[matched_id]['confidence'] += 1
                 self.entrance_history[matched_id]['frames_since_seen'] = 0
                 self.entrance_history[matched_id]['entrance'] = entrance
+                
+                # Glätte Maße (Exponential Moving Average)
+                prev_width = self.entrance_history[matched_id].get('smooth_width', entrance.width)
+                prev_height = self.entrance_history[matched_id].get('smooth_height', entrance.height)
+                prev_depth = self.entrance_history[matched_id].get('smooth_depth', entrance.depth)
+                
+                self.entrance_history[matched_id]['smooth_width'] = \
+                    (1 - smoothing_alpha) * prev_width + smoothing_alpha * entrance.width
+                self.entrance_history[matched_id]['smooth_height'] = \
+                    (1 - smoothing_alpha) * prev_height + smoothing_alpha * entrance.height
+                self.entrance_history[matched_id]['smooth_depth'] = \
+                    (1 - smoothing_alpha) * prev_depth + smoothing_alpha * entrance.depth
             else:
                 # Neuer Eingang
                 new_id = self.next_entrance_id
@@ -410,7 +424,10 @@ class HoleDetectionCleanNode(BaseNode):
                     'position': pos,
                     'entrance': entrance,
                     'confidence': 1,
-                    'frames_since_seen': 0
+                    'frames_since_seen': 0,
+                    'smooth_width': entrance.width,
+                    'smooth_height': entrance.height,
+                    'smooth_depth': entrance.depth
                 }
     
     # ====================================================================
@@ -425,7 +442,15 @@ class HoleDetectionCleanNode(BaseNode):
         for entrance_id, data in self.entrance_history.items():
             if data['confidence'] >= self.confidence_threshold:
                 entrance = data['entrance']
+                
+                # Nutze geglättete Maße
+                smooth_width = data.get('smooth_width', entrance.width)
+                smooth_height = data.get('smooth_height', entrance.height)
+                smooth_depth = data.get('smooth_depth', entrance.depth)
+                
                 entrance.header = header
+                entrance.width = float(smooth_width)
+                entrance.height = float(smooth_height)
                 
                 # ROS Publish
                 self.entrance_pub.publish(entrance)
@@ -441,9 +466,9 @@ class HoleDetectionCleanNode(BaseNode):
                             f'{entrance.position.x:.4f}',
                             f'{entrance.position.y:.4f}',
                             f'{entrance.position.z:.4f}',
-                            f'{entrance.width:.4f}',
-                            f'{entrance.height:.4f}',
-                            f'{entrance.depth:.4f}',
+                            f'{smooth_width:.4f}',
+                            f'{smooth_height:.4f}',
+                            f'{smooth_depth:.4f}',
                             data['confidence']
                         ])
                 except Exception as e:
@@ -465,8 +490,8 @@ class HoleDetectionCleanNode(BaseNode):
                 marker.pose.orientation.w = 0.0
                 
                 marker.scale.x = 0.1  # Dünn (Marker-Dicke)
-                marker.scale.y = entrance.width
-                marker.scale.z = entrance.height
+                marker.scale.y = smooth_width
+                marker.scale.z = smooth_height
                 
                 marker.color.r = 0.0
                 marker.color.g = 1.0
