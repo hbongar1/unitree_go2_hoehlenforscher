@@ -218,16 +218,17 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.cluster_distance = 0.5
         
         # Voxel Grid spezifische Parameter - optimiert für 20cm, 42cm, 50cm Löcher
-        self.voxel_size = 0.01  # 1cm Voxel = guter Kompromiss (20cm Loch = 20x20 Voxel)
+        self.voxel_size = 0.005  # 0.5cm Voxel für mm-genaue Erkennung (war 1cm)
         self.gradient_percentile = 75  # Top 25% Gradienten = Kanten
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
-        self.gaussian_sigma = 0.8  # Reduzierte Glättung für kleine Löcher
+        self.gaussian_sigma = 1.5  # Erhöhte Glättung für höhere Auflösung
         
         # Spezifische Parameter für bodenstehende Löcher
         self.min_hole_diameter = 0.10  # Minimaler Durchmesser 10cm (aggresiverer)
         self.max_hole_diameter = 2.0  # Maximaler Durchmesser 2m
         self.vertical_slice_height = 0.08  # 8cm Scheiben (Kompromiss für alle Größen)
-        self.min_region_cells = 8  # Mindestanzahl Grid-Zellen für gültige Region (reduziert)
+        self.min_region_cells = 40  # Erhöht für 0.5cm Voxel (war 8 bei 1cm)
+        self.min_surrounded_sides = 3  # Loch muss von mind. 3 Seiten umgeben sein
         
         # Ground Plane Detection Parameter
         self.enable_ground_detection = False
@@ -612,6 +613,34 @@ class HoleDetectionVoxelGridNode(BaseNode):
                     f"❌ Region {region_id} verworfen: Höhe {height:.2f}m < {self.height_threshold}m"
                 )
                 continue
+            
+            # NEUER CHECK: Ist das Loch von mindestens 3 Seiten umgeben?
+            # Prüfe ob es Punkte links, rechts, oben, unten gibt
+            margin = grid_resolution_2d * 5  # 5 Zellen Abstand
+            
+            # Finde Punkte um die Region herum
+            left_check = np.any((front_points[:, 1] < (region_y_min - margin)) & 
+                               (front_points[:, 2] >= region_z_min) & 
+                               (front_points[:, 2] <= region_z_max))
+            right_check = np.any((front_points[:, 1] > (region_y_max + margin)) & 
+                                (front_points[:, 2] >= region_z_min) & 
+                                (front_points[:, 2] <= region_z_max))
+            top_check = np.any((front_points[:, 2] > (region_z_max + margin)) & 
+                              (front_points[:, 1] >= region_y_min) & 
+                              (front_points[:, 1] <= region_y_max))
+            bottom_check = np.any((front_points[:, 2] < (region_z_min - margin)) & 
+                                 (front_points[:, 1] >= region_y_min) & 
+                                 (front_points[:, 1] <= region_y_max))
+            
+            surrounded_sides = sum([left_check, right_check, top_check, bottom_check])
+            
+            if surrounded_sides < self.min_surrounded_sides:
+                self.get_logger().info(
+                    f"❌ Region {region_id} verworfen: Nur {surrounded_sides}/4 Seiten umgeben (min: {self.min_surrounded_sides})"
+                )
+                continue
+            
+            self.get_logger().info(f"   ✅ Von {surrounded_sides}/4 Seiten umgeben")
             
             # Bestimme X-Position (Durchschnitt aller Punkte in dieser Region)
             in_region_y = (front_points[:, 1] >= region_y_min) & (front_points[:, 1] <= region_y_max)
