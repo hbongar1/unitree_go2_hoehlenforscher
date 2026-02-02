@@ -1,0 +1,20 @@
+[0.751s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build --no-deps symlink_data
+[1.017s] running develop
+[1.145s] running egg_info
+[1.145s] writing go2_my_nodes_py.egg-info/PKG-INFO
+[1.145s] writing dependency_links to go2_my_nodes_py.egg-info/dependency_links.txt
+[1.145s] writing entry points to go2_my_nodes_py.egg-info/entry_points.txt
+[1.145s] writing requirements to go2_my_nodes_py.egg-info/requires.txt
+[1.146s] writing top-level names to go2_my_nodes_py.egg-info/top_level.txt
+[1.147s] reading manifest file 'go2_my_nodes_py.egg-info/SOURCES.txt'
+[1.148s] writing manifest file 'go2_my_nodes_py.egg-info/SOURCES.txt'
+[1.149s] running build_ext
+[1.149s] Creating /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2-my-nodes-py.egg-link (link to .)
+[1.150s] Installing cloud_to_entrance_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.150s] Installing entrance_decision_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.150s] Installing hole_detection_voxel_grid script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.150s] Installing navigation_action_server_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.151s] 
+[1.151s] Installed /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py
+[1.151s] running symlink_data
+[1.178s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py' returned '0': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build --no-deps symlink_data

@@ -221,7 +221,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.cluster_distance = 0.5
         
         # Voxel Grid spezifische Parameter - HÖCHSTE Auflösung
-        self.voxel_size = 0.0025  # 0.25cm Voxel für höchste Präzision
+        self.voxel_size = 0.0025  # 0.cm Voxel für höchste Präzision
         self.gradient_percentile = 75  # Top 25% Gradienten = Kanten
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
         self.gaussian_sigma = 2.0  # Erhöhte Glättung für höchste Auflösung
@@ -230,11 +230,11 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.min_hole_diameter = 0.10  # Minimaler Durchmesser 10cm (aggresiverer)
         self.max_hole_diameter = 2.0  # Maximaler Durchmesser 2m
         self.vertical_slice_height = 0.08  # 8cm Scheiben (Kompromiss für alle Größen)
-        self.min_region_cells = 160  # Angepasst für 0.25cm Voxel (50x50cm = 200x200 Zellen)
+        self.min_region_cells = 260  # Angepasst für 0.25cm Voxel (50x50cm = 200x200 Zellen)
         self.min_surrounded_sides = 3  # Loch muss von mind. 3 Seiten umgeben sein
         
         # CSV-Logging für erkannte Eingänge
-        log_dir = os.path.expanduser('~/entrance_detections')
+        log_dir = os.path.join(os.path.dirname(__file__), 'entrance_detections')
         os.makedirs(log_dir, exist_ok=True)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.csv_file = os.path.join(log_dir, f'detections_{timestamp}.csv')
@@ -248,13 +248,13 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.enable_ground_detection = False
         self.ground_plane_distance_threshold = 0.02  # 2cm tolerance for RANSAC
         self.ground_plane_min_points = 100  # Min points to fit plane
-        self.min_height_above_ground = 0.0  # Ignore points < 0cm above ground
+        self.min_height_above_ground = 5.0 # Ignore points < 5cm above ground
         
         # Multi-Frame-Akkumulation
-        self.frame_buffer_size = 60
+        self.frame_buffer_size = 50
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 5
+        self.process_every_n_frames = 3
         
         # Konfidenz-Tracking
         self.entrance_history = {}
@@ -385,7 +385,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         
         if len(points) == 0:
             return points
-        
+
         # Polar-Koordinaten in XY-Ebene
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi  # In Grad
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
@@ -571,7 +571,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         
         # Finde Bereiche mit niedriger Dichte (Löcher)
         if np.any(smoothed > 0):
-            threshold = np.percentile(smoothed[smoothed > 0], 10)  # Untere 10% = Lücken
+            threshold = np.percentile(smoothed[smoothed > 0], 8)  # Untere 10% = Lücken
         else:
             self.get_logger().warn("Keine Punkte in Frontal-Projektion")
             return []
@@ -580,8 +580,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
         hole_mask = smoothed < threshold
         
         # Morphologische Operationen - weniger aggressiv für größere Löcher
-        hole_mask = binary_erosion(hole_mask, iterations=1)
-        hole_mask = binary_dilation(hole_mask, iterations=2)
+        hole_mask = binary_erosion(hole_mask, iterations=0)
+        hole_mask = binary_dilation(hole_mask, iterations=1)
         
         # Finde zusammenhängende Loch-Regionen
         labeled_array, num_features = label(hole_mask)
@@ -648,23 +648,51 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 continue
             
             region_points = front_points[in_region]
-            region_x_min = np.min(region_points[:, 0])
-            region_x_max = np.max(region_points[:, 0])
             
-            # Zentroid
-            centroid_x = (region_x_min + region_x_max) / 2.0
-            centroid_y = (region_y_min + region_y_max) / 2.0
-            centroid_z = (region_z_min + region_z_max) / 2.0
+            # Berechne Dimensionen basierend auf echten Punkt-Koordinaten (genauer als Voxel-Grid!)
+            # Nutze Perzentile (5%-95%) um Ausreißer zu ignorieren
+            if len(region_points) > 0:
+                # X-Dimension (Tiefe)
+                x_vals = region_points[:, 0]
+                x_min = np.percentile(x_vals, 5)
+                x_max = np.percentile(x_vals, 95)
+                depth = x_max - x_min
+                
+                # Y-Dimension (Breite)
+                y_vals = region_points[:, 1]
+                y_min = np.percentile(y_vals, 5)
+                y_max = np.percentile(y_vals, 95)
+                width_refined = y_max - y_min
+                
+                # Z-Dimension (Höhe)
+                z_vals = region_points[:, 2]
+                z_min = np.percentile(z_vals, 5)
+                z_max = np.percentile(z_vals, 95)
+                height_refined = z_max - z_min
+            else:
+                x_min = region_x_min = np.min([p[0] for p in region_points]) if len(region_points) > 0 else 0
+                x_max = region_x_max = np.max([p[0] for p in region_points]) if len(region_points) > 0 else 0
+                depth = x_max - x_min
+                y_min = region_y_min
+                y_max = region_y_max
+                width_refined = width
+                z_min = region_z_min
+                z_max = region_z_max
+                height_refined = height
             
-            # Berechne Tiefe (X-Ausdehnung)
-            depth = region_x_max - region_x_min
+            # Zentroid (aus Perzentil-Grenzen)
+            centroid_x = (x_min + x_max) / 2.0
+            centroid_y = (y_min + y_max) / 2.0
+            centroid_z = (z_min + z_max) / 2.0
             
             hole_regions.append({
                 'centroid': np.array([centroid_x, centroid_y, centroid_z]),
-                'bounds_min': np.array([region_x_min, region_y_min, region_z_min]),
-                'bounds_max': np.array([region_x_max, region_y_max, region_z_max]),
-                'width': width,
-                'height': height,
+                'bounds_min': np.array([x_min, y_min, z_min]),
+                'bounds_max': np.array([x_max, y_max, z_max]),
+                'width': width_refined,
+                'height': height_refined,
+                'depth': depth,
+                'point_count': len(region_points),
                 'voxel_count': len(region_cells)
             })
         
