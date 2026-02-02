@@ -20,7 +20,7 @@ from std_msgs.msg import Header, ColorRGBA
 from visualization_msgs.msg import Marker, MarkerArray
 
 # Scipy imports (direkt, ohne NumPy Fallbacks)
-from scipy.ndimage import gaussian_filter, binary_erosion, binary_dilation, label
+from scipy.ndimage import gaussian_filter, binary_erosion, binary_dilation, label, sobel
 
 
 class HoleDetectionCleanNode(BaseNode):
@@ -249,18 +249,34 @@ class HoleDetectionCleanNode(BaseNode):
             if 0 <= yi < y_bins and 0 <= zi < z_bins:
                 density_2d[yi, zi] += 1
         
-        # Glättung
+        # Glättung (leicht, um Rauschen zu unterdrücken)
         smoothed = gaussian_filter(density_2d, sigma=self.gaussian_sigma)
         
-        # Finde niedrige Dichte (Löcher)
-        if not np.any(smoothed > 0):
-            return []
+        # --- GRADIENTEN-BASIERTE KANTENERKENNUNG ---
         
-        threshold = np.percentile(smoothed[smoothed > 0], 15)
-        hole_mask = smoothed < threshold
+        # 1. Kanten finden (Sobel Operator)
+        sx = sobel(smoothed, axis=0, mode='constant')
+        sy = sobel(smoothed, axis=1, mode='constant')
+        sob = np.hypot(sx, sy)
         
-        # KEINE Morphologie für exakte Maße
-        # hole_mask bleibt unverändert = direktes Threshold-Ergebnis
+        # 2. Kanten-Maske (wo ändert sich die Dichte stark?)
+        # Hoher Gradient = Kante Wand/Loch
+        edge_threshold = np.percentile(sob, 90)  # Top 10% Gradienten sind Kanten
+        edges = sob > edge_threshold
+        
+        # 3. Loch-Kandidaten finden
+        # Wir suchen Bereiche mit NIEDRIGER Dichte, die von KANTEN umschlossen sind
+        # Low Density Mask (Basis-Kandidat)
+        density_threshold = np.percentile(smoothed[smoothed > 0], 25) # Etwas großzügiger als vorher (15->25)
+        low_density = smoothed < density_threshold
+        
+        # 4. Kombiniere: Loch ist Low Density, aber präzisiert durch Kanten
+        # Wir nutzen Watershed-ähnliche Logik: Low Density erweitert bis zur Kante
+        hole_mask = low_density & ~edges  # Nimm Low Density, aber stoppe an Kanten
+        
+        # Schließe kleine Lücken in der Maske
+        hole_mask = binary_dilation(hole_mask, iterations=1)
+        hole_mask = binary_erosion(hole_mask, iterations=1) # Closing Operation
         
         # Label zusammenhängende Regionen
         labeled_array, num_features = label(hole_mask)
