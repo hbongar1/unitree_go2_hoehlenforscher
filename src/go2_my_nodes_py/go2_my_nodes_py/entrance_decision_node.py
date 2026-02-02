@@ -36,9 +36,9 @@ class EntranceDecisionNode(BaseNode):
         self.min_height = 0.35  # Minimale Höhe in Metern
         
         # Roboter-Parameter
-        self.robot_standing_height = 0.5  # Höhe im Stand (ca. 50cm für GO2)
-        self.robot_width = 0.3  # Breite des Roboters (ca. 30cm)
-        self.min_crouching_height = 0.35  # Minimale Höhe beim Beugen
+        self.robot_standing_height = 0.45  # Höhe im Stand (45cm für GO2)
+        self.robot_width = 0.30  # Breite des Roboters (30cm)
+        self.min_crouching_height = 0.30  # Minimale Höhe beim Beugen (30cm)
         
         # Messungen sammeln
         self.entrance_buffer_size = 5  # Anzahl der Messungen zum Mitteln
