@@ -87,13 +87,13 @@ class HoleDetectionCleanNode(BaseNode):
         
         # Subscribers
         self.cloud_sub = self.create_subscription(
-            PointCloud2, 'utlidar/cloud', self.cloud_data_callback, qos_profile
+            PointCloud2, 'utlidar/cloud_deskewed', self.cloud_data_callback, qos_profile
         )
         
         # Publishers
-        self.entrance_pub = self.create_publisher(Entrance, '/entrance_detection', 10)
-        self.filtered_cloud_pub = self.create_publisher(PointCloud2, '/filtered_cloud_voxel_grid', 10)
-        self.marker_pub = self.create_publisher(MarkerArray, '/entrance_markers', 10)
+        self.entrance_pub = self.create_publisher(Entrance, '/entrance_detection_clean', 10)
+        self.filtered_cloud_pub = self.create_publisher(PointCloud2, '/filtered_cloud_voxel_clean', 10)
+        self.marker_pub = self.create_publisher(MarkerArray, '/entrance_markers_clean', 10)
         
         self.get_logger().info("✅ Hole Detection Clean Node gestartet!")
     
@@ -349,25 +349,27 @@ class HoleDetectionCleanNode(BaseNode):
     # ANALYSE & TRACKING
     # ====================================================================
     
-    def analyze_hole_region(self, region: dict, header: Header) -> Entrance:
-        """Erstellt Entrance-Message aus Loch-Region"""
+    def analyze_hole_region(self, region: dict, header: Header) -> dict:
+        """Erstellt Entrance-Message aus Loch-Region (Tiefe getrennt)"""
         entrance_msg = Entrance()
         entrance_msg.header = header
-        
+
         pos = Point()
         pos.x = float(region['centroid'][0])
         pos.y = float(region['centroid'][1])
         pos.z = float(region['centroid'][2])
         entrance_msg.position = pos
-        
+
         entrance_msg.width = float(region['width'])
         entrance_msg.height = float(region['height'])
-        entrance_msg.depth = float(region.get('depth', 0.0))
-        entrance_msg.voxel_count = int(region.get('voxel_count', 0))
-        
-        return entrance_msg
+
+        return {
+            'entrance': entrance_msg,
+            'depth': float(region.get('depth', 0.0)),
+            'voxel_count': int(region.get('voxel_count', 0))
+        }
     
-    def update_entrance_tracking(self, current_entrances: List[Entrance]):
+    def update_entrance_tracking(self, current_entrances: List[dict]):
         """Update Konfidenz-Tracking mit Measurement-Smoothing"""
         smoothing_alpha = 0.3  # 30% neue Messung (schnellere Konvergenz zu echten Werten)
         
@@ -382,7 +384,9 @@ class HoleDetectionCleanNode(BaseNode):
             del self.entrance_history[eid]
         
         # Match neue Eingänge
-        for entrance in current_entrances:
+        for entry in current_entrances:
+            entrance = entry['entrance']
+            depth = entry.get('depth', 0.0)
             pos = entrance.position
             matched_id = None
             
@@ -404,18 +408,19 @@ class HoleDetectionCleanNode(BaseNode):
                 self.entrance_history[matched_id]['confidence'] += 1
                 self.entrance_history[matched_id]['frames_since_seen'] = 0
                 self.entrance_history[matched_id]['entrance'] = entrance
+                self.entrance_history[matched_id]['depth'] = depth
                 
                 # Glätte Maße (Exponential Moving Average)
                 prev_width = self.entrance_history[matched_id].get('smooth_width', entrance.width)
                 prev_height = self.entrance_history[matched_id].get('smooth_height', entrance.height)
-                prev_depth = self.entrance_history[matched_id].get('smooth_depth', entrance.depth)
+                prev_depth = self.entrance_history[matched_id].get('smooth_depth', depth)
                 
                 self.entrance_history[matched_id]['smooth_width'] = \
                     (1 - smoothing_alpha) * prev_width + smoothing_alpha * entrance.width
                 self.entrance_history[matched_id]['smooth_height'] = \
                     (1 - smoothing_alpha) * prev_height + smoothing_alpha * entrance.height
                 self.entrance_history[matched_id]['smooth_depth'] = \
-                    (1 - smoothing_alpha) * prev_depth + smoothing_alpha * entrance.depth
+                    (1 - smoothing_alpha) * prev_depth + smoothing_alpha * depth
             else:
                 # Neuer Eingang
                 new_id = self.next_entrance_id
@@ -423,11 +428,12 @@ class HoleDetectionCleanNode(BaseNode):
                 self.entrance_history[new_id] = {
                     'position': pos,
                     'entrance': entrance,
+                    'depth': depth,
                     'confidence': 1,
                     'frames_since_seen': 0,
                     'smooth_width': entrance.width,
                     'smooth_height': entrance.height,
-                    'smooth_depth': entrance.depth
+                    'smooth_depth': depth
                 }
     
     # ====================================================================
@@ -446,7 +452,7 @@ class HoleDetectionCleanNode(BaseNode):
                 # Nutze geglättete Maße
                 smooth_width = data.get('smooth_width', entrance.width)
                 smooth_height = data.get('smooth_height', entrance.height)
-                smooth_depth = data.get('smooth_depth', entrance.depth)
+                smooth_depth = data.get('smooth_depth', data.get('depth', 0.0))
                 
                 entrance.header = header
                 entrance.width = float(smooth_width)
@@ -537,7 +543,8 @@ def main(args=None):
         pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
