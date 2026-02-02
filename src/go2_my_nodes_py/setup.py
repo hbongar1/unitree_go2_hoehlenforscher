@@ -37,6 +37,9 @@ setup(
             'entrance_decision_node = go2_my_nodes_py.entrance_decision_node:main',
             'navigation_action_server_node = go2_my_nodes_py.navigation_action_server_node:main',
             'hole_detection_voxel_grid = go2_my_nodes_py.hole_detection_voxel_grid:main',
+             'hole_detection_clean = go2_my_nodes_py.hole_detection_clean:main',
         ],
     },
+
+
 )

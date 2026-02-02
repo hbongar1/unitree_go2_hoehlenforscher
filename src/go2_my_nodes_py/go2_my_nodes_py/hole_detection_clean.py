@@ -48,8 +48,8 @@ class HoleDetectionCleanNode(BaseNode):
         self.width_threshold = 0.15    # Min 15cm Breite
         
         # Voxel Grid (2D-Projektion)
-        self.voxel_size = 0.02  # 2cm Auflösung
-        self.gaussian_sigma = 1.5  # Glättung
+        self.voxel_size = 0.002  # 2cm Auflösung
+        self.gaussian_sigma = 1.0  # Glättung
         self.min_region_cells = 400  # Min Zellen für 50cm Loch
         self.min_surrounded_sides = 3  # Loch muss von 3 Seiten umgeben sein
         
@@ -87,7 +87,7 @@ class HoleDetectionCleanNode(BaseNode):
         
         # Subscribers
         self.cloud_sub = self.create_subscription(
-            PointCloud2, 'utlidar/cloud', self.cloud_data_callback, qos_profile
+            PointCloud2, 'utlidar/cloud_deskewed', self.cloud_data_callback, qos_profile
         )
         
         # Publishers
