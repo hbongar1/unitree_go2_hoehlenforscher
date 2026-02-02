@@ -7,6 +7,9 @@ import rclpy
 from typing import List, Optional, Tuple
 import numpy as np
 import struct
+import csv
+import os
+from datetime import datetime
 from collections import deque, defaultdict
 from rclpy.qos import QoSProfile, QoSHistoryPolicy, QoSReliabilityPolicy, QoSDurabilityPolicy
 from go2_my_nodes_py.base_node import BaseNode
@@ -217,18 +220,29 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.max_width = 1.0
         self.cluster_distance = 0.5
         
-        # Voxel Grid spezifische Parameter - optimiert für 20cm, 42cm, 50cm Löcher
-        self.voxel_size = 0.005  # 0.5cm Voxel für mm-genaue Erkennung (war 1cm)
+        # Voxel Grid spezifische Parameter - HÖCHSTE Auflösung
+        self.voxel_size = 0.0025  # 0.25cm Voxel für höchste Präzision
         self.gradient_percentile = 75  # Top 25% Gradienten = Kanten
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
-        self.gaussian_sigma = 1.5  # Erhöhte Glättung für höhere Auflösung
+        self.gaussian_sigma = 2.0  # Erhöhte Glättung für höchste Auflösung
         
         # Spezifische Parameter für bodenstehende Löcher
         self.min_hole_diameter = 0.10  # Minimaler Durchmesser 10cm (aggresiverer)
         self.max_hole_diameter = 2.0  # Maximaler Durchmesser 2m
         self.vertical_slice_height = 0.08  # 8cm Scheiben (Kompromiss für alle Größen)
-        self.min_region_cells = 40  # Erhöht für 0.5cm Voxel (war 8 bei 1cm)
+        self.min_region_cells = 160  # Angepasst für 0.25cm Voxel (50x50cm = 200x200 Zellen)
         self.min_surrounded_sides = 3  # Loch muss von mind. 3 Seiten umgeben sein
+        
+        # CSV-Logging für erkannte Eingänge
+        log_dir = os.path.expanduser('~/entrance_detections')
+        os.makedirs(log_dir, exist_ok=True)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.csv_file = os.path.join(log_dir, f'detections_{timestamp}.csv')
+        with open(self.csv_file, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Timestamp', 'Position_X_m', 'Position_Y_m', 'Position_Z_m', 
+                           'Breite_m', 'Hoehe_m', 'Tiefe_m', 'Confidence'])
+        self.get_logger().info(f"CSV-Logging aktiviert: {self.csv_file}")
         
         # Ground Plane Detection Parameter
         self.enable_ground_detection = False
@@ -580,12 +594,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
             
             # Mindestgröße
             if len(region_cells) < self.min_region_cells:
-                self.get_logger().info(
-                    f"❌ Region {region_id} verworfen: zu wenig Zellen ({len(region_cells)} < {self.min_region_cells})"
-                )
                 continue
-            
-            self.get_logger().info(f"🔍 Region {region_id}: {len(region_cells)} Zellen - prüfe Dimensionen...")
             
             # Zurück zu Weltkoordinaten (Y-Z frontal)
             region_y_min = region_cells[:, 0].min() * grid_resolution_2d + y_min
@@ -597,10 +606,6 @@ class HoleDetectionVoxelGridNode(BaseNode):
             width = region_y_max - region_y_min
             height = region_z_max - region_z_min
             
-            self.get_logger().info(
-                f"   Breite={width:.2f}m, Höhe={height:.2f}m"
-            )
-            
             # Filter: Größencheck
             if width < self.min_hole_diameter or width > self.max_hole_diameter:
                 self.get_logger().info(
@@ -609,9 +614,6 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 continue
             
             if height < self.height_threshold:
-                self.get_logger().info(
-                    f"❌ Region {region_id} verworfen: Höhe {height:.2f}m < {self.height_threshold}m"
-                )
                 continue
             
             # NEUER CHECK: Ist das Loch von mindestens 3 Seiten umgeben?
@@ -635,12 +637,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
             surrounded_sides = sum([left_check, right_check, top_check, bottom_check])
             
             if surrounded_sides < self.min_surrounded_sides:
-                self.get_logger().info(
-                    f"❌ Region {region_id} verworfen: Nur {surrounded_sides}/4 Seiten umgeben (min: {self.min_surrounded_sides})"
-                )
                 continue
-            
-            self.get_logger().info(f"   ✅ Von {surrounded_sides}/4 Seiten umgeben")
             
             # Bestimme X-Position (Durchschnitt aller Punkte in dieser Region)
             in_region_y = (front_points[:, 1] >= region_y_min) & (front_points[:, 1] <= region_y_max)
@@ -659,10 +656,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
             centroid_y = (region_y_min + region_y_max) / 2.0
             centroid_z = (region_z_min + region_z_max) / 2.0
             
-            self.get_logger().info(
-                f"✅ Region {region_id} AKZEPTIERT: Position=({centroid_x:.2f}, {centroid_y:.2f}, {centroid_z:.2f}), "
-                f"Größe={width:.2f}×{height:.2f}m"
-            )
+            # Berechne Tiefe (X-Ausdehnung)
+            depth = region_x_max - region_x_min
             
             hole_regions.append({
                 'centroid': np.array([centroid_x, centroid_y, centroid_z]),
@@ -872,10 +867,29 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 entrance.header = header
                 self.entrance_pub.publish(entrance)
                 published_count += 1
+                
+                # CSV-Logging für erkannte Eingänge
+                try:
+                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                    depth = entrance.width  # Bei frontalen Löchern ist width die Tiefe
+                    with open(self.csv_file, 'a', newline='') as f:
+                        writer = csv.writer(f)
+                        writer.writerow([
+                            timestamp,
+                            f'{entrance.position.x:.4f}',
+                            f'{entrance.position.y:.4f}',
+                            f'{entrance.position.z:.4f}',
+                            f'{entrance.width:.4f}',
+                            f'{entrance.height:.4f}',
+                            f'{depth:.4f}',
+                            data['confidence']
+                        ])
+                except Exception as e:
+                    self.get_logger().warn(f"CSV-Logging fehlgeschlagen: {e}")
         
         if published_count > 0:
             self.get_logger().info(
-                f"[Voxel Grid] {published_count} stabile Eingänge gepublisht"
+                f"[Voxel Grid] {published_count} stabile Eingänge gepublisht → CSV: {self.csv_file}"
             )
     
     def publish_filtered_cloud(self, points: np.ndarray, header: Header):
