@@ -283,6 +283,10 @@ class HoleDetectionVoxelGridNode(BaseNode):
                         f"{len(above_ground)} Punkte über dem Boden"
                     )
             
+            # Publiziere gefilterte Cloud in JEDEM Frame für Echtzeit-Visualisierung
+            self.publish_filtered_cloud(filtered_points, msg.header)
+            
+            # Sammle Frames für robuste Loch-Erkennung
             self.point_buffer.append(filtered_points)
             
             if self.frame_counter % self.process_every_n_frames != 0:
@@ -293,8 +297,6 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 return
             
             combined_points = np.vstack(list(self.point_buffer))
-            
-            self.publish_filtered_cloud(combined_points, msg.header)
             
             # Analysiere gesamte Point Cloud direkt
             hole_regions = self.find_hole_regions_in_cloud(combined_points)
@@ -834,6 +836,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
     def publish_filtered_cloud(self, points: np.ndarray, header: Header):
         """Publisht gefilterte Cloud"""
         if len(points) == 0:
+            self.get_logger().warn("Keine Punkte zum Publizieren (alle gefiltert)")
             return
         
         cloud_msg = PointCloud2()
@@ -852,6 +855,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         
         cloud_msg.data = points.astype(np.float32).tobytes()
         self.filtered_cloud_pub.publish(cloud_msg)
+        self.get_logger().debug(f"Gefilterte Cloud publiziert: {len(points)} Punkte")
     
     def publish_region_markers(self, regions: List[dict], header: Header):
         """Visualisiert Loch-Regionen"""
