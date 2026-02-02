@@ -11,11 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', [
-            'launch/hole_detection_all.launch.py',
-            'launch/hole_detection_normal_vector.launch.py',
-            'launch/hole_detection_convex_hull.launch.py',
             'launch/hole_detection_voxel_grid.launch.py',
-            'launch/cardboard_test.launch.py',  # Neu: Pappe-Test
         ]),
         ('share/' + package_name + '/rviz', [
             'rviz/hole_detection.rviz',
@@ -40,8 +36,6 @@ setup(
             'cloud_to_entrance_node = go2_my_nodes_py.cloud_to_entrance_node:main',
             'entrance_decision_node = go2_my_nodes_py.entrance_decision_node:main',
             'navigation_action_server_node = go2_my_nodes_py.navigation_action_server_node:main',
-            'hole_detection_normal_vector = go2_my_nodes_py.hole_detection_normal_vector:main',
-            'hole_detection_convex_hull = go2_my_nodes_py.hole_detection_convex_hull:main',
             'hole_detection_voxel_grid = go2_my_nodes_py.hole_detection_voxel_grid:main',
         ],
     },
