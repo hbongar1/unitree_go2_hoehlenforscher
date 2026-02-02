@@ -236,14 +236,14 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.min_height_above_ground = 0.0  # Ignore points < 0cm above ground
         
         # Multi-Frame-Akkumulation
-        self.frame_buffer_size = 50
+        self.frame_buffer_size = 60
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
         self.process_every_n_frames = 5
         
         # Konfidenz-Tracking
         self.entrance_history = {}
-        self.confidence_threshold = 1
+        self.confidence_threshold = 2
         self.entrance_timeout = 40
         self.next_entrance_id = 0
         
@@ -363,6 +363,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         Filtert Punkte - nur in 100 Grad Radius (±50°) und max 2m Tiefe
         - Winkel: -50° bis +50° (100 Grad total)
         - Distanz: max 2m in die Tiefe
+        - Zusätzlich: Randbereiche des Sichtfelds werden ausgeschlossen
         """
         valid_mask = np.all(np.isfinite(points), axis=1)
         points = points[valid_mask]
@@ -375,10 +376,15 @@ class HoleDetectionVoxelGridNode(BaseNode):
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
         # Filter 1: 100 Grad Radius (±50° um Vorwärtsrichtung)
-        angle_filter = np.abs(angles) < 50.0
-        
-        # Filter 2: Max 2m in die Tiefe
-        distance_filter = distances_xy < 2.0
+        # Randbereiche ausschließen (z. B. 5° Sicherheitsabstand)
+        max_angle_deg = 50.0
+        edge_margin_deg = 5.0
+        angle_filter = np.abs(angles) < (max_angle_deg - edge_margin_deg)
+
+        # Filter 2: Max 2m in die Tiefe (mit Randabstand)
+        max_distance = 2.0
+        edge_margin_dist = 0.1
+        distance_filter = (distances_xy > edge_margin_dist) & (distances_xy < (max_distance - edge_margin_dist))
         
         # Filter 3: Z-Range (Höhe)
         z_filter = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
@@ -915,18 +921,18 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 marker.action = Marker.ADD
                 
                 marker.pose.position = entrance.position
-                # 90° Rotation um Y-Achse für X-Z-Ebene (frontal)
+                # 180° Rotation um Z-Achse (90° + ursprüngliche 90°)
                 marker.pose.orientation.x = 0.0
-                marker.pose.orientation.y = 0.7071068  # sin(45°) für 90° Y-Rotation
-                marker.pose.orientation.z = 0.0
-                marker.pose.orientation.w = 0.7071068  # cos(45°)
+                marker.pose.orientation.y = 0.0
+                marker.pose.orientation.z = 1.0   # sin(90°) für 180° Z-Rotation
+                marker.pose.orientation.w = 0.0   # cos(90°)
                 
                 # Für frontale Löcher in X-Z-Ebene:
                 # X = Breite (horizontal)
                 # Y = Tiefe (dünn, senkrecht zur Wand)
                 # Z = Höhe (vertikal)
-                marker.scale.x = entrance.width  # Breite des Lochs
-                marker.scale.y = 0.1             # Dünn (Marker-Dicke, zur Wand)
+                marker.scale.x = 0.1  # Breite des Lochs
+                marker.scale.y = entrance.width             # Dünn (Marker-Dicke, zur Wand)
                 marker.scale.z = entrance.height # Höhe des Lochs
                 
                 marker.color.r = 0.0

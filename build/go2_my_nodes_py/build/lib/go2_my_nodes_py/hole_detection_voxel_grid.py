@@ -500,144 +500,140 @@ class HoleDetectionVoxelGridNode(BaseNode):
         if len(points) < 50:
             return []
         
-        # Für vertikale Löcher: Analysiere in X-Scheiben (links-rechts)
-        min_x = np.min(points[:, 0])
-        max_x = np.max(points[:, 0])
+        # FRONTAL-ANSATZ: Filtere Punkte direkt vor dem Roboter (0.3m - 2.5m)
+        x_min_filter, x_max_filter = 0.3, 2.5
+        in_front = (points[:, 0] >= x_min_filter) & (points[:, 0] <= x_max_filter)
+        front_points = points[in_front]
         
-        # Analysiere mehrere vertikale Scheiben von links nach rechts
-        slice_positions = np.arange(
-            min_x + 0.05,  # Beginne 5cm vom Rand
-            max_x,
-            self.vertical_slice_height
-        )
-        
-        if len(slice_positions) < 2:
-            self.get_logger().warn("Nicht genug vertikale Scheiben für Analyse")
+        if len(front_points) < 50:
+            self.get_logger().warn(f"Zu wenig Punkte vor dem Roboter: {len(front_points)}")
             return []
         
-        # Erstelle YZ-Projektionen (Seitenansicht) für jede X-Scheibe
-        slice_masks = []
-        yz_bounds = [np.min(points[:, 1]), np.max(points[:, 1]),
-                     np.min(points[:, 2]), np.max(points[:, 2])]
+        self.get_logger().info(f"Analysiere {len(front_points)} Punkte vor dem Roboter (X: {x_min_filter}-{x_max_filter}m)")
         
-        grid_resolution_2d = self.voxel_size  # Gleiche Auflösung wie Voxel
+        # Erstelle Y-Z-Projektion (Frontalansicht - schaue nach vorne)
+        y_points = front_points[:, 1]
+        z_points = front_points[:, 2]
         
-        for x_pos in slice_positions:
-            # Selektiere Punkte in dieser X-Scheibe (±4cm)
-            slice_mask = np.abs(points[:, 0] - x_pos) < (self.vertical_slice_height / 2)
-            slice_points = points[slice_mask]
-            
-            if len(slice_points) < 10:
-                slice_masks.append(None)
-                continue
-            
-            # Erstelle 2D-Dichte-Gitter (YZ-Projektion = Seitenansicht)
-            y_bins = int((yz_bounds[1] - yz_bounds[0]) / grid_resolution_2d) + 1
-            z_bins = int((yz_bounds[3] - yz_bounds[2]) / grid_resolution_2d) + 1
-            
-            density_2d = np.zeros((y_bins, z_bins), dtype=np.float32)
-            
-            # Zähle Punkte in jedem 2D-Grid-Zelle (YZ statt XZ!)
-            y_indices = ((slice_points[:, 1] - yz_bounds[0]) / grid_resolution_2d).astype(int)
-            z_indices = ((slice_points[:, 2] - yz_bounds[2]) / grid_resolution_2d).astype(int)
-            
-            for yi, zi in zip(y_indices, z_indices):
-                if 0 <= yi < y_bins and 0 <= zi < z_bins:
-                    density_2d[yi, zi] += 1
-            
-            slice_masks.append(density_2d)
+        # Bestimme Grenzen
+        y_min = np.min(y_points)
+        y_max = np.max(y_points)
+        z_min = np.min(z_points)
+        z_max = np.max(z_points)
         
-        # Finde konsistente Lücken über mehrere Scheiben hinweg
-        valid_masks = [m for m in slice_masks if m is not None]
+        # Erstelle 2D-Dichte-Grid (Y-Z frontal)
+        grid_resolution_2d = self.voxel_size  # 1cm
+        y_bins = int((y_max - y_min) / grid_resolution_2d) + 1
+        z_bins = int((z_max - z_min) / grid_resolution_2d) + 1
         
-        if len(valid_masks) < 2:
-            self.get_logger().warn("Nicht genug gültige Scheiben für Loch-Erkennung")
-            return []
+        # Performance-Limit
+        if y_bins > 1000 or z_bins > 1000:
+            self.get_logger().warn(f"Grid zu groß ({y_bins}x{z_bins}), reduziere Auflösung")
+            grid_resolution_2d = 0.02
+            y_bins = int((y_max - y_min) / grid_resolution_2d) + 1
+            z_bins = int((z_max - z_min) / grid_resolution_2d) + 1
         
-        # Kombiniere mehrere Scheiben durch Mittelwertbildung
-        combined_density = np.mean(valid_masks, axis=0)
+        self.get_logger().info(f"Frontal-Grid: {y_bins}x{z_bins} (Y-Z), Auflösung: {grid_resolution_2d*100:.1f}cm")
         
-        # Adaptive Glättung
-        smoothed = gaussian_filter(combined_density, sigma=self.gaussian_sigma)
+        density_2d = np.zeros((y_bins, z_bins), dtype=np.float32)
         
-        # Finde Bereiche mit niedriger Dichte (potenzielle Löcher)
-        # Für vertikale Löcher: aggressiverer Schwellwert
+        # Zähle Punkte in 2D-Grid (Y-Z)
+        y_indices = ((y_points - y_min) / grid_resolution_2d).astype(int)
+        z_indices = ((z_points - z_min) / grid_resolution_2d).astype(int)
+        
+        for yi, zi in zip(y_indices, z_indices):
+            if 0 <= yi < y_bins and 0 <= zi < z_bins:
+                density_2d[yi, zi] += 1
+        
+        # Glättung
+        smoothed = gaussian_filter(density_2d, sigma=self.gaussian_sigma)
+        
+        # Finde Bereiche mit niedriger Dichte (Löcher)
         if np.any(smoothed > 0):
-            threshold = np.percentile(smoothed[smoothed > 0], 5)  # Untere 5% = Lücken (noch aggressiver)
+            threshold = np.percentile(smoothed[smoothed > 0], 10)  # Untere 10% = Lücken
         else:
+            self.get_logger().warn("Keine Punkte in Frontal-Projektion")
             return []
         
         # Binäre Maske: True = Loch (niedrige Dichte)
         hole_mask = smoothed < threshold
         
         # Morphologische Operationen - weniger aggressiv für größere Löcher
-        hole_mask = binary_erosion(hole_mask, iterations=0)  # Keine Erosion für größere Erkennung
-        hole_mask = binary_dilation(hole_mask, iterations=1)  # Nur 1x Dilation
+        hole_mask = binary_erosion(hole_mask, iterations=1)
+        hole_mask = binary_dilation(hole_mask, iterations=2)
         
         # Finde zusammenhängende Loch-Regionen
         labeled_array, num_features = label(hole_mask)
         
-        self.get_logger().info(f"Gefundene Loch-Kandidaten (YZ-Projektion): {num_features}")
+        self.get_logger().info(f"Gefundene Loch-Kandidaten (Frontal Y-Z): {num_features}")
         
         hole_regions = []
         for region_id in range(1, num_features + 1):
-            # Grid-Indizes dieser Region (YZ statt XZ!)
             region_cells = np.argwhere(labeled_array == region_id)
             
-            # Mindestgröße für Loch-Regionen
+            # Mindestgröße
             if len(region_cells) < self.min_region_cells:
-                self.get_logger().debug(
-                    f"Region verworfen: zu wenig Zellen ({len(region_cells)} < {self.min_region_cells})"
+                self.get_logger().info(
+                    f"❌ Region {region_id} verworfen: zu wenig Zellen ({len(region_cells)} < {self.min_region_cells})"
                 )
                 continue
             
-            # Zurück zu Weltkoordinaten (YZ statt XZ!)
-            region_y_min = region_cells[:, 0].min() * grid_resolution_2d + yz_bounds[0]
-            region_y_max = region_cells[:, 0].max() * grid_resolution_2d + yz_bounds[0]
-            region_z_min = region_cells[:, 1].min() * grid_resolution_2d + yz_bounds[2]
-            region_z_max = region_cells[:, 1].max() * grid_resolution_2d + yz_bounds[2]
+            self.get_logger().info(f"🔍 Region {region_id}: {len(region_cells)} Zellen - prüfe Dimensionen...")
             
-            # Höhe und Tiefe der Region bestimmen
-            depth = region_y_max - region_y_min
+            # Zurück zu Weltkoordinaten (Y-Z frontal)
+            region_y_min = region_cells[:, 0].min() * grid_resolution_2d + y_min
+            region_y_max = region_cells[:, 0].max() * grid_resolution_2d + y_min
+            region_z_min = region_cells[:, 1].min() * grid_resolution_2d + z_min
+            region_z_max = region_cells[:, 1].max() * grid_resolution_2d + z_min
+            
+            # Dimensionen
+            width = region_y_max - region_y_min
             height = region_z_max - region_z_min
             
-            # Filter: Größencheck - für vertikale Löcher prüfen wir Tiefe und Höhe
-            if depth < self.min_hole_diameter or depth > self.max_hole_diameter:
-                self.get_logger().debug(
-                    f"Region verworfen: Tiefe {depth:.2f}m außerhalb "
-                    f"[{self.min_hole_diameter}, {self.max_hole_diameter}]"
+            self.get_logger().info(
+                f"   Breite={width:.2f}m, Höhe={height:.2f}m"
+            )
+            
+            # Filter: Größencheck
+            if width < self.min_hole_diameter or width > self.max_hole_diameter:
+                self.get_logger().info(
+                    f"❌ Region {region_id} verworfen: Breite {width:.2f}m außerhalb [{self.min_hole_diameter}, {self.max_hole_diameter}]"
                 )
                 continue
             
             if height < self.height_threshold:
-                self.get_logger().debug(
-                    f"Region verworfen: Höhe {height:.2f}m < {self.height_threshold}m"
+                self.get_logger().info(
+                    f"❌ Region {region_id} verworfen: Höhe {height:.2f}m < {self.height_threshold}m"
                 )
                 continue
             
-            # Bestimme die X-Ausdehnung (Breite) dieser Region
-            # Finde alle Punkte innerhalb der YZ-Bounding-Box
-            in_region_y = (points[:, 1] >= region_y_min) & (points[:, 1] <= region_y_max)
-            in_region_z = (points[:, 2] >= region_z_min) & (points[:, 2] <= region_z_max)
+            # Bestimme X-Position (Durchschnitt aller Punkte in dieser Region)
+            in_region_y = (front_points[:, 1] >= region_y_min) & (front_points[:, 1] <= region_y_max)
+            in_region_z = (front_points[:, 2] >= region_z_min) & (front_points[:, 2] <= region_z_max)
             in_region = in_region_y & in_region_z
             
             if not np.any(in_region):
                 continue
             
-            region_points = points[in_region]
+            region_points = front_points[in_region]
             region_x_min = np.min(region_points[:, 0])
             region_x_max = np.max(region_points[:, 0])
             
-            # Zentroid (für vertikales Loch in YZ: X-Mitte, Y-Mitte, Z-Mitte)
+            # Zentroid
             centroid_x = (region_x_min + region_x_max) / 2.0
             centroid_y = (region_y_min + region_y_max) / 2.0
             centroid_z = (region_z_min + region_z_max) / 2.0
+            
+            self.get_logger().info(
+                f"✅ Region {region_id} AKZEPTIERT: Position=({centroid_x:.2f}, {centroid_y:.2f}, {centroid_z:.2f}), "
+                f"Größe={width:.2f}×{height:.2f}m"
+            )
             
             hole_regions.append({
                 'centroid': np.array([centroid_x, centroid_y, centroid_z]),
                 'bounds_min': np.array([region_x_min, region_y_min, region_z_min]),
                 'bounds_max': np.array([region_x_max, region_y_max, region_z_max]),
-                'width': depth,
+                'width': width,
                 'height': height,
                 'voxel_count': len(region_cells)
             })
@@ -919,16 +915,19 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 marker.action = Marker.ADD
                 
                 marker.pose.position = entrance.position
-                # 90 Grad Rotation um Z-Achse (für vertikale Wände)
+                # 180° Rotation um Z-Achse (90° + ursprüngliche 90°)
                 marker.pose.orientation.x = 0.0
                 marker.pose.orientation.y = 0.0
-                marker.pose.orientation.z = 0.7071068  # sin(45°) für 90° Rotation
-                marker.pose.orientation.w = 0.7071068  # cos(45°)
+                marker.pose.orientation.z = 1.0   # sin(90°) für 180° Z-Rotation
+                marker.pose.orientation.w = 0.0   # cos(90°)
                 
-                # Für vertikale Löcher: Y ist die Tiefe (dünn), X ist Breite, Z ist Höhe
-                marker.scale.x = 0.1
-                marker.scale.y = entrance.width
-                marker.scale.z = entrance.height
+                # Für frontale Löcher in X-Z-Ebene:
+                # X = Breite (horizontal)
+                # Y = Tiefe (dünn, senkrecht zur Wand)
+                # Z = Höhe (vertikal)
+                marker.scale.x = entrance.width  # Breite des Lochs
+                marker.scale.y = 0.1             # Dünn (Marker-Dicke, zur Wand)
+                marker.scale.z = entrance.height # Höhe des Lochs
                 
                 marker.color.r = 0.0
                 marker.color.g = 1.0
