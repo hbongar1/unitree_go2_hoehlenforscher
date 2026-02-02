@@ -41,7 +41,7 @@ class HoleDetectionRansacNode(BaseNode):
         # === PARAMETER ===
         
         # Löcher Spezifikationen
-        self.min_hole_diameter = 0.12  # 12cm minimal (strenger)
+        self.min_hole_diameter = 0.08  # 8cm minimal
         self.max_hole_diameter = 2.0   # 2m maximal
         self.height_threshold = 0.1    # Min 10cm Höhe
         self.width_threshold = 0.1     # Min 10cm Breite
@@ -50,7 +50,7 @@ class HoleDetectionRansacNode(BaseNode):
         self.voxel_size = 0.01  # 1cm Voxel (grob, nur für Kandidaten)
         self.gaussian_sigma = 1.0
         self.min_region_cells = 100
-        self.min_surrounded_sides = 3  # Mindestens 3 Seiten (strenger)
+        self.min_surrounded_sides = 2
         
         # RANSAC Parameter
         self.ransac_iterations = 100
@@ -65,7 +65,7 @@ class HoleDetectionRansacNode(BaseNode):
         
         # Konfidenz
         self.entrance_history = {}
-        self.confidence_threshold = 4  # Mindestens 4x gesehen = sehr stabil
+        self.confidence_threshold = 3
         self.entrance_timeout = 60
         self.next_entrance_id = 0
         
@@ -181,14 +181,9 @@ class HoleDetectionRansacNode(BaseNode):
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
-        # Filter 1: Winkel (±35° = fokussiert aber nicht zu eng)
-        angle_filter = np.abs(angles) < 35.0
-        
-        # Filter 2: Distanz (0.2-1.8m - breiter als vorher)
-        distance_filter = (distances_xy > 0.2) & (distances_xy < 2.5)
-        
-        # Filter 3: Höhe (10cm-2.5m)
-        z_filter = (points[:, 2] > 0.01) & (points[:, 2] < 2.5)
+        angle_filter = np.abs(angles) < 45.0
+        distance_filter = (distances_xy > 0.1) & (distances_xy < 1.9)
+        z_filter = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
         
         return points[angle_filter & distance_filter & z_filter]
     
