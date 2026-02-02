@@ -392,26 +392,41 @@ class HoleDetectionRansacNode(BaseNode):
     
     def fit_edge_ransac(self, values: np.ndarray) -> float:
         """
-        RANSAC-ähnlicher robuster Schätzer für Kanten-Position.
-        Findet den Median der innersten 80% der Punkte (ignoriert Ausreißer).
+        Echtes RANSAC Line Fitting für 1D-Kante.
+        Findet die dominante Kanten-Position durch iteratives Sampling.
+        
+        Konzept:
+        - Bei einer vertikalen Kante (z.B. links): Y-Werte sollten ähnlich sein
+        - Wir suchen den Y-Wert, der die meisten Punkte hat (innerhalb Toleranz)
         """
-        if len(values) == 0:
-            return 0.0
-        
-        # Robuster Schätzer: Nutze 10-90 Perzentil
-        p10 = np.percentile(values, 10)
-        p90 = np.percentile(values, 90)
-        
-        # Filtere Ausreißer
-        inliers = values[(values >= p10) & (values <= p90)]
-        
-        if len(inliers) == 0:
+        if len(values) < 3:
             return np.median(values)
         
-        # Für "innere" Kante (links/unten): Nimm das Maximum der Inliers
-        # Für "äußere" Kante (rechts/oben): Nimm das Minimum der Inliers
-        # Wir geben einfach den Median zurück, der Caller entscheidet dann
-        return np.median(inliers)
+        best_edge = None
+        best_inliers = 0
+        
+        # RANSAC Hauptschleife
+        for _ in range(self.ransac_iterations):
+            # 1. Zufälliges Sample (1 Punkt genügt für 1D-Linie = konstanter Wert)
+            sample_idx = np.random.randint(0, len(values))
+            candidate_edge = values[sample_idx]
+            
+            # 2. Zähle Inliers (Punkte nahe dieser Position)
+            distances = np.abs(values - candidate_edge)
+            inliers = np.sum(distances < self.ransac_threshold)
+            
+            # 3. Update bestes Modell
+            if inliers > best_inliers:
+                best_inliers = inliers
+                # Verfeinere: Nimm Median aller Inliers
+                inlier_mask = distances < self.ransac_threshold
+                best_edge = np.median(values[inlier_mask])
+        
+        # Fallback falls RANSAC fehlschlägt
+        if best_edge is None or best_inliers < 3:
+            return np.median(values)
+        
+        return best_edge
     
     def measure_with_percentile(self, points: np.ndarray, y_min: float, y_max: float,
                                  z_min: float, z_max: float, axis: str) -> float:
