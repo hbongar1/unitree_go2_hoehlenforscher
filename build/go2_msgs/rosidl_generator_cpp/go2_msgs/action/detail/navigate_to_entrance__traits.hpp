@@ -47,6 +47,13 @@ inline void to_flow_style_yaml(
   {
     out << "entrance_height: ";
     rosidl_generator_traits::value_to_yaml(msg.entrance_height, out);
+    out << ", ";
+  }
+
+  // member: required_height_adjustment
+  {
+    out << "required_height_adjustment: ";
+    rosidl_generator_traits::value_to_yaml(msg.required_height_adjustment, out);
   }
   out << "}";
 }  // NOLINT(readability/fn_size)
@@ -81,6 +88,16 @@ inline void to_block_style_yaml(
     }
     out << "entrance_height: ";
     rosidl_generator_traits::value_to_yaml(msg.entrance_height, out);
+    out << "\n";
+  }
+
+  // member: required_height_adjustment
+  {
+    if (indentation > 0) {
+      out << std::string(indentation, ' ');
+    }
+    out << "required_height_adjustment: ";
+    rosidl_generator_traits::value_to_yaml(msg.required_height_adjustment, out);
     out << "\n";
   }
 }  // NOLINT(readability/fn_size)

@@ -37,7 +37,7 @@ void go2_msgs__action__NavigateToEntrance_Goal__rosidl_typesupport_introspection
   go2_msgs__action__NavigateToEntrance_Goal__fini(message_memory);
 }
 
-static rosidl_typesupport_introspection_c__MessageMember go2_msgs__action__NavigateToEntrance_Goal__rosidl_typesupport_introspection_c__NavigateToEntrance_Goal_message_member_array[3] = {
+static rosidl_typesupport_introspection_c__MessageMember go2_msgs__action__NavigateToEntrance_Goal__rosidl_typesupport_introspection_c__NavigateToEntrance_Goal_message_member_array[4] = {
   {
     "target_position",  // name
     rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE,  // type
@@ -88,13 +88,30 @@ static rosidl_typesupport_introspection_c__MessageMember go2_msgs__action__Navig
     NULL,  // fetch(index, &value) function pointer
     NULL,  // assign(index, value) function pointer
     NULL  // resize(index) function pointer
+  },
+  {
+    "required_height_adjustment",  // name
+    rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT,  // type
+    0,  // upper bound of string
+    NULL,  // members of sub message
+    false,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(go2_msgs__action__NavigateToEntrance_Goal, required_height_adjustment),  // bytes offset in struct
+    NULL,  // default value
+    NULL,  // size() function pointer
+    NULL,  // get_const(index) function pointer
+    NULL,  // get(index) function pointer
+    NULL,  // fetch(index, &value) function pointer
+    NULL,  // assign(index, value) function pointer
+    NULL  // resize(index) function pointer
   }
 };
 
 static const rosidl_typesupport_introspection_c__MessageMembers go2_msgs__action__NavigateToEntrance_Goal__rosidl_typesupport_introspection_c__NavigateToEntrance_Goal_message_members = {
   "go2_msgs__action",  // message namespace
   "NavigateToEntrance_Goal",  // message name
-  3,  // number of fields
+  4,  // number of fields
   sizeof(go2_msgs__action__NavigateToEntrance_Goal),
   go2_msgs__action__NavigateToEntrance_Goal__rosidl_typesupport_introspection_c__NavigateToEntrance_Goal_message_member_array,  // message members
   go2_msgs__action__NavigateToEntrance_Goal__rosidl_typesupport_introspection_c__NavigateToEntrance_Goal_init_function,  // function to initialize message memory (memory has to be allocated)

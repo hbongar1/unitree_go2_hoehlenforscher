@@ -28,6 +28,7 @@ typedef struct go2_msgs__action__NavigateToEntrance_Goal
   geometry_msgs__msg__Point target_position;
   float entrance_width;
   float entrance_height;
+  float required_height_adjustment;
 } go2_msgs__action__NavigateToEntrance_Goal;
 
 // Struct for a sequence of go2_msgs__action__NavigateToEntrance_Goal.

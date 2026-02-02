@@ -21,16 +21,32 @@ namespace action
 namespace builder
 {
 
+class Init_NavigateToEntrance_Goal_required_height_adjustment
+{
+public:
+  explicit Init_NavigateToEntrance_Goal_required_height_adjustment(::go2_msgs::action::NavigateToEntrance_Goal & msg)
+  : msg_(msg)
+  {}
+  ::go2_msgs::action::NavigateToEntrance_Goal required_height_adjustment(::go2_msgs::action::NavigateToEntrance_Goal::_required_height_adjustment_type arg)
+  {
+    msg_.required_height_adjustment = std::move(arg);
+    return std::move(msg_);
+  }
+
+private:
+  ::go2_msgs::action::NavigateToEntrance_Goal msg_;
+};
+
 class Init_NavigateToEntrance_Goal_entrance_height
 {
 public:
   explicit Init_NavigateToEntrance_Goal_entrance_height(::go2_msgs::action::NavigateToEntrance_Goal & msg)
   : msg_(msg)
   {}
-  ::go2_msgs::action::NavigateToEntrance_Goal entrance_height(::go2_msgs::action::NavigateToEntrance_Goal::_entrance_height_type arg)
+  Init_NavigateToEntrance_Goal_required_height_adjustment entrance_height(::go2_msgs::action::NavigateToEntrance_Goal::_entrance_height_type arg)
   {
     msg_.entrance_height = std::move(arg);
-    return std::move(msg_);
+    return Init_NavigateToEntrance_Goal_required_height_adjustment(msg_);
   }
 
 private:

@@ -83,6 +83,15 @@ bool go2_msgs__action__navigate_to_entrance__goal__convert_from_py(PyObject * _p
     ros_message->entrance_height = (float)PyFloat_AS_DOUBLE(field);
     Py_DECREF(field);
   }
+  {  // required_height_adjustment
+    PyObject * field = PyObject_GetAttrString(_pymsg, "required_height_adjustment");
+    if (!field) {
+      return false;
+    }
+    assert(PyFloat_Check(field));
+    ros_message->required_height_adjustment = (float)PyFloat_AS_DOUBLE(field);
+    Py_DECREF(field);
+  }
 
   return true;
 }
@@ -135,6 +144,17 @@ PyObject * go2_msgs__action__navigate_to_entrance__goal__convert_to_py(void * ra
     field = PyFloat_FromDouble(ros_message->entrance_height);
     {
       int rc = PyObject_SetAttrString(_pymessage, "entrance_height", field);
+      Py_DECREF(field);
+      if (rc) {
+        return NULL;
+      }
+    }
+  }
+  {  // required_height_adjustment
+    PyObject * field = NULL;
+    field = PyFloat_FromDouble(ros_message->required_height_adjustment);
+    {
+      int rc = PyObject_SetAttrString(_pymessage, "required_height_adjustment", field);
       Py_DECREF(field);
       if (rc) {
         return NULL;

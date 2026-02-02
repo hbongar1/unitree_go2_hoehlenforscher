@@ -45,6 +45,7 @@ struct NavigateToEntrance_Goal_
     {
       this->entrance_width = 0.0f;
       this->entrance_height = 0.0f;
+      this->required_height_adjustment = 0.0f;
     }
   }
 
@@ -56,6 +57,7 @@ struct NavigateToEntrance_Goal_
     {
       this->entrance_width = 0.0f;
       this->entrance_height = 0.0f;
+      this->required_height_adjustment = 0.0f;
     }
   }
 
@@ -69,6 +71,9 @@ struct NavigateToEntrance_Goal_
   using _entrance_height_type =
     float;
   _entrance_height_type entrance_height;
+  using _required_height_adjustment_type =
+    float;
+  _required_height_adjustment_type required_height_adjustment;
 
   // setters for named parameter idiom
   Type & set__target_position(
@@ -87,6 +92,12 @@ struct NavigateToEntrance_Goal_
     const float & _arg)
   {
     this->entrance_height = _arg;
+    return *this;
+  }
+  Type & set__required_height_adjustment(
+    const float & _arg)
+  {
+    this->required_height_adjustment = _arg;
     return *this;
   }
 
@@ -139,6 +150,9 @@ struct NavigateToEntrance_Goal_
       return false;
     }
     if (this->entrance_height != other.entrance_height) {
+      return false;
+    }
+    if (this->required_height_adjustment != other.required_height_adjustment) {
       return false;
     }
     return true;

@@ -17,6 +17,8 @@ module go2_msgs {
       float entrance_width;
 
       float entrance_height;
+
+      float required_height_adjustment;
     };
     @verbatim (language="comment", text=
       "Result: Was the navigation successful?")

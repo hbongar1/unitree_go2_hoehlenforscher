@@ -88,6 +88,11 @@ static bool _NavigateToEntrance_Goal__cdr_serialize(
     cdr << ros_message->entrance_height;
   }
 
+  // Field name: required_height_adjustment
+  {
+    cdr << ros_message->required_height_adjustment;
+  }
+
   return true;
 }
 
@@ -124,6 +129,11 @@ static bool _NavigateToEntrance_Goal__cdr_deserialize(
     cdr >> ros_message->entrance_height;
   }
 
+  // Field name: required_height_adjustment
+  {
+    cdr >> ros_message->required_height_adjustment;
+  }
+
   return true;
 }  // NOLINT(readability/fn_size)
 
@@ -154,6 +164,12 @@ size_t get_serialized_size_go2_msgs__action__NavigateToEntrance_Goal(
   // field.name entrance_height
   {
     size_t item_size = sizeof(ros_message->entrance_height);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
+  // field.name required_height_adjustment
+  {
+    size_t item_size = sizeof(ros_message->required_height_adjustment);
     current_alignment += item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
@@ -221,6 +237,14 @@ size_t max_serialized_size_go2_msgs__action__NavigateToEntrance_Goal(
     current_alignment += array_size * sizeof(uint32_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
   }
+  // member: required_height_adjustment
+  {
+    size_t array_size = 1;
+
+    last_member_size = array_size * sizeof(uint32_t);
+    current_alignment += array_size * sizeof(uint32_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
+  }
 
   size_t ret_val = current_alignment - initial_alignment;
   if (is_plain) {
@@ -230,7 +254,7 @@ size_t max_serialized_size_go2_msgs__action__NavigateToEntrance_Goal(
     using DataType = go2_msgs__action__NavigateToEntrance_Goal;
     is_plain =
       (
-      offsetof(DataType, entrance_height) +
+      offsetof(DataType, required_height_adjustment) +
       last_member_size
       ) == ret_val;
   }

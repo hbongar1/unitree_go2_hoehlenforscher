@@ -64,16 +64,19 @@ class NavigateToEntrance_Goal(metaclass=Metaclass_NavigateToEntrance_Goal):
         '_target_position',
         '_entrance_width',
         '_entrance_height',
+        '_required_height_adjustment',
     ]
 
     _fields_and_field_types = {
         'target_position': 'geometry_msgs/Point',
         'entrance_width': 'float',
         'entrance_height': 'float',
+        'required_height_adjustment': 'float',
     }
 
     SLOT_TYPES = (
         rosidl_parser.definition.NamespacedType(['geometry_msgs', 'msg'], 'Point'),  # noqa: E501
+        rosidl_parser.definition.BasicType('float'),  # noqa: E501
         rosidl_parser.definition.BasicType('float'),  # noqa: E501
         rosidl_parser.definition.BasicType('float'),  # noqa: E501
     )
@@ -86,6 +89,7 @@ class NavigateToEntrance_Goal(metaclass=Metaclass_NavigateToEntrance_Goal):
         self.target_position = kwargs.get('target_position', Point())
         self.entrance_width = kwargs.get('entrance_width', float())
         self.entrance_height = kwargs.get('entrance_height', float())
+        self.required_height_adjustment = kwargs.get('required_height_adjustment', float())
 
     def __repr__(self):
         typename = self.__class__.__module__.split('.')
@@ -121,6 +125,8 @@ class NavigateToEntrance_Goal(metaclass=Metaclass_NavigateToEntrance_Goal):
         if self.entrance_width != other.entrance_width:
             return False
         if self.entrance_height != other.entrance_height:
+            return False
+        if self.required_height_adjustment != other.required_height_adjustment:
             return False
         return True
 
@@ -172,6 +178,21 @@ class NavigateToEntrance_Goal(metaclass=Metaclass_NavigateToEntrance_Goal):
             assert not (value < -3.402823466e+38 or value > 3.402823466e+38) or math.isinf(value), \
                 "The 'entrance_height' field must be a float in [-3.402823466e+38, 3.402823466e+38]"
         self._entrance_height = value
+
+    @builtins.property
+    def required_height_adjustment(self):
+        """Message field 'required_height_adjustment'."""
+        return self._required_height_adjustment
+
+    @required_height_adjustment.setter
+    def required_height_adjustment(self, value):
+        if __debug__:
+            assert \
+                isinstance(value, float), \
+                "The 'required_height_adjustment' field must be of type 'float'"
+            assert not (value < -3.402823466e+38 or value > 3.402823466e+38) or math.isinf(value), \
+                "The 'required_height_adjustment' field must be a float in [-3.402823466e+38, 3.402823466e+38]"
+        self._required_height_adjustment = value
 
 
 # Import statements for member types

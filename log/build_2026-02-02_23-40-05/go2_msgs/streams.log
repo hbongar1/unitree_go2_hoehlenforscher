@@ -1,0 +1,221 @@
+[0.032s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py:/opt/ros/humble /usr/bin/cmake --build /workspace/unitree_go2_hoehlenforscher/build/go2_msgs -- -j16 -l16
+[0.086s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.294s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.306s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.309s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.312s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.352s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.377s] -- Found std_msgs: 4.9.0 (/opt/ros/humble/share/std_msgs/cmake)
+[0.399s] -- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)
+[0.412s] -- Found action_msgs: 1.2.2 (/opt/ros/humble/share/action_msgs/cmake)
+[0.908s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[1.345s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.976s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.048s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[2.077s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[2.077s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[2.077s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[2.134s] -- Configuring done
+[2.168s] -- Generating done
+[2.182s] -- Build files have been written to: /workspace/unitree_go2_hoehlenforscher/build/go2_msgs
+[2.229s] [  2%] [34m[1mGenerating C code for ROS interfaces[0m
+[2.262s] [  5%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[2.273s] [  5%] Built target ament_cmake_python_symlink_go2_msgs
+[2.565s] running egg_info
+[2.566s] writing go2_msgs.egg-info/PKG-INFO
+[2.566s] writing dependency_links to go2_msgs.egg-info/dependency_links.txt
+[2.566s] writing top-level names to go2_msgs.egg-info/top_level.txt
+[2.568s] reading manifest file 'go2_msgs.egg-info/SOURCES.txt'
+[2.569s] writing manifest file 'go2_msgs.egg-info/SOURCES.txt'
+[2.603s] [  5%] Built target ament_cmake_python_build_go2_msgs_egg
+[2.863s] [  5%] Built target go2_msgs__cpp
+[2.878s] [  7%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[2.878s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_generator_c[0m
+[2.881s] [ 10%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[2.881s] [ 12%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[2.904s] [ 17%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o[0m
+[2.904s] [ 17%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__functions.c.o[0m
+[3.102s] [ 20%] [32m[1mLinking C shared library libgo2_msgs__rosidl_generator_c.so[0m
+[3.207s] [ 20%] Built target go2_msgs__rosidl_generator_c
+[3.232s] [ 28%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[3.233s] [ 28%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[3.233s] [ 28%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[3.332s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_cpp[0m
+[3.340s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_introspection_cpp[0m
+[3.353s] [ 30%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/go2_msgs/action/navigate_to_entrance__type_support.cpp.o[0m
+[3.354s] [ 33%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/go2_msgs/msg/entrance__type_support.cpp.o[0m
+[3.365s] [ 35%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/go2_msgs/action/detail/navigate_to_entrance__type_support.cpp.o[0m
+[3.366s] [ 38%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/go2_msgs/msg/detail/entrance__type_support.cpp.o[0m
+[3.415s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_fastrtps_cpp[0m
+[3.435s] [ 41%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/detail/dds_fastrtps/entrance__type_support.cpp.o[0m
+[3.440s] [ 43%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/action/detail/dds_fastrtps/navigate_to_entrance__type_support.cpp.o[0m
+[3.674s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_c[0m
+[3.685s] [ 46%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/go2_msgs/action/navigate_to_entrance__type_support.cpp.o[0m
+[3.686s] [ 48%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/go2_msgs/msg/entrance__type_support.cpp.o[0m
+[3.746s] [ 51%] [32m[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_c.so[0m
+[3.773s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_fastrtps_c[0m
+[3.790s] [ 56%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/go2_msgs/action/detail/navigate_to_entrance__type_support_c.cpp.o[0m
+[3.790s] [ 56%] [32mBuilding CXX object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/go2_msgs/msg/detail/entrance__type_support_c.cpp.o[0m
+[3.806s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_introspection_c[0m
+[3.817s] [ 61%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/go2_msgs/action/detail/navigate_to_entrance__type_support.c.o[0m
+[3.817s] [ 61%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/go2_msgs/msg/detail/entrance__type_support.c.o[0m
+[3.851s] [ 61%] Built target go2_msgs__rosidl_typesupport_c
+[3.871s] [ 64%] [32m[1mLinking C shared library libgo2_msgs__rosidl_typesupport_introspection_c.so[0m
+[3.952s] [ 66%] [32m[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_cpp.so[0m
+[3.956s] [ 66%] Built target go2_msgs__rosidl_typesupport_introspection_c
+[4.053s] [ 69%] [32m[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[4.082s] [ 69%] Built target go2_msgs__rosidl_typesupport_cpp
+[4.090s] [ 71%] [32m[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[4.179s] [ 71%] Built target go2_msgs__rosidl_typesupport_introspection_cpp
+[4.192s] [ 74%] [32m[1mLinking CXX shared library libgo2_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[4.221s] [ 74%] Built target go2_msgs__rosidl_typesupport_fastrtps_cpp
+[4.326s] [ 74%] Built target go2_msgs__rosidl_typesupport_fastrtps_c
+[4.369s] [ 74%] Built target go2_msgs
+[4.413s] [ 76%] [34m[1mGenerating Python code for ROS interfaces[0m
+[5.494s] [ 76%] Built target go2_msgs__py
+[5.516s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_generator_py[0m
+[5.548s] [ 79%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_py.dir/rosidl_generator_py/go2_msgs/msg/_entrance_s.c.o[0m
+[5.550s] [ 82%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_generator_py.dir/rosidl_generator_py/go2_msgs/action/_navigate_to_entrance_s.c.o[0m
+[5.731s] [ 84%] [32m[1mLinking C shared library rosidl_generator_py/go2_msgs/libgo2_msgs__rosidl_generator_py.so[0m
+[5.864s] [ 84%] Built target go2_msgs__rosidl_generator_py
+[5.886s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_introspection_c__pyext[0m
+[5.886s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_c__pyext[0m
+[5.888s] [35m[1mConsolidate compiler generated dependencies of target go2_msgs__rosidl_typesupport_fastrtps_c__pyext[0m
+[5.915s] [ 87%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[5.917s] [ 89%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[5.918s] [ 92%] [32mBuilding C object CMakeFiles/go2_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[6.090s] [ 94%] [32m[1mLinking C shared library rosidl_generator_py/go2_msgs/go2_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so[0m
+[6.095s] [ 97%] [32m[1mLinking C shared library rosidl_generator_py/go2_msgs/go2_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so[0m
+[6.097s] [100%] [32m[1mLinking C shared library rosidl_generator_py/go2_msgs/go2_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so[0m
+[6.201s] [100%] Built target go2_msgs__rosidl_typesupport_c__pyext
+[6.216s] [100%] Built target go2_msgs__rosidl_typesupport_introspection_c__pyext
+[6.222s] [100%] Built target go2_msgs__rosidl_typesupport_fastrtps_c__pyext
+[6.247s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py:/opt/ros/humble /usr/bin/cmake --build /workspace/unitree_go2_hoehlenforscher/build/go2_msgs -- -j16 -l16
+[6.270s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py:/opt/ros/humble /usr/bin/cmake --install /workspace/unitree_go2_hoehlenforscher/build/go2_msgs
+[6.285s] -- Install configuration: ""
+[6.286s] -- Execute custom install script
+[6.287s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/rosidl_interfaces/go2_msgs
+[6.288s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__functions.h
+[6.288s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__struct.h
+[6.289s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__type_support.h
+[6.289s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/navigate_to_entrance.h
+[6.289s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__functions.h
+[6.289s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__struct.h
+[6.290s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__type_support.h
+[6.290s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/entrance.h
+[6.290s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_generator_c__visibility_control.h
+[6.290s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/library_path.sh
+[6.291s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/library_path.dsv
+[6.292s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_fastrtps_c.h
+[6.292s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_fastrtps_c.h
+[6.292s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[6.293s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_introspection_c.h
+[6.294s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_introspection_c.h
+[6.294s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[6.295s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__builder.hpp
+[6.295s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__struct.hpp
+[6.295s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__traits.hpp
+[6.296s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__type_support.hpp
+[6.296s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/navigate_to_entrance.hpp
+[6.296s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__builder.hpp
+[6.296s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__struct.hpp
+[6.297s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__traits.hpp
+[6.297s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__type_support.hpp
+[6.297s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/entrance.hpp
+[6.297s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[6.298s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_fastrtps_cpp.hpp
+[6.299s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_fastrtps_cpp.hpp
+[6.299s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[6.300s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_introspection_cpp.hpp
+[6.300s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/include/go2_msgs/go2_msgs/msg/detail/entrance__rosidl_typesupport_introspection_cpp.hpp
+[6.300s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/pythonpath.sh
+[6.300s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/pythonpath.dsv
+[6.301s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/PKG-INFO
+[6.301s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/SOURCES.txt
+[6.302s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/dependency_links.txt
+[6.302s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs-0.0.1-py3.10.egg-info/top_level.txt
+[6.303s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/__init__.py
+[6.303s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c
+[6.304s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[6.304s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[6.304s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/__init__.py
+[6.304s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/_navigate_to_entrance.py
+[6.304s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/_navigate_to_entrance_s.c
+[6.305s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[6.305s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[6.305s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[6.305s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/libgo2_msgs__rosidl_generator_py.so
+[6.306s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/__init__.py
+[6.306s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/_entrance.py
+[6.306s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/_entrance_s.c
+[6.306s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[6.307s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[6.307s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/go2_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[6.308s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/msg/Entrance.idl
+[6.308s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/action/NavigateToEntrance.idl
+[6.308s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/msg/Entrance.msg
+[6.308s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/action/NavigateToEntrance.action
+[6.309s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/package_run_dependencies/go2_msgs
+[6.309s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/parent_prefix_path/go2_msgs
+[6.309s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/ament_prefix_path.sh
+[6.309s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/ament_prefix_path.dsv
+[6.310s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/path.sh
+[6.310s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/environment/path.dsv
+[6.310s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.bash
+[6.310s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.sh
+[6.311s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.zsh
+[6.311s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/local_setup.dsv
+[6.311s] -- Symlinking: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/package.dsv
+[6.329s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/ament_index/resource_index/packages/go2_msgs
+[6.329s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/rosidl_cmake-extras.cmake
+[6.330s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[6.330s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[6.331s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[6.333s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[6.333s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[6.333s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[6.334s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgsConfig.cmake
+[6.334s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgsConfig-version.cmake
+[6.334s] -- Up-to-date symlink: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/package.xml
+[6.335s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_c.so
+[6.336s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_c.so" to ""
+[6.337s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_c.so
+[6.339s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+[6.339s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_c.so
+[6.341s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_c.so" to ""
+[6.342s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_c.so
+[6.343s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_c.so" to ""
+[6.344s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so
+[6.345s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+[6.345s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_cpp.so
+[6.346s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+[6.347s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_cpp.so
+[6.348s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_typesupport_cpp.so" to ""
+[6.442s] Listing '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs'...
+[6.442s] Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/__init__.py'...
+[6.443s] Listing '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action'...
+[6.443s] Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/__init__.py'...
+[6.443s] Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/action/_navigate_to_entrance.py'...
+[6.443s] Listing '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg'...
+[6.444s] Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/__init__.py'...
+[6.444s] Compiling '/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/local/lib/python3.10/dist-packages/go2_msgs/msg/_entrance.py'...
+[6.450s] -- Installing: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_py.so
+[6.452s] -- Set runtime path of "/workspace/unitree_go2_hoehlenforscher/install/go2_msgs/lib/libgo2_msgs__rosidl_generator_py.so" to ""
+[6.452s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_cExport.cmake
+[6.453s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_cExport-noconfig.cmake
+[6.453s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[6.454s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[6.454s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cExport.cmake
+[6.454s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[6.455s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cExport.cmake
+[6.456s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[6.456s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_cppExport.cmake
+[6.456s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[6.456s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[6.457s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[6.457s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[6.457s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cppExport.cmake
+[6.457s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/go2_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[6.457s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_pyExport.cmake
+[6.458s] -- Up-to-date: /workspace/unitree_go2_hoehlenforscher/install/go2_msgs/share/go2_msgs/cmake/export_go2_msgs__rosidl_generator_pyExport-noconfig.cmake
+[6.460s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/build/go2_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py:/opt/ros/humble /usr/bin/cmake --install /workspace/unitree_go2_hoehlenforscher/build/go2_msgs

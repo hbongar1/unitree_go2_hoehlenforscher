@@ -28,6 +28,7 @@ go2_msgs__action__NavigateToEntrance_Goal__init(go2_msgs__action__NavigateToEntr
   }
   // entrance_width
   // entrance_height
+  // required_height_adjustment
   return true;
 }
 
@@ -41,6 +42,7 @@ go2_msgs__action__NavigateToEntrance_Goal__fini(go2_msgs__action__NavigateToEntr
   geometry_msgs__msg__Point__fini(&msg->target_position);
   // entrance_width
   // entrance_height
+  // required_height_adjustment
 }
 
 bool
@@ -61,6 +63,10 @@ go2_msgs__action__NavigateToEntrance_Goal__are_equal(const go2_msgs__action__Nav
   }
   // entrance_height
   if (lhs->entrance_height != rhs->entrance_height) {
+    return false;
+  }
+  // required_height_adjustment
+  if (lhs->required_height_adjustment != rhs->required_height_adjustment) {
     return false;
   }
   return true;
@@ -84,6 +90,8 @@ go2_msgs__action__NavigateToEntrance_Goal__copy(
   output->entrance_width = input->entrance_width;
   // entrance_height
   output->entrance_height = input->entrance_height;
+  // required_height_adjustment
+  output->required_height_adjustment = input->required_height_adjustment;
   return true;
 }
 
