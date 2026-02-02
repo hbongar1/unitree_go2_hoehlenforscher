@@ -215,9 +215,9 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.filtered_cloud_pub = self.create_publisher(PointCloud2, 'filtered_cloud_voxel_grid', 10)
         
         # Parameter aus aktuellen Thresholds
-        self.height_threshold = 0.2
-        self.width_threshold = 0.2
-        self.max_width = 1.0
+        self.height_threshold = 0.1
+        self.width_threshold = 0.1
+        self.max_width = 2.0
         self.cluster_distance = 0.5
         
         # Voxel Grid spezifische Parameter - Optimiert für 50cm Löcher
@@ -227,11 +227,11 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.gaussian_sigma = 1.5  # Moderate Glättung für stabile Erkennung
         
         # Spezifische Parameter für bodenstehende Löcher
-        self.min_hole_diameter = 0.10  # Minimaler Durchmesser 10cm (aggresiverer)
+        self.min_hole_diameter = 0.08  # Minimaler Durchmesser 8cm
         self.max_hole_diameter = 2.0  # Maximaler Durchmesser 2m
         self.vertical_slice_height = 0.08  # 8cm Scheiben (Kompromiss für alle Größen)
-        self.min_region_cells = 400  # Angepasst für 2cm Voxel (50x50cm = ~625 Zellen, nutze 400 als Minimum)
-        self.min_surrounded_sides = 3  # Loch muss von mind. 3 Seiten umgeben sein
+        self.min_region_cells = 80  # Weniger streng, damit kleine Löcher erkannt werden
+        self.min_surrounded_sides = 1  # Loch muss von mind. 1 Seite umgeben sein
         
         # CSV-Logging für erkannte Eingänge
         log_dir = os.path.join(os.path.dirname(__file__), 'entrance_detections')
@@ -248,17 +248,17 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.enable_ground_detection = False
         self.ground_plane_distance_threshold = 0.02  # 2cm tolerance for RANSAC
         self.ground_plane_min_points = 100  # Min points to fit plane
-        self.min_height_above_ground = 5.0 # Ignore points < 5cm above ground
+        self.min_height_above_ground = 0.05 # Ignore points < 5cm above ground
         
         # Multi-Frame-Akkumulation
         self.frame_buffer_size = 50
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 3
+        self.process_every_n_frames = 2
         
         # Konfidenz-Tracking
         self.entrance_history = {}
-        self.confidence_threshold = 2
+        self.confidence_threshold = 1
         self.entrance_timeout = 40
         self.next_entrance_id = 0
         
@@ -579,9 +579,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
         # Binäre Maske: True = Loch (niedrige Dichte)
         hole_mask = smoothed < threshold
         
-        # Morphologische Operationen - KEINE Erosion, nur leichte Dilation für Zusammenhang
-        # Erosion würde die Löcher kleiner machen!
-        hole_mask = binary_dilation(hole_mask, iterations=2)  # Verbindet nahe Regionen
+        # Morphologische Operationen - weniger Aufblähung für genauere Maße
+        hole_mask = binary_dilation(hole_mask, iterations=1)
         
         # Finde zusammenhängende Loch-Regionen
         labeled_array, num_features = label(hole_mask)
@@ -654,13 +653,13 @@ class HoleDetectionVoxelGridNode(BaseNode):
             # WICHTIG: Voxel-Diskretisierung unterschätzt - addiere 1 Voxel pro Seite
             # Bei 2cm Voxel: 50cm Loch = 25 Voxel gemessen → 25*2cm = 50cm ✓
             
-            # Direkt aus Voxel-Grid + 1 Voxel Korrektur pro Seite
+            # Direkt aus Voxel-Grid mit minimaler Rand-Korrektur
             width_voxel_cells = region_cells[:, 0].max() - region_cells[:, 0].min() + 1  # +1 für letzte Zelle
             height_voxel_cells = region_cells[:, 1].max() - region_cells[:, 1].min() + 1
-            
-            # Konvertiere Zellen zu Meter + 1 Voxel Expansion (Rand-Korrektur)
-            width_refined = (width_voxel_cells + 2) * grid_resolution_2d  # +2 Voxel (1 pro Seite)
-            height_refined = (height_voxel_cells + 2) * grid_resolution_2d
+
+            # Konvertiere Zellen zu Meter + kleine Korrektur (0.5 Voxel pro Seite)
+            width_refined = (width_voxel_cells + 1) * grid_resolution_2d
+            height_refined = (height_voxel_cells + 1) * grid_resolution_2d
             
             self.get_logger().info(
                 f"📏 Region {region_id}: {width_voxel_cells}x{height_voxel_cells} Voxel "
@@ -863,6 +862,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
     
     def update_entrance_tracking(self, current_entrances: List[Entrance]):
         """Konfidenz-Tracking"""
+        smoothing_alpha = 0.2
         for entrance_id in list(self.entrance_history.keys()):
             self.entrance_history[entrance_id]['frames_since_seen'] += 1
             if self.entrance_history[entrance_id]['frames_since_seen'] > self.entrance_timeout:
@@ -888,6 +888,13 @@ class HoleDetectionVoxelGridNode(BaseNode):
                 self.entrance_history[matched_id]['confidence'] += 1
                 self.entrance_history[matched_id]['frames_since_seen'] = 0
                 self.entrance_history[matched_id]['entrance'] = entrance
+                # Glätte Maße zur Reduktion von Varianz
+                prev_width = self.entrance_history[matched_id].get('smooth_width', entrance.width)
+                prev_height = self.entrance_history[matched_id].get('smooth_height', entrance.height)
+                prev_depth = self.entrance_history[matched_id].get('smooth_depth', entrance.width)
+                self.entrance_history[matched_id]['smooth_width'] = (1 - smoothing_alpha) * prev_width + smoothing_alpha * entrance.width
+                self.entrance_history[matched_id]['smooth_height'] = (1 - smoothing_alpha) * prev_height + smoothing_alpha * entrance.height
+                self.entrance_history[matched_id]['smooth_depth'] = (1 - smoothing_alpha) * prev_depth + smoothing_alpha * entrance.width
             else:
                 new_id = self.next_entrance_id
                 self.next_entrance_id += 1
@@ -895,7 +902,10 @@ class HoleDetectionVoxelGridNode(BaseNode):
                     'position': pos,
                     'entrance': entrance,
                     'confidence': 1,
-                    'frames_since_seen': 0
+                    'frames_since_seen': 0,
+                    'smooth_width': entrance.width,
+                    'smooth_height': entrance.height,
+                    'smooth_depth': entrance.width
                 }
     
     def publish_stable_entrances(self, header: Header):
@@ -904,14 +914,19 @@ class HoleDetectionVoxelGridNode(BaseNode):
         for entrance_id, data in self.entrance_history.items():
             if data['confidence'] >= self.confidence_threshold:
                 entrance = data['entrance']
+                smooth_width = data.get('smooth_width', entrance.width)
+                smooth_height = data.get('smooth_height', entrance.height)
+                smooth_depth = data.get('smooth_depth', entrance.width)
                 entrance.header = header
+                entrance.width = float(smooth_width)
+                entrance.height = float(smooth_height)
                 self.entrance_pub.publish(entrance)
                 published_count += 1
                 
                 # CSV-Logging für erkannte Eingänge
                 try:
                     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                    depth = entrance.width  # Bei frontalen Löchern ist width die Tiefe
+                    depth = smooth_depth  # Geglättete Tiefe
                     with open(self.csv_file, 'a', newline='') as f:
                         writer = csv.writer(f)
                         writer.writerow([
@@ -919,8 +934,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
                             f'{entrance.position.x:.4f}',
                             f'{entrance.position.y:.4f}',
                             f'{entrance.position.z:.4f}',
-                            f'{entrance.width:.4f}',
-                            f'{entrance.height:.4f}',
+                            f'{smooth_width:.4f}',
+                            f'{smooth_height:.4f}',
                             f'{depth:.4f}',
                             data['confidence']
                         ])
