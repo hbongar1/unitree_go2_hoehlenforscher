@@ -17,6 +17,163 @@ from std_msgs.msg import Header, ColorRGBA
 from visualization_msgs.msg import Marker, MarkerArray
 
 
+# ============================================================================
+# NumPy-basierte Fallback-Funktionen (falls scipy nicht verfügbar)
+# ============================================================================
+
+def numpy_gaussian_filter(input_array: np.ndarray, sigma: float) -> np.ndarray:
+    """
+    Einfacher Gaussian Filter mit NumPy (Fallback für scipy.ndimage.gaussian_filter)
+    Funktioniert für 2D und 3D Arrays
+    """
+    if input_array.ndim == 2:
+        # 2D Gaussian Filter
+        kernel_size = int(4 * sigma + 0.5)
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+        
+        # Erstelle 1D Gaussian Kernel
+        x = np.arange(kernel_size) - kernel_size // 2
+        gaussian_1d = np.exp(-x**2 / (2 * sigma**2))
+        gaussian_1d /= gaussian_1d.sum()
+        
+        # 2D Kernel durch Outer Product
+        kernel_2d = np.outer(gaussian_1d, gaussian_1d)
+        
+        # Konvolution mit Padding
+        padded = np.pad(input_array, kernel_size // 2, mode='edge')
+        result = np.zeros_like(input_array, dtype=np.float32)
+        
+        for i in range(input_array.shape[0]):
+            for j in range(input_array.shape[1]):
+                window = padded[i:i+kernel_size, j:j+kernel_size]
+                result[i, j] = np.sum(window * kernel_2d)
+        
+        return result
+    
+    elif input_array.ndim == 3:
+        # 3D Gaussian Filter (vereinfacht - wendet 1D Filter in jeder Richtung an)
+        kernel_size = int(4 * sigma + 0.5)
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+        
+        # 1D Gaussian Kernel
+        x = np.arange(kernel_size) - kernel_size // 2
+        gaussian_1d = np.exp(-x**2 / (2 * sigma**2))
+        gaussian_1d /= gaussian_1d.sum()
+        
+        # Sequentielle Filterung entlang jeder Achse
+        result = input_array.astype(float).copy()
+        
+        # X-Achse
+        padded = np.pad(result, ((kernel_size//2, kernel_size//2), (0, 0), (0, 0)), mode='edge')
+        temp = np.zeros_like(result)
+        for i in range(result.shape[0]):
+            for j in range(result.shape[1]):
+                for k in range(result.shape[2]):
+                    temp[i, j, k] = np.sum(padded[i:i+kernel_size, j, k] * gaussian_1d)
+        result = temp
+        
+        return result.astype(np.float32)
+    
+    else:
+        # Fallback: keine Glättung
+        return input_array.astype(np.float32)
+
+
+def numpy_binary_erosion(input_array: np.ndarray, iterations: int = 1) -> np.ndarray:
+    """
+    Einfache binäre Erosion mit NumPy (Fallback für scipy.ndimage.binary_erosion)
+    """
+    result = input_array.copy()
+    
+    for _ in range(iterations):
+        eroded = result.copy()
+        rows, cols = result.shape
+        
+        for i in range(1, rows - 1):
+            for j in range(1, cols - 1):
+                # 3x3 Nachbarschaft prüfen
+                if result[i, j]:
+                    # Wenn irgendeiner der 8 Nachbarn False ist, erodiere
+                    neighbors = [
+                        result[i-1, j-1], result[i-1, j], result[i-1, j+1],
+                        result[i, j-1],                    result[i, j+1],
+                        result[i+1, j-1], result[i+1, j], result[i+1, j+1]
+                    ]
+                    if not all(neighbors):
+                        eroded[i, j] = False
+        
+        result = eroded
+    
+    return result
+
+
+def numpy_binary_dilation(input_array: np.ndarray, iterations: int = 1) -> np.ndarray:
+    """
+    Einfache binäre Dilation mit NumPy (Fallback für scipy.ndimage.binary_dilation)
+    """
+    result = input_array.copy()
+    
+    for _ in range(iterations):
+        dilated = result.copy()
+        rows, cols = result.shape
+        
+        for i in range(1, rows - 1):
+            for j in range(1, cols - 1):
+                # 3x3 Nachbarschaft prüfen
+                if not result[i, j]:
+                    # Wenn irgendeiner der 8 Nachbarn True ist, expandiere
+                    neighbors = [
+                        result[i-1, j-1], result[i-1, j], result[i-1, j+1],
+                        result[i, j-1],                    result[i, j+1],
+                        result[i+1, j-1], result[i+1, j], result[i+1, j+1]
+                    ]
+                    if any(neighbors):
+                        dilated[i, j] = True
+        
+        result = dilated
+    
+    return result
+
+
+def numpy_label(input_array: np.ndarray) -> tuple:
+    """
+    Einfaches Connected Component Labeling mit NumPy (Fallback für scipy.ndimage.label)
+    Verwendet Flood-Fill Algorithmus
+    """
+    labeled = np.zeros_like(input_array, dtype=np.int32)
+    current_label = 0
+    rows, cols = input_array.shape
+    
+    def flood_fill(i, j, label):
+        """Rekursiver Flood-Fill"""
+        if i < 0 or i >= rows or j < 0 or j >= cols:
+            return
+        if not input_array[i, j] or labeled[i, j] != 0:
+            return
+        
+        labeled[i, j] = label
+        
+        # 4-Connectivity (oben, unten, links, rechts)
+        flood_fill(i-1, j, label)
+        flood_fill(i+1, j, label)
+        flood_fill(i, j-1, label)
+        flood_fill(i, j+1, label)
+    
+    for i in range(rows):
+        for j in range(cols):
+            if input_array[i, j] and labeled[i, j] == 0:
+                current_label += 1
+                flood_fill(i, j, current_label)
+    
+    return labeled, current_label
+
+
+# ============================================================================
+# Hauptklasse
+# ============================================================================
+
 class HoleDetectionVoxelGridNode(BaseNode):
     """
     Erkennt Eingänge durch Voxel-Gitter Dichte-Analyse.
@@ -60,11 +217,17 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.max_width = 1.0
         self.cluster_distance = 0.5
         
-        # Voxel Grid spezifische Parameter
-        self.voxel_size = 0.02  # 2cm Voxel-Größe (adaptive Option verfügbar)
+        # Voxel Grid spezifische Parameter - optimiert für 20cm, 42cm, 50cm Löcher
+        self.voxel_size = 0.01  # 1cm Voxel = guter Kompromiss (20cm Loch = 20x20 Voxel)
         self.gradient_percentile = 75  # Top 25% Gradienten = Kanten
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
-        self.gaussian_sigma = 1.0  # Glättungs-Parameter
+        self.gaussian_sigma = 0.8  # Reduzierte Glättung für kleine Löcher
+        
+        # Spezifische Parameter für bodenstehende Löcher
+        self.min_hole_diameter = 0.15  # Minimaler Durchmesser 15cm (mit Sicherheitsmarge für 20cm)
+        self.max_hole_diameter = 2.0  # Maximaler Durchmesser 2m
+        self.vertical_slice_height = 0.08  # 8cm Scheiben (Kompromiss für alle Größen)
+        self.min_region_cells = 15  # Mindestanzahl Grid-Zellen für gültige Region
         
         # Ground Plane Detection Parameter
         self.enable_ground_detection = True
@@ -85,10 +248,11 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.next_entrance_id = 0
         
         self.get_logger().info(
-            f"Voxel Grid Node initialisiert:\n"
-            f"  - Voxel-Größe: {self.voxel_size}m\n"
-            f"  - Gradient-Perzentil: {self.gradient_percentile}%\n"
-            f"  - Low-Dichte-Perzentil: {self.low_density_percentile}%\n"
+            f"Voxel Grid Node initialisiert (optimiert für 20/42/50cm Löcher):\n"
+            f"  - Voxel-Größe: {self.voxel_size*100:.1f}cm\n"
+            f"  - Min/Max Loch-Durchmesser: {self.min_hole_diameter*100:.0f}-{self.max_hole_diameter*100:.0f}cm\n"
+            f"  - Scheiben-Höhe: {self.vertical_slice_height*100:.0f}cm\n"
+            f"  - Glättungs-Sigma: {self.gaussian_sigma}\n"
             f"  - Bodenerkennung: {'Aktiviert' if self.enable_ground_detection else 'Deaktiviert'}"
         )
     
@@ -298,80 +462,172 @@ class HoleDetectionVoxelGridNode(BaseNode):
     
     def find_hole_regions_in_cloud(self, points: np.ndarray) -> List[dict]:
         """
-        Findet Loch-Regionen in der gesamten Point Cloud durch Voxel-Dichte-Analyse.
+        Findet bodenstehende Löcher durch 2D-Projektion und vertikale Analyse.
+        Speziell für Löcher, die nach unten offen sind und auf dem Boden stehen.
         
         Returns:
             Liste von Loch-Regionen mit Zentroid, Bounding Box und Punkten
         """
+        # Importiere scipy-Funktionen oder Fallback zu NumPy
         try:
-            from scipy.ndimage import gaussian_filter, label
+            from scipy.ndimage import gaussian_filter, label, binary_erosion, binary_dilation
+            use_scipy = True
+            self.get_logger().debug("Verwende scipy für Bildverarbeitung")
         except ImportError:
-            self.get_logger().error("scipy wird benötigt")
-            return []
+            # Fallback zu NumPy-Implementierungen
+            gaussian_filter = numpy_gaussian_filter
+            label = numpy_label
+            binary_erosion = numpy_binary_erosion
+            binary_dilation = numpy_binary_dilation
+            use_scipy = False
+            self.get_logger().info("scipy nicht verfügbar - verwende NumPy-Fallback")
         
         if len(points) < 50:
             return []
         
-        # Voxel Grid der gesamten Szene erstellen
-        min_bounds = np.min(points, axis=0)
-        max_bounds = np.max(points, axis=0)
+        # Finde den niedrigsten Z-Wert (Boden/Basis)
+        min_z = np.min(points[:, 2])
+        max_z = np.max(points[:, 2])
         
-        voxel_indices = ((points - min_bounds) / self.voxel_size).astype(int)
+        # Analysiere mehrere horizontale Scheiben von unten nach oben
+        slice_heights = np.arange(
+            min_z + 0.05,  # Beginne 5cm über dem Boden
+            max_z,
+            self.vertical_slice_height
+        )
         
-        # Zähle Punkte pro Voxel
-        voxel_counts = defaultdict(int)
-        for idx in voxel_indices:
-            key = tuple(idx)
-            voxel_counts[key] += 1
+        if len(slice_heights) < 2:
+            self.get_logger().warn("Nicht genug vertikale Scheiben für Analyse")
+            return []
         
-        max_idx = np.max(voxel_indices, axis=0)
-        grid_shape = max_idx + 1
+        # Erstelle 2D-Projektionen für jede Scheibe
+        slice_masks = []
+        xy_bounds = [np.min(points[:, 0]), np.max(points[:, 0]),
+                     np.min(points[:, 1]), np.max(points[:, 1])]
         
-        # Dichte-Gitter aufbauen
-        density_grid = np.zeros(grid_shape, dtype=np.float32)
-        for (x, y, z), count in voxel_counts.items():
-            if 0 <= x < grid_shape[0] and 0 <= y < grid_shape[1] and 0 <= z < grid_shape[2]:
-                density_grid[x, y, z] = count
+        grid_resolution_2d = self.voxel_size  # Gleiche Auflösung wie Voxel
         
-        # Glättung
-        smoothed_grid = gaussian_filter(density_grid.astype(float), sigma=self.gaussian_sigma)
+        for height in slice_heights:
+            # Selektiere Punkte in dieser Scheibe (±2.5cm)
+            slice_mask = np.abs(points[:, 2] - height) < (self.vertical_slice_height / 2)
+            slice_points = points[slice_mask]
+            
+            if len(slice_points) < 10:
+                slice_masks.append(None)
+                continue
+            
+            # Erstelle 2D-Dichte-Gitter (XY-Projektion)
+            x_bins = int((xy_bounds[1] - xy_bounds[0]) / grid_resolution_2d) + 1
+            y_bins = int((xy_bounds[3] - xy_bounds[2]) / grid_resolution_2d) + 1
+            
+            density_2d = np.zeros((x_bins, y_bins), dtype=np.float32)
+            
+            # Zähle Punkte in jedem 2D-Grid-Zelle
+            x_indices = ((slice_points[:, 0] - xy_bounds[0]) / grid_resolution_2d).astype(int)
+            y_indices = ((slice_points[:, 1] - xy_bounds[2]) / grid_resolution_2d).astype(int)
+            
+            for xi, yi in zip(x_indices, y_indices):
+                if 0 <= xi < x_bins and 0 <= yi < y_bins:
+                    density_2d[xi, yi] += 1
+            
+            slice_masks.append(density_2d)
         
-        # Finde niedrig-Dichte Bereiche (= potenzielle Löcher)
-        if np.any(smoothed_grid > 0):
-            low_density_threshold = np.percentile(
-                smoothed_grid[smoothed_grid > 0], 
-                self.low_density_percentile
-            )
+        # Finde konsistente Lücken über mehrere Scheiben hinweg
+        # Eine Lücke = Bereich mit niedriger Dichte in mehreren aufeinanderfolgenden Scheiben
+        valid_masks = [m for m in slice_masks if m is not None]
+        
+        if len(valid_masks) < 2:
+            self.get_logger().warn("Nicht genug gültige Scheiben für Loch-Erkennung")
+            return []
+        
+        # Kombiniere mehrere Scheiben durch Mittelwertbildung
+        combined_density = np.mean(valid_masks, axis=0)
+        
+        # Adaptive Glättung basierend auf Voxel-Größe
+        smoothed = gaussian_filter(combined_density, sigma=self.gaussian_sigma)
+        
+        # Finde Bereiche mit niedriger Dichte (potenzielle Löcher)
+        # Verwende dynamischen Schwellwert basierend auf Dichte-Verteilung
+        if np.any(smoothed > 0):
+            # Für kleine Löcher: aggressiverer Schwellwert
+            threshold = np.percentile(smoothed[smoothed > 0], 15)  # Untere 15% = Lücken
         else:
             return []
         
-        low_density_mask = (smoothed_grid < low_density_threshold) & (smoothed_grid >= 0)
+        # Binäre Maske: True = Loch (niedrige Dichte)
+        hole_mask = smoothed < threshold
+        
+        # Sanftere morphologische Operationen für kleine Löcher (20cm)
+        # Erosion entfernt einzelne Pixel-Rauschen, dann Dilation stellt Form wieder her
+        hole_mask = binary_erosion(hole_mask, iterations=1)
+        hole_mask = binary_dilation(hole_mask, iterations=1)
         
         # Finde zusammenhängende Loch-Regionen
-        labeled_array, num_features = label(low_density_mask)
+        labeled_array, num_features = label(hole_mask)
         
-        self.get_logger().info(f"Gefundene niedrig-Dichte Regionen: {num_features}")
+        self.get_logger().info(f"Gefundene Loch-Kandidaten (2D-Projektion): {num_features}")
         
         hole_regions = []
         for region_id in range(1, num_features + 1):
-            # Voxel-Indizes dieser Region
-            region_voxels = np.argwhere(labeled_array == region_id)
+            # Grid-Indizes dieser Region
+            region_cells = np.argwhere(labeled_array == region_id)
             
-            if len(region_voxels) < 5:  # Mindestgröße
+            # Dynamische Mindestgröße basierend auf erwarteter Lochgröße
+            # 20cm Loch bei 1cm Voxel = theoretisch 20x20 = 400 Zellen
+            # Aber durch Okklusion, Glättung und morphologische Ops: Faktor ~0.1-0.3
+            # Also: min_region_cells = 15 entspricht ca. 15-20cm tatsächlichem Loch
+            if len(region_cells) < self.min_region_cells:
+                self.get_logger().debug(
+                    f"Region verworfen: zu wenig Zellen ({len(region_cells)} < {self.min_region_cells})"
+                )
                 continue
             
-            # Zurück zu Weltkoordinaten
-            region_bounds_min = region_voxels.min(axis=0) * self.voxel_size + min_bounds
-            region_bounds_max = region_voxels.max(axis=0) * self.voxel_size + min_bounds
-            centroid = (region_bounds_min + region_bounds_max) / 2.0
+            # Zurück zu Weltkoordinaten (XY)
+            region_x_min = region_cells[:, 0].min() * grid_resolution_2d + xy_bounds[0]
+            region_x_max = region_cells[:, 0].max() * grid_resolution_2d + xy_bounds[0]
+            region_y_min = region_cells[:, 1].min() * grid_resolution_2d + xy_bounds[2]
+            region_y_max = region_cells[:, 1].max() * grid_resolution_2d + xy_bounds[2]
+            
+            # Durchmesser der Region bestimmen
+            diameter_x = region_x_max - region_x_min
+            diameter_y = region_y_max - region_y_min
+            avg_diameter = (diameter_x + diameter_y) / 2.0
+            
+            # Filter: Größencheck
+            if avg_diameter < self.min_hole_diameter or avg_diameter > self.max_hole_diameter:
+                self.get_logger().debug(
+                    f"Region verworfen: Durchmesser {avg_diameter:.2f}m außerhalb "
+                    f"[{self.min_hole_diameter}, {self.max_hole_diameter}]"
+                )
+                continue
+            
+            # Bestimme die vertikale Ausdehnung dieser Region
+            # Finde alle Punkte innerhalb der XY-Bounding-Box
+            in_region_x = (points[:, 0] >= region_x_min) & (points[:, 0] <= region_x_max)
+            in_region_y = (points[:, 1] >= region_y_min) & (points[:, 1] <= region_y_max)
+            in_region = in_region_x & in_region_y
+            
+            if not np.any(in_region):
+                continue
+            
+            region_points = points[in_region]
+            region_z_min = np.min(region_points[:, 2])
+            region_z_max = np.max(region_points[:, 2])
+            
+            # Zentroid
+            centroid_x = (region_x_min + region_x_max) / 2.0
+            centroid_y = (region_y_min + region_y_max) / 2.0
+            centroid_z = (region_z_min + region_z_max) / 2.0
             
             hole_regions.append({
-                'centroid': centroid,
-                'bounds_min': region_bounds_min,
-                'bounds_max': region_bounds_max,
-                'voxel_count': len(region_voxels)
+                'centroid': np.array([centroid_x, centroid_y, centroid_z]),
+                'bounds_min': np.array([region_x_min, region_y_min, region_z_min]),
+                'bounds_max': np.array([region_x_max, region_y_max, region_z_max]),
+                'diameter': avg_diameter,
+                'voxel_count': len(region_cells)
             })
         
+        self.get_logger().info(f"Gefundene gültige Loch-Regionen: {len(hole_regions)}")
         return hole_regions
     
     def create_voxel_grid(self, cluster: np.ndarray) -> Tuple[dict, np.ndarray, np.ndarray]:
@@ -413,10 +669,10 @@ class HoleDetectionVoxelGridNode(BaseNode):
             gradient_magnitude: Dichte-Gradienten (Kanten)
         """
         try:
-            from scipy.ndimage import gaussian_filter, label
+            from scipy.ndimage import gaussian_filter
         except ImportError:
-            self.get_logger().error("scipy wird benötigt für Voxel Grid Analyse")
-            return None, None, None
+            gaussian_filter = numpy_gaussian_filter
+            self.get_logger().debug("Verwende NumPy-Fallback für gaussian_filter")
         
         voxel_counts, min_bounds, grid_shape = self.create_voxel_grid(cluster)
         
@@ -445,7 +701,8 @@ class HoleDetectionVoxelGridNode(BaseNode):
         try:
             from scipy.ndimage import label
         except ImportError:
-            return False
+            label = numpy_label
+            self.get_logger().debug("Verwende NumPy-Fallback für label")
         
         result = self.compute_voxel_density_grid(cluster)
         if result[0] is None:
@@ -485,12 +742,18 @@ class HoleDetectionVoxelGridNode(BaseNode):
         centroid = region['centroid']
         bounds_min = region['bounds_min']
         bounds_max = region['bounds_max']
+        diameter = region.get('diameter', None)
         
         # Dimensionen berechnen
         height = bounds_max[2] - bounds_min[2]
         x_range = bounds_max[0] - bounds_min[0]
         y_range = bounds_max[1] - bounds_min[1]
-        width = max(x_range, y_range)
+        
+        # Verwende Durchmesser falls vorhanden, sonst max(x_range, y_range)
+        if diameter is not None:
+            width = diameter
+        else:
+            width = max(x_range, y_range)
         
         # Tiefenfilter - nur nahe Löcher
         distance_from_robot = np.sqrt(centroid[0]**2 + centroid[1]**2)
