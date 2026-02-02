@@ -1,6 +1,13 @@
 package.xml
 setup.cfg
 setup.py
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/PKG-INFO
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/dependency_links.txt
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/entry_points.txt
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/requires.txt
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/top_level.txt
+../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/zip-safe
 config/cardboard_detection_params.yaml
 go2_my_nodes_py/__init__.py
 go2_my_nodes_py/base_node.py

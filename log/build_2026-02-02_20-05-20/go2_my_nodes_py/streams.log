@@ -1,0 +1,54 @@
+[0.573s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build
+[0.805s] running develop
+[0.864s] Removing /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2-my-nodes-py.egg-link (link to .)
+[0.887s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py' returned '0': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build
+[0.889s] Invoking command in '/workspace/unitree_go2_hoehlenforscher/src/go2_my_nodes_py': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/go2_my_nodes_py build --build-base /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build install --record /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log --single-version-externally-managed install_data --force
+[1.036s] running egg_info
+[1.036s] writing ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/PKG-INFO
+[1.037s] writing dependency_links to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/dependency_links.txt
+[1.037s] writing entry points to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/entry_points.txt
+[1.037s] writing requirements to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/requires.txt
+[1.037s] writing top-level names to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/top_level.txt
+[1.038s] reading manifest file '../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt'
+[1.040s] writing manifest file '../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt'
+[1.040s] running build
+[1.041s] running build_py
+[1.041s] creating /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build
+[1.041s] creating /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib
+[1.041s] creating /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.041s] copying go2_my_nodes_py/cloud_to_entrance_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.042s] copying go2_my_nodes_py/entrance_decision_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.042s] copying go2_my_nodes_py/hole_detection_voxel_grid.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.042s] copying go2_my_nodes_py/base_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.042s] copying go2_my_nodes_py/__init__.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.043s] copying go2_my_nodes_py/navigation_action_server_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+[1.043s] running install
+[1.043s] running install_lib
+[1.043s] creating /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.043s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/cloud_to_entrance_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.043s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/entrance_decision_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.043s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/hole_detection_voxel_grid.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.044s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/base_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.044s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/__init__.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.044s] copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/navigation_action_server_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+[1.044s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/cloud_to_entrance_node.py to cloud_to_entrance_node.cpython-310.pyc
+[1.045s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/entrance_decision_node.py to entrance_decision_node.cpython-310.pyc
+[1.045s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/hole_detection_voxel_grid.py to hole_detection_voxel_grid.cpython-310.pyc
+[1.050s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/base_node.py to base_node.cpython-310.pyc
+[1.050s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/__init__.py to __init__.cpython-310.pyc
+[1.050s] byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/navigation_action_server_node.py to navigation_action_server_node.cpython-310.pyc
+[1.051s] running install_data
+[1.051s] copying resource/go2_my_nodes_py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/ament_index/resource_index/packages
+[1.051s] copying package.xml -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py
+[1.052s] copying launch/hole_detection_voxel_grid.launch.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py/launch
+[1.052s] copying rviz/hole_detection.rviz -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py/rviz
+[1.052s] copying config/cardboard_detection_params.yaml -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py/config
+[1.052s] running install_egg_info
+[1.053s] Copying ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py-0.0.0-py3.10.egg-info
+[1.053s] running install_scripts
+[1.071s] Installing cloud_to_entrance_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.071s] Installing entrance_decision_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.071s] Installing hole_detection_voxel_grid script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.071s] Installing navigation_action_server_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+[1.071s] writing list of installed files to '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log'
+[1.093s] Invoked command in '/workspace/unitree_go2_hoehlenforscher/src/go2_my_nodes_py' returned '0': PYTHONPATH=/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/go2_my_nodes_py build --build-base /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build install --record /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log --single-version-externally-managed install_data --force
