@@ -220,17 +220,17 @@ class HoleDetectionVoxelGridNode(BaseNode):
         self.max_width = 1.0
         self.cluster_distance = 0.5
         
-        # Voxel Grid spezifische Parameter - HÖCHSTE Auflösung
-        self.voxel_size = 0.0025  # 0.cm Voxel für höchste Präzision
+        # Voxel Grid spezifische Parameter - Optimiert für 50cm Löcher
+        self.voxel_size = 0.02  # 2cm Voxel (50cm = 25x25 Voxel, guter Kompromiss)
         self.gradient_percentile = 75  # Top 25% Gradienten = Kanten
         self.low_density_percentile = 25  # Unten 25% Dichte = Loch-Kandidaten
-        self.gaussian_sigma = 2.0  # Erhöhte Glättung für höchste Auflösung
+        self.gaussian_sigma = 1.5  # Moderate Glättung für stabile Erkennung
         
         # Spezifische Parameter für bodenstehende Löcher
         self.min_hole_diameter = 0.10  # Minimaler Durchmesser 10cm (aggresiverer)
         self.max_hole_diameter = 2.0  # Maximaler Durchmesser 2m
         self.vertical_slice_height = 0.08  # 8cm Scheiben (Kompromiss für alle Größen)
-        self.min_region_cells = 260  # Angepasst für 0.25cm Voxel (50x50cm = 200x200 Zellen)
+        self.min_region_cells = 400  # Angepasst für 2cm Voxel (50x50cm = ~625 Zellen, nutze 400 als Minimum)
         self.min_surrounded_sides = 3  # Loch muss von mind. 3 Seiten umgeben sein
         
         # CSV-Logging für erkannte Eingänge
@@ -571,7 +571,7 @@ class HoleDetectionVoxelGridNode(BaseNode):
         
         # Finde Bereiche mit niedriger Dichte (Löcher)
         if np.any(smoothed > 0):
-            threshold = np.percentile(smoothed[smoothed > 0], 8)  # Untere 10% = Lücken
+            threshold = np.percentile(smoothed[smoothed > 0], 15)  # Untere 15% = Lücken (konservativer)
         else:
             self.get_logger().warn("Keine Punkte in Frontal-Projektion")
             return []
@@ -579,9 +579,9 @@ class HoleDetectionVoxelGridNode(BaseNode):
         # Binäre Maske: True = Loch (niedrige Dichte)
         hole_mask = smoothed < threshold
         
-        # Morphologische Operationen - weniger aggressiv für größere Löcher
-        hole_mask = binary_erosion(hole_mask, iterations=0)
-        hole_mask = binary_dilation(hole_mask, iterations=1)
+        # Morphologische Operationen - KEINE Erosion, nur leichte Dilation für Zusammenhang
+        # Erosion würde die Löcher kleiner machen!
+        hole_mask = binary_dilation(hole_mask, iterations=2)  # Verbindet nahe Regionen
         
         # Finde zusammenhängende Loch-Regionen
         labeled_array, num_features = label(hole_mask)
@@ -649,46 +649,58 @@ class HoleDetectionVoxelGridNode(BaseNode):
             
             region_points = front_points[in_region]
             
-            # Berechne Dimensionen basierend auf echten Punkt-Koordinaten (genauer als Voxel-Grid!)
-            # Nutze Perzentile (5%-95%) um Ausreißer zu ignorieren
-            if len(region_points) > 0:
-                # X-Dimension (Tiefe)
-                x_vals = region_points[:, 0]
-                x_min = np.percentile(x_vals, 5)
-                x_max = np.percentile(x_vals, 95)
-                depth = x_max - x_min
-                
-                # Y-Dimension (Breite)
-                y_vals = region_points[:, 1]
-                y_min = np.percentile(y_vals, 5)
-                y_max = np.percentile(y_vals, 95)
-                width_refined = y_max - y_min
-                
-                # Z-Dimension (Höhe)
-                z_vals = region_points[:, 2]
-                z_min = np.percentile(z_vals, 5)
-                z_max = np.percentile(z_vals, 95)
-                height_refined = z_max - z_min
-            else:
-                x_min = region_x_min = np.min([p[0] for p in region_points]) if len(region_points) > 0 else 0
-                x_max = region_x_max = np.max([p[0] for p in region_points]) if len(region_points) > 0 else 0
-                depth = x_max - x_min
-                y_min = region_y_min
-                y_max = region_y_max
-                width_refined = width
-                z_min = region_z_min
-                z_max = region_z_max
-                height_refined = height
+            # Berechne Dimensionen basierend auf LOCHGRENZEN (nicht Punkte IM Loch!)
+            # Das Loch ist ZWISCHEN den Punkten - nutze Voxel-Grid Grenzen direkt
+            # WICHTIG: Voxel-Diskretisierung unterschätzt - addiere 1 Voxel pro Seite
+            # Bei 2cm Voxel: 50cm Loch = 25 Voxel gemessen → 25*2cm = 50cm ✓
             
-            # Zentroid (aus Perzentil-Grenzen)
+            # Direkt aus Voxel-Grid + 1 Voxel Korrektur pro Seite
+            width_voxel_cells = region_cells[:, 0].max() - region_cells[:, 0].min() + 1  # +1 für letzte Zelle
+            height_voxel_cells = region_cells[:, 1].max() - region_cells[:, 1].min() + 1
+            
+            # Konvertiere Zellen zu Meter + 1 Voxel Expansion (Rand-Korrektur)
+            width_refined = (width_voxel_cells + 2) * grid_resolution_2d  # +2 Voxel (1 pro Seite)
+            height_refined = (height_voxel_cells + 2) * grid_resolution_2d
+            
+            self.get_logger().info(
+                f"📏 Region {region_id}: {width_voxel_cells}x{height_voxel_cells} Voxel "
+                f"→ {width_refined*100:.1f}x{height_refined*100:.1f}cm "
+                f"(Voxel: {grid_resolution_2d*100:.1f}cm)"
+            )
+            
+            # Für X-Dimension (Tiefe): Nutze Front-Points Bereich
+            if len(region_points) > 0:
+                x_vals = region_points[:, 0]
+                x_min = np.min(x_vals)
+                x_max = np.max(x_vals)
+                depth = x_max - x_min
+            else:
+                x_min = x_min_filter
+                x_max = x_max_filter
+                depth = x_max - x_min
+            
+            # Y und Z aus korrigierten Voxel-Grid Grenzen
+            # Zentrum basierend auf Voxel-Zellen, dann erweitern
+            y_center_voxel = (region_cells[:, 0].min() + region_cells[:, 0].max()) / 2.0
+            z_center_voxel = (region_cells[:, 1].min() + region_cells[:, 1].max()) / 2.0
+            
+            y_center = y_center_voxel * grid_resolution_2d + y_min
+            z_center = z_center_voxel * grid_resolution_2d + z_min
+            
+            y_min_calc = y_center - width_refined / 2.0
+            y_max_calc = y_center + width_refined / 2.0
+            z_min_calc = z_center - height_refined / 2.0
+            z_max_calc = z_center + height_refined / 2.0
+            
+            # Zentroid (aus korrigierten Grenzen)
             centroid_x = (x_min + x_max) / 2.0
-            centroid_y = (y_min + y_max) / 2.0
-            centroid_z = (z_min + z_max) / 2.0
+            centroid_y = y_center
+            centroid_z = z_center
             
             hole_regions.append({
                 'centroid': np.array([centroid_x, centroid_y, centroid_z]),
-                'bounds_min': np.array([x_min, y_min, z_min]),
-                'bounds_max': np.array([x_max, y_max, z_max]),
+                'bounds_min': np.array([x_min, y_min_calc, z_min_calc]),
+                'bounds_max': np.array([x_max, y_max_calc, z_max_calc]),
                 'width': width_refined,
                 'height': height_refined,
                 'depth': depth,
