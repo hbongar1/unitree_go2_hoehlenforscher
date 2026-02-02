@@ -5,6 +5,7 @@
 geometry_msgs/Point target_position
 float32 entrance_width
 float32 entrance_height
+float32 required_height_adjustment
 ---
 # Result: Was the navigation successful?
 bool success
