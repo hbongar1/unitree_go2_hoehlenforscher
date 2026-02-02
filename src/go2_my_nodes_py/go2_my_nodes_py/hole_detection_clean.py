@@ -47,22 +47,22 @@ class HoleDetectionCleanNode(BaseNode):
         self.height_threshold = 0.1    # Min 10cm Höhe
         self.width_threshold = 0.1     # Min 10cm Breite
         
-        # Voxel Grid (2D-Projektion)
-        self.voxel_size = 0.02  # 2cm Auflösung
-        self.gaussian_sigma = 1.5  # Glättung
-        self.min_region_cells = 400  # Min Zellen für 50cm Loch
-        self.min_surrounded_sides = 3  # Loch muss von 3 Seiten umgeben sein
+        # Voxel Grid (2D-Projektion) - HÖCHSTE PRÄZISION
+        self.voxel_size = 0.005  # 5mm Voxel für mm-Genauigkeit
+        self.gaussian_sigma = 1.0  # Weniger Glättung = schärfere Kanten
+        self.min_region_cells = 400  # Höher wegen kleineren Voxeln (50cm = 100x100 = 10000 Zellen)
+        self.min_surrounded_sides = 2  # Mindestens 2 Seiten für Stabilität
         
-        # Multi-Frame Tracking
-        self.frame_buffer_size = 50
+        # Multi-Frame Tracking - Mehr Frames für Stabilität
+        self.frame_buffer_size = 80  # Mehr Frames = stabilere Messung
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 2
+        self.process_every_n_frames = 3  # Alle 3 Frames verarbeiten
         
-        # Konfidenz
+        # Konfidenz - Höhere Schwelle für Stabilität
         self.entrance_history = {}
-        self.confidence_threshold = 1
-        self.entrance_timeout = 40
+        self.confidence_threshold = 3  # Mindestens 3x gesehen = stabil
+        self.entrance_timeout = 60  # Länger im Speicher für besseres Tracking
         self.next_entrance_id = 0
         
         # CSV Logging
@@ -87,7 +87,7 @@ class HoleDetectionCleanNode(BaseNode):
         
         # Subscribers
         self.cloud_sub = self.create_subscription(
-            PointCloud2, 'utlidar/cloud_deskewed', self.cloud_data_callback, qos_profile
+            PointCloud2, 'utlidar/cloud', self.cloud_data_callback, qos_profile
         )
         
         # Publishers
@@ -183,11 +183,11 @@ class HoleDetectionCleanNode(BaseNode):
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
-        # Filter 1: Winkel (±45°, mit 5° Randabstand)
+        # Filter 1: Winkel (±50° mit 5° Randabstand = ±45°)
         angle_filter = np.abs(angles) < 45.0
         
-        # Filter 2: Distanz (0.3-2.5m mit Randabstand)
-        distance_filter = (distances_xy > 0.4) & (distances_xy < 2.4)
+        # Filter 2: Distanz (0.3-2.0m mit Randabstand)
+        distance_filter = (distances_xy > 0.1) & (distances_xy < 1.9)
         
         # Filter 3: Höhe (0-3m)
         z_filter = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
@@ -259,8 +259,8 @@ class HoleDetectionCleanNode(BaseNode):
         threshold = np.percentile(smoothed[smoothed > 0], 15)
         hole_mask = smoothed < threshold
         
-        # Morphologie (weniger Aufblähung für genauere Maße)
-        hole_mask = binary_dilation(hole_mask, iterations=1)
+        # KEINE Morphologie für exakte Maße
+        # hole_mask bleibt unverändert = direktes Threshold-Ergebnis
         
         # Label zusammenhängende Regionen
         labeled_array, num_features = label(hole_mask)
@@ -280,12 +280,12 @@ class HoleDetectionCleanNode(BaseNode):
             region_z_min = region_cells[:, 1].min() * grid_resolution_2d + z_min
             region_z_max = region_cells[:, 1].max() * grid_resolution_2d + z_min
             
-            # Dimensionen mit Voxel-Korrektur (+1 statt +2)
+            # Dimensionen OHNE Voxel-Korrektur für exakte Maße
             width_voxels = region_cells[:, 0].max() - region_cells[:, 0].min() + 1
             height_voxels = region_cells[:, 1].max() - region_cells[:, 1].min() + 1
             
-            width = (width_voxels + 1) * grid_resolution_2d  # +1 Voxel Rand-Korrektur
-            height = (height_voxels + 1) * grid_resolution_2d
+            width = width_voxels * grid_resolution_2d  # Exakt, keine Korrektur
+            height = height_voxels * grid_resolution_2d
             
             # Größen-Check
             if width < self.min_hole_diameter or width > self.max_hole_diameter:
@@ -369,7 +369,7 @@ class HoleDetectionCleanNode(BaseNode):
     
     def update_entrance_tracking(self, current_entrances: List[Entrance]):
         """Update Konfidenz-Tracking mit Measurement-Smoothing"""
-        smoothing_alpha = 0.2  # 20% neue Messung, 80% alte
+        smoothing_alpha = 0.3  # 30% neue Messung (schnellere Konvergenz zu echten Werten)
         
         # Inkrementiere frames_since_seen
         for data in self.entrance_history.values():
