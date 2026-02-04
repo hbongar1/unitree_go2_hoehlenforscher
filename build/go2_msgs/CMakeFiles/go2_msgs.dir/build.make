@@ -67,6 +67,7 @@ include CMakeFiles/go2_msgs.dir/compiler_depend.make
 include CMakeFiles/go2_msgs.dir/progress.make
 
 CMakeFiles/go2_msgs: /workspace/unitree_go2_hoehlenforscher/src/go2_msgs/msg/Entrance.msg
+CMakeFiles/go2_msgs: /workspace/unitree_go2_hoehlenforscher/src/go2_msgs/action/HeightAdjustment.action
 CMakeFiles/go2_msgs: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 CMakeFiles/go2_msgs: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 CMakeFiles/go2_msgs: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl

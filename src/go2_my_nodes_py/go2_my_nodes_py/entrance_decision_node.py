@@ -3,7 +3,7 @@ from rclpy.action import ActionClient
 from collections import deque
 from go2_my_nodes_py.base_node import BaseNode
 from go2_msgs.msg import Entrance
-from go2_msgs.action import Height_Adjustment
+from go2_msgs.action import HeightAdjustment
 import numpy as np
 
 
@@ -19,7 +19,7 @@ class EntranceDecisionNode(BaseNode):
         # Subscriber für Entrance Messages
         self.subscription = self.create_subscription(
             Entrance,
-            'entrance_detection_clean',
+            'entrance_detection_ransac',
             self.entrance_callback,
             10
         )
@@ -27,7 +27,7 @@ class EntranceDecisionNode(BaseNode):
         # Action Client für Höhenanpassung
         self._action_client = ActionClient(
             self,
-            Height_Adjustment,
+            HeightAdjustment,
             'height_adjustment'
         )
         
@@ -179,8 +179,8 @@ class EntranceDecisionNode(BaseNode):
         # Determine if passable
         passable = decision in ["PASS_THROUGH_STANDING", "PASS_THROUGH_CROUCHING"]
         
-        # Erstelle Goal für Height_Adjustment
-        goal_msg = Height_Adjustment.Goal()
+        # Erstelle Goal für HeightAdjustment
+        goal_msg = HeightAdjustment.Goal()
         goal_msg.passable = passable
         goal_msg.required_height_adjustment = required_height if passable else 0.0
         

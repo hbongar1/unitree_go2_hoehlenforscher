@@ -35,10 +35,11 @@ setup(
         'console_scripts': [
             'cloud_to_entrance_node = go2_my_nodes_py.cloud_to_entrance_node:main',
             'entrance_decision_node = go2_my_nodes_py.entrance_decision_node:main',
-            'navigation_action_server_node = go2_my_nodes_py.navigation_action_server_node:main',
+            'action_node = go2_my_nodes_py.action_node:main',
             'hole_detection_voxel_grid = go2_my_nodes_py.hole_detection_voxel_grid:main',
              'hole_detection_clean = go2_my_nodes_py.hole_detection_clean:main',
              'hole_detection_ransac = go2_my_nodes_py.hole_detection_ransac:main',
+             'test_sport_movement = go2_my_nodes_py.test_sport_movement:main',
         ],
     },
 

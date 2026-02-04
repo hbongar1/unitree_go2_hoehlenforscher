@@ -10,6 +10,7 @@ go2_my_nodes_py/entrance_decision_node.py
 go2_my_nodes_py/hole_detection_clean.py
 go2_my_nodes_py/hole_detection_ransac.py
 go2_my_nodes_py/hole_detection_voxel_grid.py
+go2_my_nodes_py/test_sport_movement.py
 go2_my_nodes_py.egg-info/PKG-INFO
 go2_my_nodes_py.egg-info/SOURCES.txt
 go2_my_nodes_py.egg-info/dependency_links.txt

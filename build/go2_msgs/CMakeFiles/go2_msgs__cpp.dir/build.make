@@ -71,6 +71,11 @@ CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__bui
 CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__struct.hpp
 CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__traits.hpp
 CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__type_support.hpp
+CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/height_adjustment.hpp
+CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__builder.hpp
+CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__struct.hpp
+CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__traits.hpp
+CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__type_support.hpp
 CMakeFiles/go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
 
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/lib/rosidl_generator_cpp/rosidl_generator_cpp
@@ -89,6 +94,7 @@ rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/share/rosidl_gen
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/share/rosidl_generator_cpp/resource/srv__struct.hpp.em
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/share/rosidl_generator_cpp/resource/srv__traits.hpp.em
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: rosidl_adapter/go2_msgs/msg/Entrance.idl
+rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: rosidl_adapter/go2_msgs/action/HeightAdjustment.idl
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_cpp/go2_msgs/msg/entrance.hpp: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -173,7 +179,27 @@ rosidl_generator_cpp/go2_msgs/msg/detail/entrance__traits.hpp: rosidl_generator_
 rosidl_generator_cpp/go2_msgs/msg/detail/entrance__type_support.hpp: rosidl_generator_cpp/go2_msgs/msg/entrance.hpp
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/go2_msgs/msg/detail/entrance__type_support.hpp
 
+rosidl_generator_cpp/go2_msgs/action/height_adjustment.hpp: rosidl_generator_cpp/go2_msgs/msg/entrance.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/go2_msgs/action/height_adjustment.hpp
+
+rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__builder.hpp: rosidl_generator_cpp/go2_msgs/msg/entrance.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__builder.hpp
+
+rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__struct.hpp: rosidl_generator_cpp/go2_msgs/msg/entrance.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__struct.hpp
+
+rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__traits.hpp: rosidl_generator_cpp/go2_msgs/msg/entrance.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__traits.hpp
+
+rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__type_support.hpp: rosidl_generator_cpp/go2_msgs/msg/entrance.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__type_support.hpp
+
 go2_msgs__cpp: CMakeFiles/go2_msgs__cpp
+go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__builder.hpp
+go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__struct.hpp
+go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__traits.hpp
+go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/detail/height_adjustment__type_support.hpp
+go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/action/height_adjustment.hpp
 go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__builder.hpp
 go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__struct.hpp
 go2_msgs__cpp: rosidl_generator_cpp/go2_msgs/msg/detail/entrance__traits.hpp

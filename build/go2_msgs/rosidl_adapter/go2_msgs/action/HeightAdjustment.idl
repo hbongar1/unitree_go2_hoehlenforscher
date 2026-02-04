@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from go2_msgs/action/HeightAdjustment.action
+// generated code does not contain a copyright notice
+
+
+module go2_msgs {
+  module action {
+    @verbatim (language="comment", text=
+      "Height_Adjustment.action" "\n"
+      "Action definition for navigating through an entrance")
+    struct HeightAdjustment_Goal {
+      boolean passable;
+
+      float required_height_adjustment;
+    };
+    @verbatim (language="comment", text=
+      "Result: Was the navigation successful?")
+    struct HeightAdjustment_Result {
+      boolean success;
+
+      string message;
+    };
+    @verbatim (language="comment", text=
+      "Feedback: Current progress")
+    struct HeightAdjustment_Feedback {
+      string status;
+    };
+  };
+};

@@ -261,8 +261,16 @@ CMakeFiles/go2_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/go2_msg
   /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/string.h \
   /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence.h \
   /opt/ros/humble/include/geometry_msgs/geometry_msgs/msg/detail/point__struct.h \
-  rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h
+  rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h \
+  rosidl_generator_c/go2_msgs/action/detail/height_adjustment__type_support.h \
+  rosidl_generator_c/go2_msgs/action/detail/height_adjustment__struct.h \
+  /opt/ros/humble/include/unique_identifier_msgs/unique_identifier_msgs/msg/detail/uuid__struct.h \
+  rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.h
 
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.h:
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__struct.h:
 
 rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h:
 
@@ -532,6 +540,8 @@ rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h:
 
 /usr/include/limits.h:
 
+/opt/ros/humble/include/unique_identifier_msgs/unique_identifier_msgs/msg/detail/uuid__struct.h:
+
 /usr/include/python3.10/objimpl.h:
 
 /usr/include/python3.10/patchlevel.h:
@@ -679,6 +689,8 @@ rosidl_generator_c/go2_msgs/msg/detail/entrance__struct.h:
 /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
 
 /usr/include/python3.10/pycapsule.h:
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__type_support.h:
 
 /usr/include/python3.10/code.h:
 

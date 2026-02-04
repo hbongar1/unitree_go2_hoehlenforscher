@@ -507,6 +507,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake"
   "rosidl_cmake/rosidl_cmake_export_typesupport_targets-extras.cmake"
   "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/CMakeLists.txt"
+  "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/action/HeightAdjustment.action"
   "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/msg/Entrance.msg"
   "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/package.xml"
   )
@@ -525,6 +526,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "ament_cmake_symlink_install/ament_cmake_symlink_install_uninstall_script.cmake"
   "CTestConfiguration.ini"
   "ament_cmake_core/stamps/Entrance.msg.stamp"
+  "ament_cmake_core/stamps/HeightAdjustment.action.stamp"
   "ament_cmake_core/stamps/package.xml.stamp"
   "ament_cmake_core/stamps/package_xml_2_cmake.py.stamp"
   "rosidl_generator_c/go2_msgs/msg/rosidl_generator_c__visibility_control.h"

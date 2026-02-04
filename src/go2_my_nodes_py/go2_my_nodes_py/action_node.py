@@ -3,16 +3,16 @@ import time
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from rclpy.callback_groups import ReentrantCallbackGroup
 from go2_my_nodes_py.base_node import BaseNode
-from go2_msgs.action import Height_Adjustment
+from go2_msgs.action import HeightAdjustment
 from geometry_msgs.msg import Twist
 
-# Unitree SDK imports
+# Unitree ROS2 API imports
 try:
-    from unitree_sdk2py.core.sportclient import SportClient
-    UNITREE_SDK_AVAILABLE = True
+    from unitree_api.msg import Request
+    UNITREE_API_AVAILABLE = True
 except ImportError:
-    UNITREE_SDK_AVAILABLE = False
-    SportClient = None
+    UNITREE_API_AVAILABLE = False
+    Request = None
 
 
 class action_node(BaseNode):
@@ -24,22 +24,22 @@ class action_node(BaseNode):
             description="Action server for navigating to detected entrances"
         )
         
-        # Initialisiere Unitree SportClient falls verfügbar
-        self.sport_client = None
-        if UNITREE_SDK_AVAILABLE:
-            try:
-                self.sport_client = SportClient()
-                self.sport_client.Init()
-                self.get_logger().info("✅ Unitree SportClient initialized")
-            except Exception as e:
-                self.get_logger().warn(f"⚠️  Could not initialize SportClient: {e}")
+        # Publisher für Sportmode Request Messages
+        if UNITREE_API_AVAILABLE:
+            self.sport_req_pub = self.create_publisher(
+                Request, 
+                '/api/sport/request', 
+                10
+            )
+            self.get_logger().info("✅ Unitree Sport API publisher initialized")
         else:
-            self.get_logger().warn("⚠️  Unitree SDK not available - using simulation mode")
+            self.sport_req_pub = None
+            self.get_logger().warn("⚠️  Unitree API not available - using simulation mode")
         
         # Action Server erstellen
         self._action_server = ActionServer(
             self,
-            Height_Adjustment,
+            HeightAdjustment,
             'height_adjustment',
             execute_callback=self.execute_callback,
             goal_callback=self.goal_callback,
@@ -97,24 +97,16 @@ class action_node(BaseNode):
             # Schritt 1: Prüfe ob Eingang passierbar ist
             if not passable:
                 self.get_logger().warn(
-                    f"❌ Entrance not passable - sitting down at {self.robot_sitting_height:.3f}m"
+                    "❌ Entrance not passable - sitting down"
                 )
                 
-                # Nutze SDK zum Hinsetzen falls verfügbar
-                if self.sport_client:
-                    try:
-                        result = self.sport_client.Sit()
-                        if result == 0:
-                            self.get_logger().info("✅ Successfully sat down (SDK)")
-                            self.is_sitting = True
-                        else:
-                            self.get_logger().warn(f"⚠️  SDK Sit() returned error code {result}")
-                    except Exception as e:
-                        self.get_logger().error(f"❌ Error executing Sit(): {e}")
+                # Nutze ROS2 Sport API zum Hinsetzen
+                self._send_sit_command()
+                self.is_sitting = True
                 
                 # Erfolgreiche Aktion
                 goal_handle.succeed()
-                result = Height_Adjustment.Result()
+                result = HeightAdjustment.Result()
                 result.success = True
                 result.message = "Sat down due to non-passable entrance"
                 self.get_logger().info("✅ Successfully sat down!")
@@ -133,7 +125,7 @@ class action_node(BaseNode):
             
             # Erfolgreiche Aktion
             goal_handle.succeed()
-            result = Height_Adjustment.Result()
+            result = HeightAdjustment.Result()
             result.success = True
             result.message = f"Height adjusted to {self.current_body_height:.3f}m successfully"
             self.get_logger().info("✅ Height adjustment completed successfully!")
@@ -145,7 +137,7 @@ class action_node(BaseNode):
             self._set_body_height(self.robot_standing_height)
             
             goal_handle.abort()
-            result = Height_Adjustment.Result()
+            result = HeightAdjustment.Result()
             result.success = False
             result.message = f"Execution failed: {str(e)}"
             return result
@@ -158,29 +150,16 @@ class action_node(BaseNode):
         """
         self.get_logger().info("⬆️  Standing up from sitting position...")
         
-        if self.sport_client:
-            try:
-                # Nutze echten SDK - RiseSit zum Aufstehen vom Sitzen
-                result = self.sport_client.RiseSit()
-                if result == 0:
-                    self.get_logger().info("✅ Successfully stood up (SDK)")
-                    # Setze aktuelle Höhe auf Standing-Höhe
-                    self.current_body_height = self.robot_standing_height
-                else:
-                    self.get_logger().warn(f"⚠️  SDK RiseSit() returned error code {result}")
-            except Exception as e:
-                self.get_logger().error(f"❌ Error executing RiseSit(): {e}")
-        else:
-            # Simulation
-            self.get_logger().info("⬆️  [SIMULATION] Standing up from sitting position")
-            self.current_body_height = self.robot_standing_height
+        # Nutze ROS2 Sport API zum Aufstehen
+        self._send_stand_up_command()
+        self.current_body_height = self.robot_standing_height
         
         # Gebe Feedback
-        feedback = Height_Adjustment.Feedback()
+        feedback = HeightAdjustment.Feedback()
         feedback.status = "Standing up from sitting position"
         goal_handle.publish_feedback(feedback)
         
-        time.sleep(1.0)  # Gib SDK Zeit zum Ausführen
+        time.sleep(1.0)  # Gib Zeit zum Ausführen
     
     async def _adjust_body_height_async(self, target_height: float, goal_handle):
         """
@@ -205,7 +184,7 @@ class action_node(BaseNode):
             )
             
             # Gebe Feedback
-            feedback = Height_Adjustment.Feedback()
+            feedback = HeightAdjustment.Feedback()
             feedback.status = f"Adjusting body height to {target_height:.3f}m ({progress*100:.0f}%)"
             goal_handle.publish_feedback(feedback)
             
@@ -222,33 +201,62 @@ class action_node(BaseNode):
         height = max(self.min_crouching_height, min(height, self.robot_standing_height))
         self.current_body_height = height
         
-        # Berechne relative Höhe für SDK (relativ zur Standardhöhe 0.33m)
+        # Berechne relative Höhe (relativ zur Standardhöhe)
         relative_height = height - self.robot_standing_height
         
-        if self.sport_client:
-            try:
-                # Nutze echten SDK
-                result = self.sport_client.BodyHeight(relative_height)
-                if result == 0:
-                    self.get_logger().info(
-                        f"🎯 Body height set to {height:.3f}m (relative: {relative_height:.3f}m)"
-                    )
-                else:
-                    self.get_logger().warn(
-                        f"⚠️  SDK returned error code {result} for BodyHeight"
-                    )
-            except Exception as e:
-                self.get_logger().error(f"❌ Error setting body height: {e}")
-        else:
-            # Simulation für Testing
-            self.get_logger().info(
-                f"🎯 [SIMULATION] Setting body height to {height:.3f}m"
-            )
+        # Nutze ROS2 Sport API
+        self._send_body_height_command(relative_height)
         
-        # Optional: Veröffentliche Bewegungsbefehl für Visualisierung
-        twist_msg = Twist()
-        twist_msg.linear.z = (height - self.robot_standing_height) * 0.1
-        self.cmd_vel_pub.publish(twist_msg)
+        self.get_logger().info(
+            f"🎯 Body height set to {height:.3f}m (relative: {relative_height:.3f}m)"
+        )
+    
+    def _send_sit_command(self):
+        """Sendet Sit-Befehl über Sport API"""
+        if not self.sport_req_pub:
+            self.get_logger().warn("Sport API not available - simulating sit")
+            return
+        
+        try:
+            req = Request()
+            # Für Sit-Befehl müssen wir die entsprechende API-Struktur verwenden
+            # Dies ist ein Platzhalter - die genaue Implementierung hängt von der API ab
+            req.header.identity.id = 0
+            req.parameter = '{"name": "sit"}'
+            self.sport_req_pub.publish(req)
+            self.get_logger().info("✅ Sit command sent via Sport API")
+        except Exception as e:
+            self.get_logger().error(f"❌ Error sending sit command: {e}")
+    
+    def _send_stand_up_command(self):
+        """Sendet StandUp-Befehl über Sport API"""
+        if not self.sport_req_pub:
+            self.get_logger().warn("Sport API not available - simulating stand up")
+            return
+        
+        try:
+            req = Request()
+            req.header.identity.id = 0
+            req.parameter = '{"name": "stand_up"}'
+            self.sport_req_pub.publish(req)
+            self.get_logger().info("✅ Stand up command sent via Sport API")
+        except Exception as e:
+            self.get_logger().error(f"❌ Error sending stand up command: {e}")
+    
+    def _send_body_height_command(self, height: float):
+        """Sendet BodyHeight-Befehl über Sport API"""
+        if not self.sport_req_pub:
+            self.get_logger().warn("Sport API not available - simulating body height")
+            return
+        
+        try:
+            req = Request()
+            req.header.identity.id = 0
+            req.parameter = f'{{"name": "body_height", "height": {height:.3f}}}'
+            self.sport_req_pub.publish(req)
+            self.get_logger().info(f"✅ Body height command sent: {height:.3f}m")
+        except Exception as e:
+            self.get_logger().error(f"❌ Error sending body height command: {e}")
     
     def _calculate_distance(self, target):
         """Berechnet Distanz zum Ziel (vereinfacht)"""

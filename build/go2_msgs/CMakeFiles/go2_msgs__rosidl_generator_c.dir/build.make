@@ -83,6 +83,7 @@ rosidl_generator_c/go2_msgs/msg/entrance.h: /opt/ros/humble/share/rosidl_generat
 rosidl_generator_c/go2_msgs/msg/entrance.h: /opt/ros/humble/share/rosidl_generator_c/resource/msg__type_support.h.em
 rosidl_generator_c/go2_msgs/msg/entrance.h: /opt/ros/humble/share/rosidl_generator_c/resource/srv__type_support.h.em
 rosidl_generator_c/go2_msgs/msg/entrance.h: rosidl_adapter/go2_msgs/msg/Entrance.idl
+rosidl_generator_c/go2_msgs/msg/entrance.h: rosidl_adapter/go2_msgs/action/HeightAdjustment.idl
 rosidl_generator_c/go2_msgs/msg/entrance.h: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_c/go2_msgs/msg/entrance.h: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_c/go2_msgs/msg/entrance.h: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -164,8 +165,23 @@ rosidl_generator_c/go2_msgs/msg/detail/entrance__struct.h: rosidl_generator_c/go
 rosidl_generator_c/go2_msgs/msg/detail/entrance__type_support.h: rosidl_generator_c/go2_msgs/msg/entrance.h
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/msg/detail/entrance__type_support.h
 
+rosidl_generator_c/go2_msgs/action/height_adjustment.h: rosidl_generator_c/go2_msgs/msg/entrance.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/action/height_adjustment.h
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.h: rosidl_generator_c/go2_msgs/msg/entrance.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.h
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__struct.h: rosidl_generator_c/go2_msgs/msg/entrance.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/action/detail/height_adjustment__struct.h
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__type_support.h: rosidl_generator_c/go2_msgs/msg/entrance.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/action/detail/height_adjustment__type_support.h
+
 rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c: rosidl_generator_c/go2_msgs/msg/entrance.h
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c
+
+rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c: rosidl_generator_c/go2_msgs/msg/entrance.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c
 
 CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o: CMakeFiles/go2_msgs__rosidl_generator_c.dir/flags.make
 CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o: rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c
@@ -181,14 +197,30 @@ CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/deta
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.s"
 	/usr/bin/clang-18 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c -o CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.s
 
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o: CMakeFiles/go2_msgs__rosidl_generator_c.dir/flags.make
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o: rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o: CMakeFiles/go2_msgs__rosidl_generator_c.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o"
+	/usr/bin/clang-18 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o -MF CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o.d -o CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o -c /workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c
+
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.i"
+	/usr/bin/clang-18 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c > CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.i
+
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.s"
+	/usr/bin/clang-18 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c -o CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.s
+
 # Object files for target go2_msgs__rosidl_generator_c
 go2_msgs__rosidl_generator_c_OBJECTS = \
-"CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o"
+"CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o" \
+"CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o"
 
 # External object files for target go2_msgs__rosidl_generator_c
 go2_msgs__rosidl_generator_c_EXTERNAL_OBJECTS =
 
 libgo2_msgs__rosidl_generator_c.so: CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c.o
+libgo2_msgs__rosidl_generator_c.so: CMakeFiles/go2_msgs__rosidl_generator_c.dir/rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c.o
 libgo2_msgs__rosidl_generator_c.so: CMakeFiles/go2_msgs__rosidl_generator_c.dir/build.make
 libgo2_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/libgeometry_msgs__rosidl_generator_c.so
 libgo2_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/libaction_msgs__rosidl_generator_c.so
@@ -198,7 +230,7 @@ libgo2_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/libbuiltin_interfaces__r
 libgo2_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/librosidl_runtime_c.so
 libgo2_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/librcutils.so
 libgo2_msgs__rosidl_generator_c.so: CMakeFiles/go2_msgs__rosidl_generator_c.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C shared library libgo2_msgs__rosidl_generator_c.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C shared library libgo2_msgs__rosidl_generator_c.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/go2_msgs__rosidl_generator_c.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -209,6 +241,11 @@ CMakeFiles/go2_msgs__rosidl_generator_c.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/go2_msgs__rosidl_generator_c.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/go2_msgs__rosidl_generator_c.dir/clean
 
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.c
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/action/detail/height_adjustment__functions.h
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/action/detail/height_adjustment__struct.h
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/action/detail/height_adjustment__type_support.h
+CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/action/height_adjustment.h
 CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.c
 CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/msg/detail/entrance__functions.h
 CMakeFiles/go2_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/go2_msgs/msg/detail/entrance__struct.h
