@@ -53,15 +53,15 @@ class HoleDetectionRansacNode(BaseNode):
         self.min_surrounded_sides = 2
         
         # RANSAC Parameter
-        self.ransac_iterations = 100
-        self.ransac_threshold = 0.02  # 2cm Inlier-Toleranz
-        self.edge_margin = 0.05  # 5cm Rand um das Loch für Kantenpunkte
+        self.ransac_iterations = 150
+        self.ransac_threshold = 0.01  # 2cm Inlier-Toleranz
+        self.edge_margin = 0.04  # 5cm Rand um das Loch für Kantenpunkte
         
         # Multi-Frame Tracking
-        self.frame_buffer_size = 50
+        self.frame_buffer_size = 120
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 3
+        self.process_every_n_frames = 1
         
         # Konfidenz
         self.entrance_history = {}
