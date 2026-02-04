@@ -65,7 +65,6 @@ class action_node(BaseNode):
         self.robot_standing_height = 0.45    # Normale Höhe im Stand (45cm)
         self.min_crouching_height = 0.30     # Minimale Höhe beim Beugen (30cm)
         self.current_body_height = self.robot_standing_height  # Aktuelle Höhe
-        self.height_adjustment_speed = 0.2  # m/s - Anpassungsgeschwindigkeit
         self.is_sitting = False  # Flag: Roboter sitzt gerade
         
         self.get_logger().info("Height Adjustment Action Server ready!")
