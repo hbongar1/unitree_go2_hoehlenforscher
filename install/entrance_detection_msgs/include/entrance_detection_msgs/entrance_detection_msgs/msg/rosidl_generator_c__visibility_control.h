@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/entrance_detection_msgs/rosidl_generator_c/entrance_detection_msgs/msg/rosidl_generator_c__visibility_control.h

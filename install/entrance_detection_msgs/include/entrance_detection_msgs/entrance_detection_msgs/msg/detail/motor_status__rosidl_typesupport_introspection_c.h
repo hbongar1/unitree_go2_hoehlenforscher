@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/entrance_detection_msgs/rosidl_typesupport_introspection_c/entrance_detection_msgs/msg/detail/motor_status__rosidl_typesupport_introspection_c.h

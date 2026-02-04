@@ -55,7 +55,8 @@ class HoleDetectionRansacNode(BaseNode):
         # RANSAC Parameter
         self.ransac_iterations = 150
         self.ransac_threshold = 0.01  # 1cm Inlier-Toleranz
-        self.edge_margin = 0.02  # 2cm Rand um das Loch für Kantenpunkte
+        self.edge_margin_y = 0.01  # 1cm Rand für Y-Richtung (Breite)
+        self.edge_margin_z = 0.04  # 4cm Rand für Z-Richtung (Höhe)
         
         # Multi-Frame Tracking
         self.frame_buffer_size = 200
@@ -303,33 +304,34 @@ class HoleDetectionRansacNode(BaseNode):
         z_min_rough, z_max_rough = candidate['bounds_z']
         front_points = candidate['front_points']
         
-        margin = self.edge_margin
+        margin_y = self.edge_margin_y
+        margin_z = self.edge_margin_z
         
         # Finde Punkte an den 4 Kanten des Lochs
         # LINKS: Punkte knapp links vom Loch
-        left_mask = (front_points[:, 1] >= y_min_rough - margin*2) & \
-                    (front_points[:, 1] <= y_min_rough + margin) & \
+        left_mask = (front_points[:, 1] >= y_min_rough - margin_y*2) & \
+                    (front_points[:, 1] <= y_min_rough + margin_y) & \
                     (front_points[:, 2] >= z_min_rough) & \
                     (front_points[:, 2] <= z_max_rough)
         left_points = front_points[left_mask]
         
         # RECHTS: Punkte knapp rechts vom Loch
-        right_mask = (front_points[:, 1] >= y_max_rough - margin) & \
-                     (front_points[:, 1] <= y_max_rough + margin*2) & \
+        right_mask = (front_points[:, 1] >= y_max_rough - margin_y) & \
+                     (front_points[:, 1] <= y_max_rough + margin_y*2) & \
                      (front_points[:, 2] >= z_min_rough) & \
                      (front_points[:, 2] <= z_max_rough)
         right_points = front_points[right_mask]
         
         # OBEN: Punkte knapp über dem Loch
-        top_mask = (front_points[:, 2] >= z_max_rough - margin) & \
-                   (front_points[:, 2] <= z_max_rough + margin*2) & \
+        top_mask = (front_points[:, 2] >= z_max_rough - margin_z) & \
+                   (front_points[:, 2] <= z_max_rough + margin_z*2) & \
                    (front_points[:, 1] >= y_min_rough) & \
                    (front_points[:, 1] <= y_max_rough)
         top_points = front_points[top_mask]
         
         # UNTEN: Punkte knapp unter dem Loch
-        bottom_mask = (front_points[:, 2] >= z_min_rough - margin*2) & \
-                      (front_points[:, 2] <= z_min_rough + margin) & \
+        bottom_mask = (front_points[:, 2] >= z_min_rough - margin_z*2) & \
+                      (front_points[:, 2] <= z_min_rough + margin_z) & \
                       (front_points[:, 1] >= y_min_rough) & \
                       (front_points[:, 1] <= y_max_rough)
         bottom_points = front_points[bottom_mask]

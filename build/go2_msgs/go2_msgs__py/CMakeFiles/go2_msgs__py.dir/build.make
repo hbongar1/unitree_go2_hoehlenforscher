@@ -70,11 +70,8 @@ go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/_go2_msgs_s.e
 go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_introspection_c.c
 go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c
 go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/msg/_entrance.py
-go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/action/_navigate_to_entrance.py
 go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/msg/__init__.py
-go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/action/__init__.py
 go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/msg/_entrance_s.c
-go2_msgs__py/CMakeFiles/go2_msgs__py: rosidl_generator_py/go2_msgs/action/_navigate_to_entrance_s.c
 
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/lib/rosidl_generator_py/rosidl_generator_py
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_generator_py/__init__.py
@@ -90,7 +87,6 @@ rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /op
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/rosidl_generator_py/resource/_srv_pkg_typesupport_entry_point.c.em
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/rosidl_generator_py/resource/_srv.py.em
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: rosidl_adapter/go2_msgs/msg/Entrance.idl
-rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: rosidl_adapter/go2_msgs/action/NavigateToEntrance.idl
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -172,28 +168,16 @@ rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c: rosidl_gener
 rosidl_generator_py/go2_msgs/msg/_entrance.py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/go2_msgs/msg/_entrance.py
 
-rosidl_generator_py/go2_msgs/action/_navigate_to_entrance.py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
-	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/go2_msgs/action/_navigate_to_entrance.py
-
 rosidl_generator_py/go2_msgs/msg/__init__.py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/go2_msgs/msg/__init__.py
 
-rosidl_generator_py/go2_msgs/action/__init__.py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
-	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/go2_msgs/action/__init__.py
-
 rosidl_generator_py/go2_msgs/msg/_entrance_s.c: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/go2_msgs/msg/_entrance_s.c
-
-rosidl_generator_py/go2_msgs/action/_navigate_to_entrance_s.c: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
-	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/go2_msgs/action/_navigate_to_entrance_s.c
 
 go2_msgs__py: go2_msgs__py/CMakeFiles/go2_msgs__py
 go2_msgs__py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_c.c
 go2_msgs__py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 go2_msgs__py: rosidl_generator_py/go2_msgs/_go2_msgs_s.ep.rosidl_typesupport_introspection_c.c
-go2_msgs__py: rosidl_generator_py/go2_msgs/action/__init__.py
-go2_msgs__py: rosidl_generator_py/go2_msgs/action/_navigate_to_entrance.py
-go2_msgs__py: rosidl_generator_py/go2_msgs/action/_navigate_to_entrance_s.c
 go2_msgs__py: rosidl_generator_py/go2_msgs/msg/__init__.py
 go2_msgs__py: rosidl_generator_py/go2_msgs/msg/_entrance.py
 go2_msgs__py: rosidl_generator_py/go2_msgs/msg/_entrance_s.c

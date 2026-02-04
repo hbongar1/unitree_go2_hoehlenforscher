@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_c/go2_msgs/action/detail/navigate_to_entrance__type_support.h

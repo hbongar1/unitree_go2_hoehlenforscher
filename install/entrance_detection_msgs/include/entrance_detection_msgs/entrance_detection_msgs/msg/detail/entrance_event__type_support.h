@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/entrance_detection_msgs/rosidl_generator_c/entrance_detection_msgs/msg/detail/entrance_event__type_support.h

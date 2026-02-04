@@ -15,7 +15,6 @@ find_package(action_msgs REQUIRED)
 # Declare message files
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Entrance.msg"
-  "action/NavigateToEntrance.action"
   DEPENDENCIES std_msgs geometry_msgs action_msgs
 )
 

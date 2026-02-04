@@ -1,4 +1,2 @@
-action/NavigateToEntrance.action
-action/NavigateToEntrance.idl
 msg/Entrance.idl
 msg/Entrance.msg

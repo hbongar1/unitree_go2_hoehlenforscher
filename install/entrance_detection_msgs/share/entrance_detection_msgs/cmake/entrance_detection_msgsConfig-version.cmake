@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/entrance_detection_msgs/ament_cmake_core/entrance_detection_msgsConfig-version.cmake

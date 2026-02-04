@@ -1,12 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/action/detail/dds_fastrtps/navigate_to_entrance__type_support.cpp.o"
-  "CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/action/detail/dds_fastrtps/navigate_to_entrance__type_support.cpp.o.d"
   "CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/detail/dds_fastrtps/entrance__type_support.cpp.o"
   "CMakeFiles/go2_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/detail/dds_fastrtps/entrance__type_support.cpp.o.d"
   "libgo2_msgs__rosidl_typesupport_fastrtps_cpp.pdb"
   "libgo2_msgs__rosidl_typesupport_fastrtps_cpp.so"
-  "rosidl_typesupport_fastrtps_cpp/go2_msgs/action/detail/dds_fastrtps/navigate_to_entrance__type_support.cpp"
-  "rosidl_typesupport_fastrtps_cpp/go2_msgs/action/detail/navigate_to_entrance__rosidl_typesupport_fastrtps_cpp.hpp"
   "rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/detail/dds_fastrtps/entrance__type_support.cpp"
   "rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/detail/entrance__rosidl_typesupport_fastrtps_cpp.hpp"
 )

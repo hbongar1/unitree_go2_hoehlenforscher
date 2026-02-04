@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/entrance_detection_msgs/rosidl_typesupport_fastrtps_c/entrance_detection_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h

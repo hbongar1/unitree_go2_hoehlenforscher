@@ -3,8 +3,7 @@
   "output_dir": "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_py/go2_msgs",
   "template_dir": "/opt/ros/humble/share/rosidl_generator_py/cmake/../resource",
   "idl_tuples": [
-    "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs:msg/Entrance.idl",
-    "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs:action/NavigateToEntrance.idl"
+    "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs:msg/Entrance.idl"
   ],
   "ros_interface_dependencies": [
     "std_msgs:/opt/ros/humble/share/std_msgs/msg/Bool.idl",
@@ -92,7 +91,6 @@
     "/opt/ros/humble/share/rosidl_generator_py/cmake/../resource/_srv_pkg_typesupport_entry_point.c.em",
     "/opt/ros/humble/share/rosidl_generator_py/cmake/../resource/_srv.py.em",
     "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs/msg/Entrance.idl",
-    "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs/action/NavigateToEntrance.idl",
     "/opt/ros/humble/share/std_msgs/msg/Bool.idl",
     "/opt/ros/humble/share/std_msgs/msg/Byte.idl",
     "/opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl",

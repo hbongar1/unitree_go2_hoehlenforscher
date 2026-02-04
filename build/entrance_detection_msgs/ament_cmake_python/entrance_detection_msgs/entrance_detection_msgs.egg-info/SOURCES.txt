@@ -1,6 +1,0 @@
-setup.py
-entrance_detection_msgs/__init__.py
-entrance_detection_msgs.egg-info/PKG-INFO
-entrance_detection_msgs.egg-info/SOURCES.txt
-entrance_detection_msgs.egg-info/dependency_links.txt
-entrance_detection_msgs.egg-info/top_level.txt

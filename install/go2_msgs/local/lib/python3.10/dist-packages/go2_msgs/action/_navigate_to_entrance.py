@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_py/go2_msgs/action/_navigate_to_entrance.py

@@ -361,14 +361,8 @@ include("/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/ament_cmake_symli
 # install(FILES "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs/msg/Entrance.idl" "DESTINATION" "share/go2_msgs/msg")
 ament_cmake_symlink_install_files("/workspace/unitree_go2_hoehlenforscher/src/go2_msgs" FILES "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs/msg/Entrance.idl" "DESTINATION" "share/go2_msgs/msg")
 
-# install(FILES "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs/action/NavigateToEntrance.idl" "DESTINATION" "share/go2_msgs/action")
-ament_cmake_symlink_install_files("/workspace/unitree_go2_hoehlenforscher/src/go2_msgs" FILES "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_adapter/go2_msgs/action/NavigateToEntrance.idl" "DESTINATION" "share/go2_msgs/action")
-
 # install(FILES "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/msg/Entrance.msg" "DESTINATION" "share/go2_msgs/msg")
 ament_cmake_symlink_install_files("/workspace/unitree_go2_hoehlenforscher/src/go2_msgs" FILES "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/msg/Entrance.msg" "DESTINATION" "share/go2_msgs/msg")
-
-# install(FILES "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/action/NavigateToEntrance.action" "DESTINATION" "share/go2_msgs/action")
-ament_cmake_symlink_install_files("/workspace/unitree_go2_hoehlenforscher/src/go2_msgs" FILES "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/action/NavigateToEntrance.action" "DESTINATION" "share/go2_msgs/action")
 
 # install(FILES "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/go2_msgs" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 ament_cmake_symlink_install_files("/workspace/unitree_go2_hoehlenforscher/src/go2_msgs" FILES "/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/go2_msgs" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")

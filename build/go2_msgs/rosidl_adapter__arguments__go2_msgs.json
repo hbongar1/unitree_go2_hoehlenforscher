@@ -1,7 +1,6 @@
 {
   "package_name": "go2_msgs",
   "non_idl_tuples": [
-    "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs:msg/Entrance.msg",
-    "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs:action/NavigateToEntrance.action"
+    "/workspace/unitree_go2_hoehlenforscher/src/go2_msgs:msg/Entrance.msg"
   ]
 }
