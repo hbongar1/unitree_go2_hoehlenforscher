@@ -68,8 +68,7 @@ class EntranceDecisionNode(BaseNode):
             # Führe nur einmal eine Aktion aus
             if not self.decision_sent:
                 self.execute_action(decision, avg_entrance, required_height)
-                self.decision_sent = True
-                # Leere Buffer nach Entscheidung
+                # decision_sent bleibt False - erlaube mehrere Actions
                 self.entrance_measurements.clear()
         else:
             self.get_logger().info(
@@ -157,15 +156,15 @@ class EntranceDecisionNode(BaseNode):
             
         elif decision == "TOO_NARROW":
             self.get_logger().warn(
-                f"🚫 Entrance too narrow ({entrance['width']:.3f}m < {self.robot_width:.3f}m). "
-                f"Looking for alternative route."
+                f"🚫 Entrance too narrow ({entrance['width']:.3f}m < {self.robot_width:.3f}m) - sending sit command"
             )
+            self.send_action_goal(entrance, 0.0, decision)
             
         elif decision == "TOO_LOW":
             self.get_logger().warn(
-                f"🚫 Entrance too low ({entrance['height']:.3f}m < {self.min_crouching_height:.3f}m). "
-                f"Looking for alternative route."
+                f"🚫 Entrance too low ({entrance['height']:.3f}m < {self.min_crouching_height:.3f}m) - sending sit command"
             )
+            self.send_action_goal(entrance, 0.0, decision)
     
     def send_action_goal(self, entrance: dict, required_height: float, decision: str):
         """Sendet Action Goal an den Action Server für Höhenanpassung"""
@@ -174,6 +173,7 @@ class EntranceDecisionNode(BaseNode):
         self.get_logger().info("⏳ Waiting for action server...")
         if not self._action_client.wait_for_server(timeout_sec=5.0):
             self.get_logger().error("Action server not available!")
+            self.decision_sent = False  # Reset flag
             return
         
         # Determine if passable
@@ -205,6 +205,7 @@ class EntranceDecisionNode(BaseNode):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().warn('❌ Goal rejected by action server')
+            self.decision_sent = False  # Reset flag um neue Entscheidungen zu ermöglichen
             return
         
         self.get_logger().info('✅ Goal accepted by action server')

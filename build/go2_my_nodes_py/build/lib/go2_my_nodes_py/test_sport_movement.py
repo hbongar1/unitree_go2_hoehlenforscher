@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+"""
+Test-Node für Unitree GO2 SportMode Bewegungen
+Testet verschiedene Bewegungsbefehle über die ROS2 Sport API
+"""
+
+import json
+import rclpy
+from rclpy.node import Node
+import time
+
+# Unitree ROS2 API imports
+try:
+    from unitree_api.msg import Request
+    UNITREE_API_AVAILABLE = True
+except ImportError:
+    UNITREE_API_AVAILABLE = False
+    Request = None
+    print("⚠️  unitree_api not available - please install unitree_ros2")
+
+
+class SportMovementTestNode(Node):
+    """Test-Node für SportMode Bewegungen"""
+    
+    def __init__(self):
+        super().__init__('sport_movement_test')
+        
+        if not UNITREE_API_AVAILABLE:
+            self.get_logger().error("❌ Unitree API not available!")
+            return
+        
+        # Publisher für Sport Request
+        self.sport_req_pub = self.create_publisher(
+            Request,
+            '/api/sport/request',
+            10
+        )
+        
+        # Warte bis Publisher bereit ist
+        time.sleep(0.5)
+        
+        self.get_logger().info("✅ Sport Movement Test Node initialized")
+        self.get_logger().info("Publisher ready on /api/sport/request")
+
+    # Sport API IDs (siehe unitree_ros2/example/src/include/common/ros2_sport_client.h)
+    ROBOT_SPORT_API_ID_BALANCESTAND = 1002
+    ROBOT_SPORT_API_ID_STOPMOVE = 1003
+    ROBOT_SPORT_API_ID_STANDUP = 1004
+    ROBOT_SPORT_API_ID_STANDDOWN = 1005
+    ROBOT_SPORT_API_ID_MOVE = 1008
+    ROBOT_SPORT_API_ID_SIT = 1009
+    ROBOT_SPORT_API_ID_RISESIT = 1010
+    ROBOT_SPORT_API_ID_BODYHEIGHT = 1013
+    
+    def send_sit_command(self):
+        """Sendet Sit-Befehl"""
+        self.get_logger().info("📤 Sending SIT command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_SIT
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Sit command sent")
+    
+    def send_stand_command(self):
+        """Sendet Stand-Befehl"""
+        self.get_logger().info("📤 Sending RISE_SIT command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_RISESIT
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Rise-sit command sent")
+    
+    def send_stand_up_command(self):
+        """Sendet StandUp-Befehl"""
+        self.get_logger().info("📤 Sending STAND_UP command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_STANDUP
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Stand-up command sent")
+
+    def send_stand_down_command(self):
+        """Sendet StandDown-Befehl"""
+        self.get_logger().info("📤 Sending STAND_DOWN command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_STANDDOWN
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Stand-down command sent")
+
+    def send_balance_stand_command(self):
+        """Sendet BalanceStand-Befehl"""
+        self.get_logger().info("📤 Sending BALANCE_STAND command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_BALANCESTAND
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Balance-stand command sent")
+    
+    def send_move_command(self, vx: float, vy: float, vyaw: float):
+        """Sendet Bewegungsbefehl
+        
+        Args:
+            vx: Geschwindigkeit vorwärts/rückwärts in m/s
+            vy: Geschwindigkeit seitwärts in m/s
+            vyaw: Rotationsgeschwindigkeit in rad/s
+        """
+        self.get_logger().info(f"📤 Sending MOVE command: vx={vx:.2f}, vy={vy:.2f}, vyaw={vyaw:.2f}...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_MOVE
+        req.parameter = json.dumps({"x": float(vx), "y": float(vy), "z": float(vyaw)})
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Move command sent")
+
+    def send_stop_move_command(self):
+        """Stoppt die Bewegung"""
+        self.get_logger().info("📤 Sending STOP_MOVE command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_STOPMOVE
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Stop-move command sent")
+
+    def send_body_height_command(self, height: float):
+        """Setzt relative Body Height (m). Bereich typ. [-0.18, 0.03]."""
+        self.get_logger().info(f"📤 Sending BODY_HEIGHT command: {height:.3f}m...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_BODYHEIGHT
+        req.parameter = json.dumps({"data": float(height)})
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Body-height command sent")
+    
+    def run_test_sequence(self):
+        """Führt eine Test-Sequenz durch"""
+        if not UNITREE_API_AVAILABLE:
+            self.get_logger().error("Cannot run test - API not available")
+            return
+        
+        self.get_logger().info("=" * 60)
+        self.get_logger().info("🚀 Starting Sport Movement Test Sequence")
+        self.get_logger().info("=" * 60)
+        
+        try:
+            # Test 1: StandDown / StandUp
+            self.get_logger().info("\n--- Test 1: Stand Down / Up ---")
+            self.send_stand_down_command()
+            time.sleep(3)
+            
+            self.send_stand_up_command()
+            time.sleep(3)
+            
+            # Test 2: Hinsetzen
+            self.get_logger().info("\n--- Test 2: Sit Down ---")
+            self.send_sit_command()
+            time.sleep(3)
+            
+            # Test 3: Aufstehen
+            self.get_logger().info("\n--- Test 3: Rise Sit ---")
+            self.send_stand_command()
+            time.sleep(3)
+
+            # Test 4: BalanceStand (für BodyHeight)
+            self.get_logger().info("\n--- Test 4: Balance Stand ---")
+            self.send_balance_stand_command()
+            time.sleep(2)
+
+            # Test 5: Body Height -10cm
+            self.get_logger().info("\n--- Test 5: Body Height -10cm ---")
+            self.send_body_height_command(-0.10)
+            time.sleep(3)
+            self.send_body_height_command(0.0)
+            time.sleep(2)
+
+            # Test 6: Bewegung vorwärts
+            self.get_logger().info("\n--- Test 6: Move Forward ---")
+            self.send_move_command(0.3, 0.0, 0.0)
+            time.sleep(2)
+            self.send_stop_move_command()
+            time.sleep(1)
+            
+            self.get_logger().info("\n" + "=" * 60)
+            self.get_logger().info("✅ Test Sequence Completed Successfully!")
+            self.get_logger().info("=" * 60)
+            
+        except Exception as e:
+            self.get_logger().error(f"❌ Error during test sequence: {e}")
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    
+    if not UNITREE_API_AVAILABLE:
+        print("❌ Cannot start test - unitree_api not available")
+        print("Please install: sudo apt install ros-humble-unitree-api")
+        return
+    
+    node = SportMovementTestNode()
+    
+    try:
+        # Führe Test-Sequenz aus
+        node.run_test_sequence()
+        
+        # Halte Node am Leben für manuelle Tests
+        print("\n" + "=" * 60)
+        print("Test sequence finished. Node is still running.")
+        print("Press Ctrl+C to exit.")
+        print("=" * 60)
+        rclpy.spin(node)
+        
+    except KeyboardInterrupt:
+        node.get_logger().info("Test interrupted by user")
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
