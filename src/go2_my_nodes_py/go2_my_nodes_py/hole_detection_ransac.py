@@ -56,7 +56,7 @@ class HoleDetectionRansacNode(BaseNode):
         self.ransac_iterations = 150
         self.ransac_threshold = 0.01  # 1cm Inlier-Toleranz
         self.edge_margin_y = 0.01  # 1cm Rand für Y-Richtung (Breite)
-        self.edge_margin_z = 0.04  # 4cm Rand für Z-Richtung (Höhe)
+        self.edge_margin_z = 0.05  # 6cm Rand für Z-Richtung (Höhe)
         
         # Multi-Frame Tracking
         self.frame_buffer_size = 200
@@ -139,7 +139,7 @@ class HoleDetectionRansacNode(BaseNode):
             if self.frame_counter % self.process_every_n_frames != 0:
                 return
             
-            if len(self.point_buffer) < (self.frame_buffer_size/2):
+            if len(self.point_buffer) < 100:
                 self.get_logger().debug(f"Zu wenig Frames gepuffert: {len(self.point_buffer)}/{self.frame_buffer_size}")
                 return
             

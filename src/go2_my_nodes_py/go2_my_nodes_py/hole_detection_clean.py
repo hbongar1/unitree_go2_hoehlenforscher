@@ -54,7 +54,8 @@ class HoleDetectionCleanNode(BaseNode):
         self.min_surrounded_sides = 2  # Mindestens 2 Seiten für Stabilität
         
         # Multi-Frame Tracking - Mehr Frames für Stabilität
-        self.frame_buffer_size = 120  # Mehr Frames = stabilere Messung
+        self.frame_buffer_size = 200  # Mehr Frames = stabilere Messung
+        self.min_buffer_frames_to_search = 100  # Erst nach 100 Frames nach Eingängen suchen
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
         self.process_every_n_frames = 1  # Jedes Frame verarbeiten
@@ -75,6 +76,13 @@ class HoleDetectionCleanNode(BaseNode):
             writer.writerow(['Timestamp', 'Position_X_m', 'Position_Y_m', 'Position_Z_m',
                            'Breite_m', 'Hoehe_m', 'Tiefe_m', 'Confidence'])
         self.get_logger().info(f"CSV-Logging: {self.csv_file}")
+
+        # CSV Entry Tracking
+        self.csv_entry_count = 0
+        self.csv_max_entries = 100
+        self.csv_breite_values = []
+        self.csv_hoehe_values = []
+        self.csv_tiefe_values = []
         
         # === ROS2 SETUP ===
         
@@ -124,7 +132,7 @@ class HoleDetectionCleanNode(BaseNode):
             if self.frame_counter % self.process_every_n_frames != 0:
                 return
             
-            if len(self.point_buffer) < 2:
+            if len(self.point_buffer) < self.min_buffer_frames_to_search:
                 return
             
             # 5. Kombiniere Frames
@@ -480,19 +488,29 @@ class HoleDetectionCleanNode(BaseNode):
                 
                 # CSV Logging
                 try:
-                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                    with open(self.csv_file, 'a', newline='') as f:
-                        writer = csv.writer(f)
-                        writer.writerow([
-                            timestamp,
-                            f'{entrance.position.x:.4f}',
-                            f'{entrance.position.y:.4f}',
-                            f'{entrance.position.z:.4f}',
-                            f'{smooth_width:.4f}',
-                            f'{smooth_height:.4f}',
-                            f'{smooth_depth:.4f}',
-                            data['confidence']
-                        ])
+                    if self.csv_entry_count < self.csv_max_entries:
+                        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                        with open(self.csv_file, 'a', newline='') as f:
+                            writer = csv.writer(f)
+                            writer.writerow([
+                                timestamp,
+                                f'{entrance.position.x:.4f}',
+                                f'{entrance.position.y:.4f}',
+                                f'{entrance.position.z:.4f}',
+                                f'{smooth_width:.4f}',
+                                f'{smooth_height:.4f}',
+                                f'{smooth_depth:.4f}',
+                                data['confidence']
+                            ])
+                        # Speichere Werte für Mittelwertberechnung
+                        self.csv_breite_values.append(smooth_width)
+                        self.csv_hoehe_values.append(smooth_height)
+                        self.csv_tiefe_values.append(smooth_depth)
+                        self.csv_entry_count += 1
+
+                        # Wenn Limit erreicht, schreibe Mittelwerte
+                        if self.csv_entry_count >= self.csv_max_entries:
+                            self._write_csv_statistics()
                 except Exception as e:
                     self.get_logger().warn(f"CSV-Logging fehlgeschlagen: {e}")
                 
@@ -526,6 +544,35 @@ class HoleDetectionCleanNode(BaseNode):
         if published_count > 0:
             self.marker_pub.publish(marker_array)
             self.get_logger().info(f"{published_count} Eingänge → CSV: {self.csv_file}")
+
+    def _write_csv_statistics(self):
+        """Schreibt Mittelwerte von Breite, Höhe und Tiefe unten in die CSV-Datei"""
+        try:
+            if not self.csv_breite_values:
+                self.get_logger().warn("Keine Messwerte für CSV-Statistiken vorhanden")
+                return
+
+            avg_breite = np.mean(self.csv_breite_values)
+            avg_hoehe = np.mean(self.csv_hoehe_values)
+            avg_tiefe = np.mean(self.csv_tiefe_values)
+
+            with open(self.csv_file, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([])
+                writer.writerow(['STATISTIKEN'])
+                writer.writerow([])
+                writer.writerow(['MITTELWERTE:'])
+                writer.writerow(['Durchschnittliche Breite (m):', f'{avg_breite:.4f}'])
+                writer.writerow(['Durchschnittliche Höhe (m):', f'{avg_hoehe:.4f}'])
+                writer.writerow(['Durchschnittliche Tiefe (m):', f'{avg_tiefe:.4f}'])
+                writer.writerow(['Anzahl Einträge:', self.csv_entry_count])
+
+            self.get_logger().info(
+                f"CSV-Statistiken geschrieben nach {self.csv_entry_count} Einträgen: "
+                f"Breite={avg_breite:.4f}m, Höhe={avg_hoehe:.4f}m, Tiefe={avg_tiefe:.4f}m"
+            )
+        except Exception as e:
+            self.get_logger().error(f"Fehler beim Schreiben der CSV-Statistiken: {e}")
     
     def publish_filtered_cloud(self, points: np.ndarray, header: Header):
         """Publiziert gefilterte PointCloud für RViz"""

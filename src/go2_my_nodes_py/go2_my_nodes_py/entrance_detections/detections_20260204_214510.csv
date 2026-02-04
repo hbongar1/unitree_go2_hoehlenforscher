@@ -1,0 +1,6 @@
+Timestamp,Position_X_m,Position_Y_m,Position_Z_m,Breite_m,Hoehe_m,Tiefe_m,Confidence
+        # Voxel Grid - FEIN für maximale Präzision
+        self.voxel_size = 0.002  # 2mm Voxel (feiner = genauer)
+        self.gaussian_sigma = 0.7  # Weniger Glättung = schärfere Kanten
+        self.min_region_cells = 1000  # Höher wegen feineren Voxeln
+        self.min_surrounded_sides = 2  # Mindestens 2 Seiten für Stabilität
