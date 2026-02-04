@@ -3,7 +3,7 @@ from rclpy.action import ActionClient
 from collections import deque
 from go2_my_nodes_py.base_node import BaseNode
 from go2_msgs.msg import Entrance
-from go2_msgs.action import NavigateToEntrance
+from go2_msgs.action import Height_Adjustment
 import numpy as np
 
 
@@ -24,11 +24,11 @@ class EntranceDecisionNode(BaseNode):
             10
         )
         
-        # Action Client für Navigation
+        # Action Client für Höhenanpassung
         self._action_client = ActionClient(
             self,
-            NavigateToEntrance,
-            'navigate_to_entrance'
+            Height_Adjustment,
+            'height_adjustment'
         )
         
         # Parameter für Durchgangsentscheidungen
@@ -48,15 +48,13 @@ class EntranceDecisionNode(BaseNode):
     def entrance_callback(self, msg: Entrance):
         """Callback wird aufgerufen, wenn Entrance-Daten ankommen"""
         self.get_logger().info(
-            f"Received entrance: width={msg.width:.3f}m, height={msg.height:.3f}m, "
-            f"position=({msg.position.x:.2f}, {msg.position.y:.2f}, {msg.position.z:.2f})"
+            f"Received entrance: width={msg.width:.3f}m, height={msg.height:.3f}m"
         )
         
         # Sammle Messungen
         self.entrance_measurements.append({
             'width': msg.width,
-            'height': msg.height,
-            'position': msg.position
+            'height': msg.height
         })
         
         # Nur Entscheidung treffen, wenn genug Messungen gesammelt wurden
@@ -83,15 +81,9 @@ class EntranceDecisionNode(BaseNode):
         """Berechnet Durchschnittswerte aus den gesammelten Messungen"""
         widths = [m['width'] for m in self.entrance_measurements]
         heights = [m['height'] for m in self.entrance_measurements]
-        positions = [m['position'] for m in self.entrance_measurements]
         
         avg_width = np.mean(widths)
         avg_height = np.mean(heights)
-        
-        # Durchschnittliche Position
-        avg_x = np.mean([p.x for p in positions])
-        avg_y = np.mean([p.y for p in positions])
-        avg_z = np.mean([p.z for p in positions])
         
         self.get_logger().info(
             f"📊 Average entrance measurements: "
@@ -101,11 +93,7 @@ class EntranceDecisionNode(BaseNode):
         
         return {
             'width': avg_width,
-            'height': avg_height,
-            'position_x': avg_x,
-            'position_y': avg_y,
-            'position_z': avg_z,
-            'raw_position': positions[0]  # Nutze Position des letzten Frames
+            'height': avg_height
         }
     
     def make_decision(self, entrance: dict) -> tuple:
@@ -153,62 +141,52 @@ class EntranceDecisionNode(BaseNode):
             return "TOO_LOW", 0.0
     
     def execute_action(self, decision: str, entrance: dict, required_height: float = 0.0):
-        """Führt Aktion basierend auf Entscheidung aus"""
+        """Führt Action aus, um die Entscheidung an die Action Node zu schicken"""
         
         if decision == "PASS_THROUGH_STANDING":
             self.get_logger().info(
-                f"🚀 Navigating through entrance (STANDING) at "
-                f"({entrance['position_x']:.2f}, {entrance['position_y']:.2f})"
+                f"✅ Can pass through STANDING - sending action goal"
             )
-            self.send_navigation_goal(entrance, required_height)
+            self.send_action_goal(entrance, required_height, decision)
             
         elif decision == "PASS_THROUGH_CROUCHING":
             self.get_logger().info(
-                f"🚀 Navigating through entrance (CROUCHING to {required_height:.3f}m) at "
-                f"({entrance['position_x']:.2f}, {entrance['position_y']:.2f})"
+                f"⚠️  Must crouch to pass through (required height: {required_height:.3f}m)"
             )
-            self.send_navigation_goal(entrance, required_height)
+            self.send_action_goal(entrance, required_height, decision)
             
         elif decision == "TOO_NARROW":
             self.get_logger().warn(
                 f"🚫 Entrance too narrow ({entrance['width']:.3f}m < {self.robot_width:.3f}m). "
                 f"Looking for alternative route."
             )
-            # Hier könnte Alternative gesucht werden
             
         elif decision == "TOO_LOW":
             self.get_logger().warn(
                 f"🚫 Entrance too low ({entrance['height']:.3f}m < {self.min_crouching_height:.3f}m). "
                 f"Looking for alternative route."
             )
-            # Hier könnte Alternative gesucht werden
     
-    
-    def send_navigation_goal(self, entrance: dict, required_height: float = 0.0):
-        """
-        Sendet Navigation Goal an Action Server.
-        
-        Parameters:
-            entrance: dict mit durchschnittlichen Measurements
-            required_height: Höhe auf die sich der Roboter einstellen muss (0 = kein Anpassen)
-        """
+    def send_action_goal(self, entrance: dict, required_height: float, decision: str):
+        """Sendet Action Goal an den Action Server für Höhenanpassung"""
         
         # Warte auf Action Server
         self.get_logger().info("⏳ Waiting for action server...")
-        self._action_client.wait_for_server()
+        if not self._action_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().error("Action server not available!")
+            return
         
-        # Erstelle Goal
-        goal_msg = NavigateToEntrance.Goal()
-        goal_msg.target_position.x = entrance['position_x']
-        goal_msg.target_position.y = entrance['position_y']
-        goal_msg.target_position.z = entrance['position_z']
-        goal_msg.entrance_width = entrance['width']
-        goal_msg.entrance_height = entrance['height']
-        goal_msg.required_height_adjustment = required_height
+        # Determine if passable
+        passable = decision in ["PASS_THROUGH_STANDING", "PASS_THROUGH_CROUCHING"]
+        
+        # Erstelle Goal für Height_Adjustment
+        goal_msg = Height_Adjustment.Goal()
+        goal_msg.passable = passable
+        goal_msg.required_height_adjustment = required_height if passable else 0.0
         
         self.get_logger().info(
-            f"Sending navigation goal to ({entrance['position_x']:.2f}, {entrance['position_y']:.2f}) "
-            f"| Required height adjustment: {required_height:.3f}m"
+            f"📤 Sending action goal: passable={passable}, "
+            f"required_height_adjustment={goal_msg.required_height_adjustment:.3f}m"
         )
         
         # Sende Goal asynchron mit Callbacks
@@ -218,17 +196,18 @@ class EntranceDecisionNode(BaseNode):
         )
         self._send_goal_future.add_done_callback(self.goal_response_callback)
         
-        # Speichere required_height für Action Feedback
+        # Speichere Infos für Callbacks
         self._required_height = required_height
+        self._decision = decision
     
     def goal_response_callback(self, future):
         """Callback wenn Server Goal akzeptiert/ablehnt"""
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.get_logger().warn('Goal rejected by action server')
+            self.get_logger().warn('❌ Goal rejected by action server')
             return
         
-        self.get_logger().info('Goal accepted by action server')
+        self.get_logger().info('✅ Goal accepted by action server')
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
     
@@ -236,10 +215,7 @@ class EntranceDecisionNode(BaseNode):
         """Callback für Feedback während der Ausführung"""
         feedback = feedback_msg.feedback
         self.get_logger().info(
-            f"🔄 Navigation feedback: {feedback.status} | "
-            f"Progress: {feedback.progress_percentage:.1f}% | "
-            f"Distance: {feedback.distance_remaining:.2f}m | "
-            f"Required height adjustment: {getattr(self, '_required_height', 0.0):.3f}m"
+            f"🔄 Action feedback: {feedback.status}"
         )
     
     def get_result_callback(self, future):
@@ -247,13 +223,11 @@ class EntranceDecisionNode(BaseNode):
         result = future.result().result
         if result.success:
             self.get_logger().info(
-                f'✅ Navigation successful! {result.message} | '
-                f'Adjusted height: {getattr(self, "_required_height", 0.0):.3f}m'
+                f'✅ Action successful! {result.message}'
             )
         else:
             self.get_logger().error(
-                f'❌ Navigation failed: {result.message} | '
-                f'Attempted height adjustment: {getattr(self, "_required_height", 0.0):.3f}m'
+                f'❌ Action failed: {result.message}'
             )
         
         # Bereit für nächste Entscheidung
