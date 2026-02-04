@@ -47,17 +47,17 @@ class HoleDetectionCleanNode(BaseNode):
         self.height_threshold = 0.1    # Min 10cm Höhe
         self.width_threshold = 0.1     # Min 10cm Breite
         
-        # Voxel Grid (2D-Projektion) - HÖCHSTE PRÄZISION
-        self.voxel_size = 0.005  # 5mm Voxel für mm-Genauigkeit
-        self.gaussian_sigma = 1.0  # Weniger Glättung = schärfere Kanten
-        self.min_region_cells = 400  # Höher wegen kleineren Voxeln (50cm = 100x100 = 10000 Zellen)
+        # Voxel Grid - FEIN für maximale Präzision
+        self.voxel_size = 0.003  # 3mm Voxel (feiner = genauer)
+        self.gaussian_sigma = 0.7  # Weniger Glättung = schärfere Kanten
+        self.min_region_cells = 500  # Höher wegen feineren Voxeln
         self.min_surrounded_sides = 2  # Mindestens 2 Seiten für Stabilität
         
         # Multi-Frame Tracking - Mehr Frames für Stabilität
-        self.frame_buffer_size = 80  # Mehr Frames = stabilere Messung
+        self.frame_buffer_size = 120  # Mehr Frames = stabilere Messung
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
-        self.process_every_n_frames = 3  # Alle 3 Frames verarbeiten
+        self.process_every_n_frames = 1  # Jedes Frame verarbeiten
         
         # Konfidenz - Höhere Schwelle für Stabilität
         self.entrance_history = {}
@@ -111,7 +111,7 @@ class HoleDetectionCleanNode(BaseNode):
             
             # 2. Filtern (100° Radius, 0.3-2.5m Tiefe)
             filtered_points = self.filter_points(points)
-            if len(filtered_points) < 50:
+            if len(filtered_points) < 30:
                 return
             
             # 3. Gefilterte Cloud publizieren (für RViz)
