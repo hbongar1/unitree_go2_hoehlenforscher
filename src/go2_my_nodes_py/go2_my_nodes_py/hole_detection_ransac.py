@@ -47,7 +47,7 @@ class HoleDetectionRansacNode(BaseNode):
         self.width_threshold = 0.1     # Min 10cm Breite
         
         # Voxel Grid (nur für Kandidaten-Suche, nicht für Messung!)
-        self.voxel_size = 0.001  # 0.5cm Voxel (grob, nur für Kandidaten)
+        self.voxel_size = 0.005  # 0.5cm Voxel (grob, nur für Kandidaten)
         self.gaussian_sigma = 1.0
         self.min_region_cells = 100
         self.min_surrounded_sides = 2
@@ -55,10 +55,10 @@ class HoleDetectionRansacNode(BaseNode):
         # RANSAC Parameter
         self.ransac_iterations = 150
         self.ransac_threshold = 0.01  # 1cm Inlier-Toleranz
-        self.edge_margin = 0.03  # 3cm Rand um das Loch für Kantenpunkte
+        self.edge_margin = 0.02  # 2cm Rand um das Loch für Kantenpunkte
         
         # Multi-Frame Tracking
-        self.frame_buffer_size = 120
+        self.frame_buffer_size = 200
         self.point_buffer = deque(maxlen=self.frame_buffer_size)
         self.frame_counter = 0
         self.process_every_n_frames = 1
@@ -79,6 +79,13 @@ class HoleDetectionRansacNode(BaseNode):
             writer.writerow(['Timestamp', 'Position_X_m', 'Position_Y_m', 'Position_Z_m',
                            'Breite_m', 'Hoehe_m', 'Tiefe_m', 'Confidence'])
         self.get_logger().info(f"CSV-Logging: {self.csv_file}")
+        
+        # CSV Entry Tracking
+        self.csv_entry_count = 0
+        self.csv_max_entries = 100
+        self.csv_breite_values = []  # Für Mittelwertberechnung
+        self.csv_hoehe_values = []
+        self.csv_tiefe_values = []
         
         # === ROS2 SETUP ===
         
@@ -131,8 +138,8 @@ class HoleDetectionRansacNode(BaseNode):
             if self.frame_counter % self.process_every_n_frames != 0:
                 return
             
-            if len(self.point_buffer) < 2:
-                self.get_logger().debug(f"Zu wenig Frames gepuffert: {len(self.point_buffer)}")
+            if len(self.point_buffer) < (self.frame_buffer_size/2):
+                self.get_logger().debug(f"Zu wenig Frames gepuffert: {len(self.point_buffer)}/{self.frame_buffer_size}")
                 return
             
             all_points = np.vstack(list(self.point_buffer))
@@ -174,14 +181,14 @@ class HoleDetectionRansacNode(BaseNode):
         return np.array(points_list) if points_list else np.array([]).reshape(0, 3)
     
     def filter_points(self, points: np.ndarray) -> np.ndarray:
-        """Filtert Punkte: 60° Radius, 0.1-1.9m Tiefe, 0-3m Höhe"""
+        """Filtert Punkte: 70° Radius, 0.1-1.9m Tiefe, 0-3m Höhe"""
         if len(points) == 0:
             return points
 
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
-        angle_filter = np.abs(angles) < 30.0
+        angle_filter = np.abs(angles) < 35.0
         distance_filter = (distances_xy > 0.1) & (distances_xy < 1.9)
         z_filter = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
         
@@ -547,19 +554,29 @@ class HoleDetectionRansacNode(BaseNode):
                 
                 # CSV Logging
                 try:
-                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                    with open(self.csv_file, 'a', newline='') as f:
-                        writer = csv.writer(f)
-                        writer.writerow([
-                            timestamp,
-                            f'{entrance.position.x:.4f}',
-                            f'{entrance.position.y:.4f}',
-                            f'{entrance.position.z:.4f}',
-                            f'{smooth_width:.4f}',
-                            f'{smooth_height:.4f}',
-                            f'{smooth_depth:.4f}',
-                            data['confidence']
-                        ])
+                    if self.csv_entry_count < self.csv_max_entries:
+                        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                        with open(self.csv_file, 'a', newline='') as f:
+                            writer = csv.writer(f)
+                            writer.writerow([
+                                timestamp,
+                                f'{entrance.position.x:.4f}',
+                                f'{entrance.position.y:.4f}',
+                                f'{entrance.position.z:.4f}',
+                                f'{smooth_width:.4f}',
+                                f'{smooth_height:.4f}',
+                                f'{smooth_depth:.4f}',
+                                data['confidence']
+                            ])
+                        # Speichere Werte für Mittelwertberechnung
+                        self.csv_breite_values.append(smooth_width)
+                        self.csv_hoehe_values.append(smooth_height)
+                        self.csv_tiefe_values.append(smooth_depth)
+                        self.csv_entry_count += 1
+                        
+                        # Wenn Limit erreicht, schreibe Mittelwerte
+                        if self.csv_entry_count >= self.csv_max_entries:
+                            self._write_csv_statistics()
                 except Exception as e:
                     self.get_logger().warn(f"CSV-Logging fehlgeschlagen: {e}")
                 
@@ -619,7 +636,40 @@ class HoleDetectionRansacNode(BaseNode):
         cloud_msg.data = points.ravel().tobytes()
         self.filtered_cloud_pub.publish(cloud_msg)
         self.get_logger().info(f"Gefilterte Cloud publiziert: {len(points)} Punkte")
-
+    
+    def _write_csv_statistics(self):
+        """Schreibt Mittelwerte von Breite, Höhe und Tiefe unten in die CSV-Datei"""
+        try:
+            if not self.csv_breite_values:
+                self.get_logger().warn("Keine Messwerte für CSV-Statistiken vorhanden")
+                return
+            
+            # Berechne Mittelwerte
+            avg_breite = np.mean(self.csv_breite_values)
+            avg_hoehe = np.mean(self.csv_hoehe_values)
+            avg_tiefe = np.mean(self.csv_tiefe_values)
+            
+            # Schreibe Statistiken unten in die CSV
+            with open(self.csv_file, 'a', newline='') as f:
+                writer = csv.writer(f)
+                # Leere Zeile
+                writer.writerow([])
+                # Statistik-Header
+                writer.writerow(['STATISTIKEN'])
+                writer.writerow([])
+                # Mittelwerte
+                writer.writerow(['MITTELWERTE:'])
+                writer.writerow([f'Durchschnittliche Breite (m):', f'{avg_breite:.4f}'])
+                writer.writerow([f'Durchschnittliche Höhe (m):', f'{avg_hoehe:.4f}'])
+                writer.writerow([f'Durchschnittliche Tiefe (m):', f'{avg_tiefe:.4f}'])
+                writer.writerow([f'Anzahl Einträge:', self.csv_entry_count])
+            
+            self.get_logger().info(
+                f"CSV-Statistiken geschrieben nach {self.csv_entry_count} Einträgen: "
+                f"Breite={avg_breite:.4f}m, Höhe={avg_hoehe:.4f}m, Tiefe={avg_tiefe:.4f}m"
+            )
+        except Exception as e:
+            self.get_logger().error(f"Fehler beim Schreiben der CSV-Statistiken: {e}")
 
 def main(args=None):
     rclpy.init(args=args)
