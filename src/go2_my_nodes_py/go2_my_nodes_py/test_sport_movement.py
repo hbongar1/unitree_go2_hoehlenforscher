@@ -4,6 +4,7 @@ Test-Node für Unitree GO2 SportMode Bewegungen
 Testet verschiedene Bewegungsbefehle über die ROS2 Sport API
 """
 
+import json
 import rclpy
 from rclpy.node import Node
 import time
@@ -40,37 +41,56 @@ class SportMovementTestNode(Node):
         
         self.get_logger().info("✅ Sport Movement Test Node initialized")
         self.get_logger().info("Publisher ready on /api/sport/request")
+
+    # Sport API IDs (siehe unitree_ros2/example/src/include/common/ros2_sport_client.h)
+    ROBOT_SPORT_API_ID_BALANCESTAND = 1002
+    ROBOT_SPORT_API_ID_STOPMOVE = 1003
+    ROBOT_SPORT_API_ID_STANDUP = 1004
+    ROBOT_SPORT_API_ID_STANDDOWN = 1005
+    ROBOT_SPORT_API_ID_MOVE = 1008
+    ROBOT_SPORT_API_ID_SIT = 1009
+    ROBOT_SPORT_API_ID_RISESIT = 1010
+    ROBOT_SPORT_API_ID_BODYHEIGHT = 1013
     
     def send_sit_command(self):
         """Sendet Sit-Befehl"""
         self.get_logger().info("📤 Sending SIT command...")
         req = Request()
-        req.header.identity.id = 0
-        req.parameter = '{"name": "sit"}'
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_SIT
         self.sport_req_pub.publish(req)
         self.get_logger().info("✅ Sit command sent")
     
     def send_stand_command(self):
         """Sendet Stand-Befehl"""
-        self.get_logger().info("📤 Sending STAND command...")
+        self.get_logger().info("📤 Sending RISE_SIT command...")
         req = Request()
-        req.header.identity.id = 0
-        req.parameter = '{"name": "stand_up"}'
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_RISESIT
         self.sport_req_pub.publish(req)
-        self.get_logger().info("✅ Stand command sent")
+        self.get_logger().info("✅ Rise-sit command sent")
     
-    def send_body_height_command(self, height: float):
-        """Sendet BodyHeight-Befehl
-        
-        Args:
-            height: Relative Höhe in Metern (negativ = tiefer, positiv = höher)
-        """
-        self.get_logger().info(f"📤 Sending BODY HEIGHT command: {height:.3f}m...")
+    def send_stand_up_command(self):
+        """Sendet StandUp-Befehl"""
+        self.get_logger().info("📤 Sending STAND_UP command...")
         req = Request()
-        req.header.identity.id = 0
-        req.parameter = f'{{"name": "body_height", "height": {height:.3f}}}'
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_STANDUP
         self.sport_req_pub.publish(req)
-        self.get_logger().info(f"✅ Body height command sent: {height:.3f}m")
+        self.get_logger().info("✅ Stand-up command sent")
+
+    def send_stand_down_command(self):
+        """Sendet StandDown-Befehl"""
+        self.get_logger().info("📤 Sending STAND_DOWN command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_STANDDOWN
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Stand-down command sent")
+
+    def send_balance_stand_command(self):
+        """Sendet BalanceStand-Befehl"""
+        self.get_logger().info("📤 Sending BALANCE_STAND command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_BALANCESTAND
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Balance-stand command sent")
     
     def send_move_command(self, vx: float, vy: float, vyaw: float):
         """Sendet Bewegungsbefehl
@@ -82,10 +102,27 @@ class SportMovementTestNode(Node):
         """
         self.get_logger().info(f"📤 Sending MOVE command: vx={vx:.2f}, vy={vy:.2f}, vyaw={vyaw:.2f}...")
         req = Request()
-        req.header.identity.id = 0
-        req.parameter = f'{{"name": "move", "vx": {vx:.3f}, "vy": {vy:.3f}, "vyaw": {vyaw:.3f}}}'
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_MOVE
+        req.parameter = json.dumps({"x": float(vx), "y": float(vy), "z": float(vyaw)})
         self.sport_req_pub.publish(req)
         self.get_logger().info("✅ Move command sent")
+
+    def send_stop_move_command(self):
+        """Stoppt die Bewegung"""
+        self.get_logger().info("📤 Sending STOP_MOVE command...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_STOPMOVE
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Stop-move command sent")
+
+    def send_body_height_command(self, height: float):
+        """Setzt relative Body Height (m). Bereich typ. [-0.18, 0.03]."""
+        self.get_logger().info(f"📤 Sending BODY_HEIGHT command: {height:.3f}m...")
+        req = Request()
+        req.header.identity.api_id = self.ROBOT_SPORT_API_ID_BODYHEIGHT
+        req.parameter = json.dumps({"data": float(height)})
+        self.sport_req_pub.publish(req)
+        self.get_logger().info("✅ Body-height command sent")
     
     def run_test_sequence(self):
         """Führt eine Test-Sequenz durch"""
@@ -98,14 +135,12 @@ class SportMovementTestNode(Node):
         self.get_logger().info("=" * 60)
         
         try:
-            # Test 1: Body Height anpassen
-            self.get_logger().info("\n--- Test 1: Body Height Adjustment ---")
-            self.get_logger().info("Lowering body by 10cm...")
-            self.send_body_height_command(-0.10)
+            # Test 1: StandDown / StandUp
+            self.get_logger().info("\n--- Test 1: Stand Down / Up ---")
+            self.send_stand_down_command()
             time.sleep(3)
             
-            self.get_logger().info("Raising body back to normal...")
-            self.send_body_height_command(0.0)
+            self.send_stand_up_command()
             time.sleep(3)
             
             # Test 2: Hinsetzen
@@ -114,9 +149,28 @@ class SportMovementTestNode(Node):
             time.sleep(3)
             
             # Test 3: Aufstehen
-            self.get_logger().info("\n--- Test 3: Stand Up ---")
+            self.get_logger().info("\n--- Test 3: Rise Sit ---")
             self.send_stand_command()
             time.sleep(3)
+
+            # Test 4: BalanceStand (für BodyHeight)
+            self.get_logger().info("\n--- Test 4: Balance Stand ---")
+            self.send_balance_stand_command()
+            time.sleep(2)
+
+            # Test 5: Body Height -10cm
+            self.get_logger().info("\n--- Test 5: Body Height -10cm ---")
+            self.send_body_height_command(-0.10)
+            time.sleep(3)
+            self.send_body_height_command(0.0)
+            time.sleep(2)
+
+            # Test 6: Bewegung vorwärts
+            self.get_logger().info("\n--- Test 6: Move Forward ---")
+            self.send_move_command(0.3, 0.0, 0.0)
+            time.sleep(2)
+            self.send_stop_move_command()
+            time.sleep(1)
             
             self.get_logger().info("\n" + "=" * 60)
             self.get_logger().info("✅ Test Sequence Completed Successfully!")
