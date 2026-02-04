@@ -47,15 +47,15 @@ class HoleDetectionRansacNode(BaseNode):
         self.width_threshold = 0.1     # Min 10cm Breite
         
         # Voxel Grid (nur für Kandidaten-Suche, nicht für Messung!)
-        self.voxel_size = 0.01  # 1cm Voxel (grob, nur für Kandidaten)
+        self.voxel_size = 0.001  # 0.5cm Voxel (grob, nur für Kandidaten)
         self.gaussian_sigma = 1.0
         self.min_region_cells = 100
         self.min_surrounded_sides = 2
         
         # RANSAC Parameter
         self.ransac_iterations = 150
-        self.ransac_threshold = 0.01  # 2cm Inlier-Toleranz
-        self.edge_margin = 0.04  # 5cm Rand um das Loch für Kantenpunkte
+        self.ransac_threshold = 0.01  # 1cm Inlier-Toleranz
+        self.edge_margin = 0.03  # 3cm Rand um das Loch für Kantenpunkte
         
         # Multi-Frame Tracking
         self.frame_buffer_size = 120
@@ -174,14 +174,14 @@ class HoleDetectionRansacNode(BaseNode):
         return np.array(points_list) if points_list else np.array([]).reshape(0, 3)
     
     def filter_points(self, points: np.ndarray) -> np.ndarray:
-        """Filtert Punkte: 100° Radius, 0.1-1.9m Tiefe, 0-3m Höhe"""
+        """Filtert Punkte: 60° Radius, 0.1-1.9m Tiefe, 0-3m Höhe"""
         if len(points) == 0:
             return points
 
         angles = np.arctan2(points[:, 1], points[:, 0]) * 180.0 / np.pi
         distances_xy = np.sqrt(points[:, 0]**2 + points[:, 1]**2)
         
-        angle_filter = np.abs(angles) < 45.0
+        angle_filter = np.abs(angles) < 30.0
         distance_filter = (distances_xy > 0.1) & (distances_xy < 1.9)
         z_filter = (points[:, 2] > 0.0) & (points[:, 2] < 3.0)
         

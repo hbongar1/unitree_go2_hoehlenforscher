@@ -17,9 +17,13 @@ go2_my_nodes_py/hole_detection_clean.py
 go2_my_nodes_py/hole_detection_ransac.py
 go2_my_nodes_py/hole_detection_voxel_grid.py
 go2_my_nodes_py/navigation_action_server_node.py
+go2_my_nodes_py.egg-info/PKG-INFO
+go2_my_nodes_py.egg-info/SOURCES.txt
+go2_my_nodes_py.egg-info/dependency_links.txt
+go2_my_nodes_py.egg-info/entry_points.txt
+go2_my_nodes_py.egg-info/requires.txt
+go2_my_nodes_py.egg-info/top_level.txt
+go2_my_nodes_py.egg-info/zip-safe
 launch/hole_detection_voxel_grid.launch.py
 resource/go2_my_nodes_py
 rviz/hole_detection.rviz
-test/test_copyright.py
-test/test_flake8.py
-test/test_pep257.py
