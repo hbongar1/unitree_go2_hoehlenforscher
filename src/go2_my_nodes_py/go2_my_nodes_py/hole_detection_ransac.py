@@ -110,12 +110,19 @@ class HoleDetectionRansacNode(BaseNode):
         try:
             points = self.extract_points_from_cloud(msg)
             if len(points) == 0:
+                self.get_logger().debug("Keine Punkte extrahiert")
                 return
+            
+            self.get_logger().debug(f"Extrahierte Punkte: {len(points)}")
             
             filtered_points = self.filter_points(points)
+            self.get_logger().debug(f"Gefilterte Punkte: {len(filtered_points)}")
+            
             if len(filtered_points) < 50:
+                self.get_logger().debug(f"Zu wenig gefilterte Punkte: {len(filtered_points)} < 50")
                 return
             
+            # Wichtig: IMMER die gefilterte Cloud publizieren!
             self.publish_filtered_cloud(filtered_points, msg.header)
             
             self.point_buffer.append(filtered_points)
@@ -125,6 +132,7 @@ class HoleDetectionRansacNode(BaseNode):
                 return
             
             if len(self.point_buffer) < 2:
+                self.get_logger().debug(f"Zu wenig Frames gepuffert: {len(self.point_buffer)}")
                 return
             
             all_points = np.vstack(list(self.point_buffer))
@@ -590,6 +598,9 @@ class HoleDetectionRansacNode(BaseNode):
         if len(points) == 0:
             return
         
+        # Stelle sicher, dass Array im korrekten Format ist (Nx3, float32)
+        points = np.ascontiguousarray(points.astype(np.float32))
+        
         cloud_msg = PointCloud2()
         cloud_msg.header = header
         cloud_msg.height = 1
@@ -604,8 +615,10 @@ class HoleDetectionRansacNode(BaseNode):
         cloud_msg.point_step = 12
         cloud_msg.row_step = cloud_msg.point_step * len(points)
         
-        cloud_msg.data = points.astype(np.float32).tobytes()
+        # Flatten und zu bytes konvertieren
+        cloud_msg.data = points.ravel().tobytes()
         self.filtered_cloud_pub.publish(cloud_msg)
+        self.get_logger().info(f"Gefilterte Cloud publiziert: {len(points)} Punkte")
 
 
 def main(args=None):

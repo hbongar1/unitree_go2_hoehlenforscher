@@ -1,0 +1,52 @@
+running develop
+Removing /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2-my-nodes-py.egg-link (link to .)
+running egg_info
+writing ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/PKG-INFO
+writing dependency_links to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/dependency_links.txt
+writing entry points to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/entry_points.txt
+writing requirements to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/requires.txt
+writing top-level names to ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/top_level.txt
+reading manifest file '../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt'
+writing manifest file '../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info/SOURCES.txt'
+running build
+running build_py
+copying go2_my_nodes_py/entrance_decision_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+copying go2_my_nodes_py/hole_detection_voxel_grid.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+copying go2_my_nodes_py/hole_detection_clean.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+copying go2_my_nodes_py/navigation_action_server_node.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+copying go2_my_nodes_py/hole_detection_ransac.py -> /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py
+running install
+running install_lib
+creating /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/cloud_to_entrance_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/entrance_decision_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/hole_detection_voxel_grid.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/base_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/hole_detection_clean.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/__init__.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/navigation_action_server_node.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+copying /workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/build/lib/go2_my_nodes_py/hole_detection_ransac.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/cloud_to_entrance_node.py to cloud_to_entrance_node.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/entrance_decision_node.py to entrance_decision_node.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/hole_detection_voxel_grid.py to hole_detection_voxel_grid.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/base_node.py to base_node.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/hole_detection_clean.py to hole_detection_clean.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/__init__.py to __init__.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/navigation_action_server_node.py to navigation_action_server_node.cpython-310.pyc
+byte-compiling /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py/hole_detection_ransac.py to hole_detection_ransac.cpython-310.pyc
+running install_data
+copying resource/go2_my_nodes_py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/ament_index/resource_index/packages
+copying package.xml -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py
+copying launch/hole_detection_voxel_grid.launch.py -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py/launch
+copying rviz/hole_detection.rviz -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py/rviz
+copying config/cardboard_detection_params.yaml -> /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/share/go2_my_nodes_py/config
+running install_egg_info
+Copying ../../build/go2_my_nodes_py/go2_my_nodes_py.egg-info to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/python3.10/site-packages/go2_my_nodes_py-0.0.0-py3.10.egg-info
+running install_scripts
+Installing cloud_to_entrance_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+Installing entrance_decision_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+Installing hole_detection_clean script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+Installing hole_detection_ransac script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+Installing hole_detection_voxel_grid script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+Installing navigation_action_server_node script to /workspace/unitree_go2_hoehlenforscher/install/go2_my_nodes_py/lib/go2_my_nodes_py
+writing list of installed files to '/workspace/unitree_go2_hoehlenforscher/build/go2_my_nodes_py/install.log'
