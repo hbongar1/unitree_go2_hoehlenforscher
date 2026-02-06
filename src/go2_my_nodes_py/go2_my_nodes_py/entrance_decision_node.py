@@ -48,7 +48,9 @@ class EntranceDecisionNode(BaseNode):
     def entrance_callback(self, msg: Entrance):
         """Callback wird aufgerufen, wenn Entrance-Daten ankommen"""
         if self.action_in_progress:
-            self.get_logger().info("⏸️  Action läuft - Eingang wird ignoriert")
+            self.get_logger().info(
+                f"⏸️  Action läuft - Eingang: width={msg.width:.3f}m, height={msg.height:.3f}m"
+            )
             return
 
         self.get_logger().info(
@@ -148,6 +150,10 @@ class EntranceDecisionNode(BaseNode):
             return
 
         self.action_in_progress = True
+
+        self.get_logger().info(
+            f"🧭 Decision: {decision} (width={entrance['width']:.3f}m, height={entrance['height']:.3f}m)"
+        )
         
         if decision == "PASS_THROUGH_STANDING":
             self.get_logger().info(

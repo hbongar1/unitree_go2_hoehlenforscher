@@ -139,7 +139,7 @@ class HoleDetectionRansacNode(BaseNode):
             if self.frame_counter % self.process_every_n_frames != 0:
                 return
             
-            if len(self.point_buffer) < 100:
+            if len(self.point_buffer) < 200:
                 self.get_logger().debug(f"Zu wenig Frames gepuffert: {len(self.point_buffer)}/{self.frame_buffer_size}")
                 return
             
