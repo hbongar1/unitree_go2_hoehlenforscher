@@ -24,6 +24,7 @@ class action_node(BaseNode):
     ROBOT_SPORT_API_ID_STOPMOVE = 1003
     ROBOT_SPORT_API_ID_STANDUP = 1004
     ROBOT_SPORT_API_ID_STANDDOWN = 1005
+    ROBOT_SPORT_API_ID_EULER = 1007
     ROBOT_SPORT_API_ID_MOVE = 1008
     ROBOT_SPORT_API_ID_SIT = 1009
     ROBOT_SPORT_API_ID_RISESIT = 1010
@@ -95,62 +96,111 @@ class action_node(BaseNode):
         required_height = goal_handle.request.required_height_adjustment
         
         try:
-            # Schritt 0: Prüfe ob Roboter sitzt und Umgebung sich verbessert hat
-            if self.is_sitting and passable:
-                self.get_logger().info(
-                    f"✅ Environment improved! Roboter sitzt noch, aber Eingang ist jetzt passierbar → Stand up"
-                )
-                # Roboter aufstehen lassen
-                await self._stand_up_async(goal_handle)
-                self.is_sitting = False
-            
-            # Schritt 1: Prüfe ob Eingang passierbar ist
+            # Schritt 1: Eingang nicht passierbar → hinsetzen, kurz warten, wieder aufstehen
             if not passable:
-                self.get_logger().warn(
-                    "❌ Entrance not passable - sitting down"
-                )
-                
-                # Nutze ROS2 Sport API zum Hinsetzen
+                self.get_logger().warn("❌ Entrance not passable - sit down, then stand up")
                 self._send_sit_command()
                 self.is_sitting = True
-                
-                # Erfolgreiche Aktion
+                time.sleep(2.0)
+                await self._return_to_standing_async(
+                    goal_handle,
+                    reason="Standing up after sit",
+                    wait_before=10.0
+                )
+                self.is_sitting = False
+
                 goal_handle.succeed()
                 result = HeightAdjustment.Result()
                 result.success = True
-                result.message = "Sat down due to non-passable entrance"
-                self.get_logger().info("✅ Successfully sat down!")
+                result.message = "Sat down due to non-passable entrance and returned to standing"
+                self.get_logger().info("✅ Sit/stand sequence completed!")
                 return result
-            
-            # Schritt 2: Eingang passierbar - passe Höhe an falls nötig
+
+            # Schritt 2: Eingang passierbar, aber Höhe anpassen → Euler (API 1007), dann wieder stehen
             if required_height > 0.0 and required_height < self.robot_standing_height:
                 self.get_logger().info(
-                    f"⬇️  Adjusting body height: {self.current_body_height:.3f}m → {required_height:.3f}m"
+                    f"🧭 Height adjustment required ({required_height:.3f}m) → performing Euler, then stand"
                 )
-                await self._adjust_body_height_async(required_height, goal_handle)
+                await self._perform_euler_async(goal_handle)
+                await self._return_to_standing_async(
+                    goal_handle,
+                    reason="Standing after Euler",
+                    wait_before=10.0
+                )
             else:
-                self.get_logger().info(
-                    f"✅ No height adjustment needed - standing at {self.robot_standing_height:.3f}m"
+                # Schritt 3: Eingang passierbar im Stand → RiseSit, dann wieder aufstehen
+                self.get_logger().info("✅ Entrance passable - rise sit, then stand up")
+                await self._rise_sit_async(goal_handle)
+                await self._return_to_standing_async(
+                    goal_handle,
+                    reason="Standing after rise sit",
+                    wait_before=10.0
                 )
             
             # Erfolgreiche Aktion
             goal_handle.succeed()
             result = HeightAdjustment.Result()
             result.success = True
-            result.message = f"Height adjusted to {self.current_body_height:.3f}m successfully"
-            self.get_logger().info("✅ Height adjustment completed successfully!")
+            result.message = "Action completed and returned to standing"
+            self.get_logger().info("✅ Action sequence completed successfully!")
             return result
             
         except Exception as e:
             self.get_logger().error(f"❌ Error during execution: {e}")
             # Stelle auf normale Höhe zurück bei Fehler
             self._set_body_height(self.robot_standing_height)
+            self._send_balance_stand_command()
             
             goal_handle.abort()
             result = HeightAdjustment.Result()
             result.success = False
             result.message = f"Execution failed: {str(e)}"
             return result
+
+    async def _return_to_standing_async(
+        self,
+        goal_handle,
+        reason: str = "Returning to standing",
+        wait_before: float = 0.0
+    ):
+        """Stellt sicher, dass der Roboter wieder im Stand ist."""
+        if wait_before > 0.0:
+            self.get_logger().info(f"⏳ Waiting {wait_before:.0f}s before standing")
+            time.sleep(wait_before)
+        self.get_logger().info(f"⬆️  {reason}")
+        self._send_stand_up_command()
+        self._send_balance_stand_command()
+        self.current_body_height = self.robot_standing_height
+
+        feedback = HeightAdjustment.Feedback()
+        feedback.status = reason
+        goal_handle.publish_feedback(feedback)
+
+        time.sleep(1.5)
+        self.get_logger().info("⏳ Waiting 5s after standing before finishing action")
+        time.sleep(5.0)
+
+    async def _perform_euler_async(self, goal_handle, roll: float = 0.0, pitch: float = 0.0, yaw: float = 0.0):
+        """Führt Euler-Command (API 1007) aus und wartet kurz."""
+        self.get_logger().info(f"🧭 Performing Euler: roll={roll:.2f}, pitch={pitch:.2f}, yaw={yaw:.2f}")
+        self._send_euler_command(roll, pitch, yaw)
+
+        feedback = HeightAdjustment.Feedback()
+        feedback.status = "Performing Euler maneuver"
+        goal_handle.publish_feedback(feedback)
+
+        time.sleep(2.0)
+
+    async def _rise_sit_async(self, goal_handle):
+        """Führt RiseSit aus und wartet kurz."""
+        self.get_logger().info("⬆️  RiseSit...")
+        self._send_stand_up_command()
+
+        feedback = HeightAdjustment.Feedback()
+        feedback.status = "RiseSit"
+        goal_handle.publish_feedback(feedback)
+
+        time.sleep(2.0)
     
     
     async def _stand_up_async(self, goal_handle):
@@ -287,6 +337,22 @@ class action_node(BaseNode):
             self.get_logger().info("✅ BalanceStand command sent via Sport API")
         except Exception as e:
             self.get_logger().error(f"❌ Error sending balance stand command: {e}")
+
+    def _send_euler_command(self, roll: float, pitch: float, yaw: float):
+        """Sendet Euler-Befehl über Sport API (API 1007)"""
+        if not self.sport_req_pub:
+            self.get_logger().warn("Sport API not available - simulating Euler")
+            return
+
+        try:
+            req = Request()
+            req.header.identity.api_id = self.ROBOT_SPORT_API_ID_EULER
+            req.parameter = json.dumps({"x": float(roll), "y": float(pitch), "z": float(yaw)})
+            self.sport_req_pub.publish(req)
+            self.get_logger().info("✅ Euler command sent via Sport API")
+        except Exception as e:
+            self.get_logger().error(f"❌ Error sending Euler command: {e}")
+
     
     def _send_move_command(self, vx: float, vy: float, vyaw: float):
         """Sendet Move-Befehl über Sport API

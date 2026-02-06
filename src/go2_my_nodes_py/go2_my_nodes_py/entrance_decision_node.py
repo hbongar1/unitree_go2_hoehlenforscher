@@ -43,10 +43,14 @@ class EntranceDecisionNode(BaseNode):
         # Messungen sammeln
         self.entrance_buffer_size = 5  # Anzahl der Messungen zum Mitteln
         self.entrance_measurements = deque(maxlen=self.entrance_buffer_size)
-        self.decision_sent = False  # Flag um doppelte Entscheidungen zu vermeiden
+        self.action_in_progress = False  # Blockiere neue Entscheidungen während Action
     
     def entrance_callback(self, msg: Entrance):
         """Callback wird aufgerufen, wenn Entrance-Daten ankommen"""
+        if self.action_in_progress:
+            self.get_logger().info("⏸️  Action läuft - Eingang wird ignoriert")
+            return
+
         self.get_logger().info(
             f"Received entrance: width={msg.width:.3f}m, height={msg.height:.3f}m"
         )
@@ -65,10 +69,9 @@ class EntranceDecisionNode(BaseNode):
             # Treffe Entscheidung
             decision, required_height = self.make_decision(avg_entrance)
             
-            # Führe nur einmal eine Aktion aus
-            if not self.decision_sent:
+            # Führe nur eine Aktion aus und blockiere neue Eingänge
+            if not self.action_in_progress:
                 self.execute_action(decision, avg_entrance, required_height)
-                # decision_sent bleibt False - erlaube mehrere Actions
                 self.entrance_measurements.clear()
         else:
             self.get_logger().info(
@@ -141,6 +144,10 @@ class EntranceDecisionNode(BaseNode):
     
     def execute_action(self, decision: str, entrance: dict, required_height: float = 0.0):
         """Führt Action aus, um die Entscheidung an die Action Node zu schicken"""
+        if self.action_in_progress:
+            return
+
+        self.action_in_progress = True
         
         if decision == "PASS_THROUGH_STANDING":
             self.get_logger().info(
@@ -173,7 +180,7 @@ class EntranceDecisionNode(BaseNode):
         self.get_logger().info("⏳ Waiting for action server...")
         if not self._action_client.wait_for_server(timeout_sec=5.0):
             self.get_logger().error("Action server not available!")
-            self.decision_sent = False  # Reset flag
+            self.action_in_progress = False
             return
         
         # Determine if passable
@@ -205,7 +212,7 @@ class EntranceDecisionNode(BaseNode):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().warn('❌ Goal rejected by action server')
-            self.decision_sent = False  # Reset flag um neue Entscheidungen zu ermöglichen
+            self.action_in_progress = False
             return
         
         self.get_logger().info('✅ Goal accepted by action server')
@@ -232,7 +239,7 @@ class EntranceDecisionNode(BaseNode):
             )
         
         # Bereit für nächste Entscheidung
-        self.decision_sent = False
+        self.action_in_progress = False
     
     def process(self, data):
         """Process method from BaseNode (optional)"""
