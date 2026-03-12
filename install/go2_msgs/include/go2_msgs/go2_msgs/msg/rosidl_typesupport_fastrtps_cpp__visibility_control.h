@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_typesupport_fastrtps_cpp/go2_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h

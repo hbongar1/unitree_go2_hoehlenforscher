@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_generator_cpp/go2_msgs/msg/detail/entrance__struct.hpp

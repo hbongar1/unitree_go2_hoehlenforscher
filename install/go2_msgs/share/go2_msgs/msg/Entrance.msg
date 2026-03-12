@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/src/go2_msgs/msg/Entrance.msg

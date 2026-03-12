@@ -1,5 +1,5 @@
 # Entrance.msg
-# Detected entrance with position and dimensions
+# Message for detected entrance with position and dimensions
 
 std_msgs/Header header
 

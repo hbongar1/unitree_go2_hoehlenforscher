@@ -1,5 +1,5 @@
 # Height_Adjustment.action
-# Action definition for navigating through an entrance
+# Action definition for adjusting the height of Unitree Go2
 
 
 bool passable

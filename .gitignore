@@ -1,0 +1,37 @@
+# ROS2 Build-Artefakte
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporäre Dateien
+*.tmp
+*.temp
+*~
+*.bak
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Runtime output
+src/go2_my_nodes_py/go2_my_nodes_py/entrance_detections/
+
+# ROS
+devel/
+.catkin_workspace

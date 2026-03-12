@@ -1,32 +1,26 @@
-# Parameter für Pappe-Cutout Eingangserkennung
-# Optimiert für Indoor-Test mit Pappe-Aufbauten
+# Parameters for entrance detection using 2D front-facing projection
+# Optimized for vertical holes in walls (8cm-2m diameter)
 
-hole_detection_voxel_grid_node:
+hole_detection_clean_node:
   ros__parameters:
-    # Minimale Eingangs-Dimensionen (angepasst an Pappe-Setup)
-    height_threshold: 0.25    # 25cm minimum (kleines Loch ~20cm wird gefiltert)
-    width_threshold: 0.25     # 25cm minimum
-    max_width: 1.2            # 120cm maximum (großzügig für Tests)
+    # Entrance size constraints
+    height_threshold: 0.1     # Minimum 10cm height
+    width_threshold: 0.1      # Minimum 10cm width
+    max_width: 2.0            # Maximum 2m width
+    min_hole_diameter: 0.08   # Minimum 8cm diameter
+    max_hole_diameter: 2.0    # Maximum 2m diameter
     
-    # Voxel Grid spezifisch
-    voxel_size: 0.015         # 1.5cm Voxel (feiner für kleine Details)
-    gradient_percentile: 70   # Empfindlicher für dünne Pappe-Kanten
-    low_density_percentile: 30  # Etwas höher für bessere Loch-Erkennung
-    gaussian_sigma: 0.8       # Leichte Glättung
+    # Voxel Grid parameters (Y-Z front projection)
+    voxel_size: 0.003         # 3mm voxel (fine precision)
+    gaussian_sigma: 0.7       # Limited smoothing for sharp edges
+    min_region_cells: 500      # Minimum region size in voxels
+    min_surrounded_sides: 2    # Minimum 2 sides surrounded
     
-    # Clustering
-    cluster_distance: 0.4     # Enger für präzisere Gruppierung
+    # Multi-frame accumulation
+    frame_buffer_size: 200     # Accumulate 200 frames for stability
+    min_buffer_frames_to_search: 100  # Start detection after 100 frames
+    process_every_n_frames: 1  # Process every frame
     
-    # Frame Processing
-    frame_buffer_size: 15     # Kleinerer Buffer für schnellere Updates
-    process_every_n_frames: 3 # Öfter verarbeiten für Live-Feedback
-    
-    # Konfidenz
-    confidence_threshold: 2   # Niedrig für schnelle erste Erkennung
-    entrance_timeout: 30      # Frames bis Eingang vergessen wird
-    
-    # Ground Plane Detection (NEU)
-    enable_ground_detection: true
-    ground_plane_distance_threshold: 0.02  # 2cm RANSAC tolerance
-    ground_plane_min_points: 100           # Min. Punkte für Ebenen-Fitting
-    min_height_above_ground: 0.15          # Filter Punkte < 15cm über Boden
+    # Confidence tracking
+    confidence_threshold: 3    # Minimum 3 detections before publishing
+    entrance_timeout: 60       # Frames to keep entrance in memory

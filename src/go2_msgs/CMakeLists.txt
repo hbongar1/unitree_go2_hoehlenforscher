@@ -12,7 +12,7 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(action_msgs REQUIRED)
 
-# Declare message and action files
+# Declare message and action files for additional interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Entrance.msg"
   "action/HeightAdjustment.action"

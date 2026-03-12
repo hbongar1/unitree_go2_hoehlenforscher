@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/ament_cmake_core/go2_msgsConfig-version.cmake

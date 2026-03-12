@@ -1,1 +1,0 @@
-/workspace/unitree_go2_hoehlenforscher/build/go2_msgs/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake

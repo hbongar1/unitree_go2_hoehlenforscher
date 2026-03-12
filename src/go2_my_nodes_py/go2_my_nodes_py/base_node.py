@@ -1,9 +1,8 @@
 import rclpy
 from rclpy.node import Node
 
-
+#Base class for all ROS 2 nodes in this project
 class BaseNode(Node):
-    """Base class for all ROS 2 nodes in this project"""
     
     def __init__(self, name: str, description: str = ""):
         super().__init__(name)
@@ -13,5 +12,4 @@ class BaseNode(Node):
             self.get_logger().info(f"Description: {description}")
     
     def process(self, data):
-        """Override this method in subclasses to implement processing logic"""
         raise NotImplementedError("Subclasses must implement the process method")
