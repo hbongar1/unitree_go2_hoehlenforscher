@@ -12,11 +12,12 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', [
             'launch/hole_detection_clean.launch.py',
+            'launch/hole_detection_ransac.launch.py',
         ]),
         ('share/' + package_name + '/rviz', [
             'rviz/hole_detection.rviz',
         ]),
-        ('share/' + package_name + '/config', [  # Neu: Config-Verzeichnis
+        ('share/' + package_name + '/config', [
             'config/cardboard_detection_params.yaml',
         ]),
     ],
@@ -25,7 +26,7 @@ setup(
     maintainer='Helena Bongartz',
     maintainer_email='helenabongartz@users.noreply.github.com',
     description='Python ROS 2 nodes for Unitree GO2 entrance detection and motion control.',
-    license='Apache-2.0',
+    license='CC BY-NC-SA 4.0',
     entry_points={
         'console_scripts': [
             'cloud_to_entrance_node = go2_my_nodes_py.cloud_to_entrance_node:main',
